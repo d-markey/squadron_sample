@@ -1,6 +1,7 @@
-import '../pi_digits_service_worker.dart';
-import 'pi_worker.dart' as pi_worker;
+import '../pi_digits_worker_pool.dart' show PiDigitsWorker;
 
-PiDigitsWorker createWorker() => PiDigitsWorker(pi_worker.start);
+import 'pi_worker.dart' as isolate;
+
+PiDigitsWorker createWorker() => PiDigitsWorker(isolate.start);
 
 String get workerPlatform => 'vm';

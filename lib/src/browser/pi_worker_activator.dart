@@ -1,4 +1,4 @@
-import '../pi_digits_service_worker.dart';
+import '../pi_digits_worker_pool.dart' show PiDigitsWorker;
 
 PiDigitsWorker createWorker() => PiDigitsWorker('pi_worker.dart.js');
 

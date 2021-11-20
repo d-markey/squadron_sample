@@ -3,18 +3,17 @@ import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:squadron/squadron_pool.dart';
+import 'package:squadron/squadron.dart';
 
 import 'src/pi_digits_service.dart';
-import 'src/pi_digits_service_worker.dart';
-import 'src/pi_worker_pool.dart';
+import 'src/pi_digits_worker_pool.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final _count = 5000;
 
-  final WorkerPool<PiDigitsWorker> _pool = createPiWorkerPool(maxWorkers: 5);
+  final PiDigitsWorkerPool _pool = PiDigitsWorkerPool(const ConcurrencySettings(maxWorkers: 7));
 
   final String title;
 
@@ -26,10 +25,12 @@ class _MyHomePageState extends State<MyHomePage> {
   _MyHomePageState();
 
   List<int> _digits = const <int>[];
-
+  bool _cancel = false;
   Timer? _computing;
 
   void _startCompute() {
+    _cancel = false;
+    _digits = const <int>[];
     _computing = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       setState(() {});
     });
@@ -43,70 +44,80 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future _loadNDigits(int start, int batch, Stream<int> digits) async {
+    try {
+      var i = start;
+      await for (var d in digits) {
+        _digits[i++] = d;
+      }
+      log('[_loadNDigits] computation for batch $start-${start+batch-1} completed successfully');
+    } on WorkerException catch (e) {
+      log('[_loadNDigits] computation for batch $start-${start+batch-1} failed: ${e.message}');
+    } catch (e) {
+      log('[_loadNDigits] computation for batch $start-${start+batch-1} failed: $e');
+    }
+  }
+
   void _loadDigitsWithoutWorkers() async {
     _startCompute();
 
-    _digits = const <int>[];
-
     await Future.delayed(const Duration(seconds: 1));
-
-    _digits = Uint8List(widget._count);
 
     var sw = Stopwatch()..start();
-    var piDigits = PiDigitsService();
-    for (var i = 0; i < widget._count; i++) {
-      var d = piDigits.getNth(i) as int;
-      // log('received digit #$i = $d');
-      _digits[i] = d;
+    if (_cancel) {
+      log('[_loadDigitsWithoutWorkers] computation has been cancelled');
+    } else {
+      _digits = Uint8List(widget._count);
+      var piDigits = PiDigitsServiceImpl();
+      await _loadNDigits(0, widget._count, piDigits.getNDigits(0, widget._count));
     }
+    sw.stop();
+
     log('[_loadDigitsWithoutWorkers] elapsed = ${sw.elapsed}');
 
-    await Future.delayed(const Duration(seconds: 1));
+    if (!_cancel) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
 
     _stopCompute();
-  }
-
-  Future _loadNDigits(int start, int count) {
-    final completer = Completer();
-    var i = start;
-    widget._pool.stream((w) => w.getNDigits(start, count)).listen((digit) {
-      // log('received digit #$i = $digit');
-      if (i < _digits.length) {
-        _digits[i++] = digit;
-      }
-    }).onDone(() {
-      completer.complete();
-    });
-    return completer.future;
   }
 
   void _loadDigitsWithWorkerPool() async {
     _startCompute();
 
-    _digits = const <int>[];
-
     await Future.delayed(const Duration(seconds: 1));
-
-    _digits = Uint8List(widget._count);
 
     var sw = Stopwatch()..start();
-    final futures = <Future>[];
-    var batch = widget._count ~/ widget._pool.maxWorkers;
-    var start = 0;
-    while (start < widget._count) {
-      if (start + batch > widget._count) {
-        batch = widget._count - start;
+    if (_cancel) {
+      log('[_loadDigitsWithWorkerPool] computation has been cancelled');
+    } else {
+      _digits = Uint8List(widget._count);
+      final futures = <Future>[];
+      var batch = widget._count ~/ widget._pool.concurrencySettings.maxWorkers;
+      var start = 0;
+      while (start < widget._count) {
+        if (start + batch > widget._count) {
+          batch = widget._count - start;
+        }
+        futures.add(_loadNDigits(start, batch, widget._pool.getNDigits(start, batch)));
+        start += batch;
       }
-      // log('loading batch $start -> ${start + batch}');
-      futures.add(_loadNDigits(start, batch));
-      start += batch;
+      await Future.wait(futures);
     }
-    await Future.wait(futures);
+
+    sw.stop();
     log('[_loadDigitsWithWorkerPool] elapsed = ${sw.elapsed}');
 
-    await Future.delayed(const Duration(seconds: 1));
+    if (!_cancel) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
 
     _stopCompute();
+  }
+
+  void _cancelPoolTasks() {
+    _cancel = true;
+    widget._pool.cancel();
   }
 
   String get _pi => _digits.isEmpty
@@ -135,11 +146,25 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         floatingActionButton: _computing != null
-            ? Text('tick = ${_computing?.tick}',
-                style: const TextStyle(
-                    backgroundColor: Colors.blue, color: Colors.white))
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text('tick = ${_computing?.tick}',
+                    style: const TextStyle(
+                        backgroundColor: Colors.blue, color: Colors.white)),
+                  FloatingActionButton(
+                    onPressed: _cancelPoolTasks,
+                    tooltip: 'Cancel',
+                    child:
+                        const Text('Cancel', textAlign: TextAlign.center),
+                  )
+                ]
+              )
             : FutureBuilder<bool>(
-                future: widget._pool.start().then((result) => true),
+                future: Future(() async {
+                  await widget._pool.start();
+                  return true;
+                }),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return Row(
