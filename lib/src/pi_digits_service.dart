@@ -1,24 +1,39 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:squadron/squadron.dart';
 import 'package:squadron/squadron_service.dart';
 
 abstract class PiDigitsService {
-  Stream<int> getNDigits(int start, int n);
+  Stream<int> getNDigits(int start, int n, CancellationToken? token);
   FutureOr<int> getNth(int n);
 
   static const getNthCommand = 1;
   static const getNDigitsCommand = 2;
 }
 
+void _noop() {}
+Future noop() => Future(_noop);
+
 class PiDigitsServiceImpl implements PiDigitsService, WorkerService {
   // see https://dept-info.labri.fr/~denis/Enseignement/2017-PG306/TP01/pi.java
 
   @override
-  Stream<int> getNDigits(int start, int n) async* {
+  Stream<int> getNDigits(int start, int n, CancellationToken? token) async* {
     final end = start + n;
-    for (var i = start; i < end; i++) {
+    var i = start;
+    while (i < end) {
       yield getNth(i);
+      i++;
+      if (i >= end) break;
+      if (i % 10 == 0) {
+        // avoid flooding the event loop with noop Futures
+        // check every 10 digits only
+        await noop();
+        if (token?.cancelled ?? false) {
+          throw CancelledException();
+        }
+      }
     }
   }
 
@@ -79,6 +94,7 @@ class PiDigitsServiceImpl implements PiDigitsService, WorkerService {
   @override
   late final Map<int, CommandHandler> operations = {
     PiDigitsService.getNthCommand: (r) => getNth(r.args[0]),
-    PiDigitsService.getNDigitsCommand: (r) => getNDigits(r.args[0], r.args[1]),
+    PiDigitsService.getNDigitsCommand: (r) =>
+        getNDigits(r.args[0], r.args[1], r.cancelToken),
   };
 }

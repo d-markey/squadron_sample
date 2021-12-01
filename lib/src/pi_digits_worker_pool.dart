@@ -8,17 +8,15 @@ import 'pi_digits_worker_activator.dart'
 
 class PiDigitsWorkerPool extends WorkerPool<PiDigitsWorker>
     implements PiDigitsService {
-  PiDigitsWorkerPool(
-      ConcurrencySettings concurrencySettings)
-      : super(createWorker,
-            concurrencySettings: concurrencySettings);
+  PiDigitsWorkerPool(ConcurrencySettings concurrencySettings)
+      : super(createWorker, concurrencySettings: concurrencySettings);
 
   @override
   Future<int> getNth(int n) => execute((w) => w.getNth(n));
 
   @override
-  Stream<int> getNDigits(int start, int n) =>
-      stream((w) => w.getNDigits(start, n));
+  Stream<int> getNDigits(int start, int n, CancellationToken? token) =>
+      stream((w) => w.getNDigits(start, n, token));
 }
 
 class PiDigitsWorker extends Worker implements PiDigitsService {
@@ -29,6 +27,6 @@ class PiDigitsWorker extends Worker implements PiDigitsService {
   Future<int> getNth(int n) => send(PiDigitsService.getNthCommand, [n]);
 
   @override
-  Stream<int> getNDigits(int start, int n) =>
-      stream(PiDigitsService.getNDigitsCommand, [start, n]);
+  Stream<int> getNDigits(int start, int n, CancellationToken? token) =>
+      stream(PiDigitsService.getNDigitsCommand, [start, n], token);
 }

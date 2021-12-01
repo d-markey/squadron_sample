@@ -16,7 +16,7 @@ The source code should be easy to understand:
 
 * `browser/pi_worker.dart` and `vm/pi_worker.dart` install and run the worker for their respective platform, relying on the service implemented in `pi_digits_service.dart`.
 
-Squadron takes care of all the rest: bootstrapping the workers, communicating to/from the workers, distributing tasks to the worker service.
+Squadron takes care of all the rest: bootstrapping the workers, communicating to/from the workers, distributing tasks to the worker service, cancellation notifications...
 
 The main app uses the worker pool to have 5,000 digits of Pi computed in parallel (see `_loadDigitsWithWorkerPool()` in `home_page.dart`).
 
