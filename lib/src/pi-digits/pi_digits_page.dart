@@ -5,25 +5,25 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
-import 'src/pi_digits_service.dart';
-import 'src/pi_digits_worker_pool.dart';
+import 'pi_digits_service.dart';
+import 'pi_digits_worker_pool.dart';
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+class PiDigitsPage extends StatefulWidget {
+  PiDigitsPage({Key? key, this.tabBar}) : super(key: key);
 
   final _count = 5000;
+
+  final TabBar? tabBar;
 
   final PiDigitsWorkerPool _pool = PiDigitsWorkerPool(
       const ConcurrencySettings(minWorkers: 8, maxWorkers: 8, maxParallel: 2));
 
-  final String title;
-
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<PiDigitsPage> createState() => _PiDigitsPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  _MyHomePageState();
+class _PiDigitsPageState extends State<PiDigitsPage> {
+  _PiDigitsPageState();
 
   List<int> _digits = const <int>[];
   bool _cancel = false;
@@ -162,7 +162,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          title: const Text('SQUADRON SAMPLE - PI DIGITS'),
+          bottom: widget.tabBar,
         ),
         body: Center(
           child: Column(

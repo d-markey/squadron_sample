@@ -1,10 +1,12 @@
 # squadron_sample
 
-Flutter demo for Squadron: parallel computation of hexadecimal digits of Pi.
+Flutter demo for Squadron with sample use-cases:
+* parallel computation of hexadecimal digits of Pi.
+* parallel thumbnail generation
 
 See [Squadron Dart package](https://pub.dev/packages/squadron) for more information on Squadron.
 
-# Quick Introduction
+# Pi Digits
 
 The source code should be easy to understand:
 
@@ -12,16 +14,45 @@ The source code should be easy to understand:
 
 * `pi_digits_worker.dart` implements the code used to proxy calls from the main thread to the platform workers (`Isolate`s in native scenarios, `WebWorker`s in browser environment).
 
-* `pi_worker_pool.dart` implements the worker pool depending on the target platform (browser or native). It will instantiate workers either from `browser/pi_worker.dart` or from `vm/pi_worker.dart` via the corresponding `pi_worker_activator.dart`.
+* `pi_worker_pool.dart` implements the worker pool depending on the target platform (browser or native). It will instantiate workers either from `browser/pi_digits_worker.dart` or from `vm/pi_digits_worker.dart` via the corresponding `pi_digits_worker_activator.dart`.
 
-* `browser/pi_worker.dart` and `vm/pi_worker.dart` install and run the worker for their respective platform, relying on the service implemented in `pi_digits_service.dart`.
+* `browser/pi_digits_worker.dart` and `vm/pi_digits_worker.dart` install and run the worker for their respective platform, relying on the service implemented in `pi_digits_service.dart`.
 
 Squadron takes care of all the rest: bootstrapping the workers, communicating to/from the workers, distributing tasks to the worker service, cancellation notifications...
 
-The main app uses the worker pool to have 5,000 digits of Pi computed in parallel (see `_loadDigitsWithWorkerPool()` in `home_page.dart`).
+The main app uses the worker pool to have 5,000 digits of Pi computed in parallel (see `_loadDigitsWithWorkerPool()` in `pi_digits_page.dart`).
 
 *NOTE FOR WEB PLATFORM:* the Worker must be compiled manually before running the app:
 
 ```
-dart compile js ./lib/src/browser/pi_worker.dart -o ./web/pi_worker.dart.js -m
+dart compile js ./lib/src/pi-digits/browser/pi_digits_worker.dart -o ./web/workers/pi_digits_worker.dart.js -m
 ```
+
+# Thumbnails
+
+The structure of the code is very similar to that for pi digits:
+
+* `thumbnail_service.dart` implements the generation of the thumbnail via [image](https://pub.dev/packages/image).
+
+* `thumbnail_worker.dart` implements the code used to proxy calls from the main thread to the platform workers (`Isolate`s in native scenarios, `WebWorker`s in browser environment).
+
+* `thumbnail_pool.dart` implements the worker pool depending on the target platform (browser or native). It will instantiate workers either from `browser/thumbnail_worker.dart` or from `vm/thumbnail_worker.dart` via the corresponding `thumbnail_worker_activator.dart`.
+
+* `browser/thumbnail_worker.dart` and `vm/thumbnail_worker.dart` install and run the worker for their respective platform, relying on the service implemented in `thumbnail_service.dart`.
+
+Squadron takes care of all the rest: bootstrapping the workers, communicating to/from the workers, distributing tasks to the worker service, cancellation notifications...
+
+The main app uses the Flutter icon as a sample image. In a production app, you'd ask the user to pick images or take pictures with the camera.
+
+*NOTE FOR WEB PLATFORM:* the Worker must be compiled manually before running the app:
+
+```
+dart compile js ./lib/src/thumbnail/browser/thumbnail_worker.dart -o ./web/workers/thumbnail_worker.dart.js -m
+```
+
+
+# Note
+
+Before running the sample, in case any modification was made to worker services or their dependencies, the JavaScript workers must be recompiled.
+
+The sample provides a script to automate building the Web workers, cf. `build_web_worker.bat`.

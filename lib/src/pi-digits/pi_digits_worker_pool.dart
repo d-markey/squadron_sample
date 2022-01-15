@@ -2,9 +2,9 @@ import 'package:squadron/squadron.dart';
 
 import 'pi_digits_service.dart';
 import 'pi_digits_worker_activator.dart'
-    if (dart.library.js) 'package:squadron_sample/src/browser/pi_worker_activator.dart'
-    if (dart.library.html) 'package:squadron_sample/src/browser/pi_worker_activator.dart'
-    if (dart.library.io) 'package:squadron_sample/src/vm/pi_worker_activator.dart';
+    if (dart.library.js) 'package:squadron_sample/src/pi-digits/browser/pi_digits_worker_activator.dart'
+    if (dart.library.html) 'package:squadron_sample/src/pi-digits/browser/pi_digits_worker_activator.dart'
+    if (dart.library.io) 'package:squadron_sample/src/pi-digits/vm/pi_digits_worker_activator.dart';
 
 class PiDigitsWorkerPool extends WorkerPool<PiDigitsWorker>
     implements PiDigitsService {
