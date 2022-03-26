@@ -14,21 +14,21 @@ abstract class MyWorkerService {
 
 // this class is the actual implementation of the service defined above
 class MyWorkerServiceImpl implements MyWorkerService, WorkerService {
-  MyWorkerServiceImpl(this._sizeClient);
+  MyWorkerServiceImpl(this._sizeService);
 
-  // i Workers, the _sizeService will be set to a TextSizeServiceClient to communicate with the TextSizeServer in the main Isolate
-  final SizeClient _sizeClient;
+  // in Workers, the _sizeService will be set to a SizeClient to communicate with the TextSizeServer in the main Isolate
+  final SizeService _sizeService;
 
   @override
   Future doSomethingWithTexts(List texts) async {
     for (var text in texts) {
-      final size = await _sizeClient.measure(text);
+      final size = await _sizeService.measure(text);
       Squadron.info('$text --> ${size['w']}x${size['h']}');
     }
   }
 
-  // this map creates the correspondance between the service constants from ThumbnailService
-  // and the method implementations in ThumbnailServiceImpl
+  // this map creates the correspondance between the service constants from MyWorkerService
+  // and the method implementations in MyWorkerServiceImpl
   @override
   late final Map<int, CommandHandler> operations = {
     MyWorkerService.doSomethingWithTextsCommand: (WorkerRequest r) =>
