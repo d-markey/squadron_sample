@@ -6,7 +6,6 @@ import 'package:squadron/squadron.dart';
 
 import 'thumbnail_service.dart';
 
-
 // this is where the stub file comes into action
 //
 // of course, if your application does not target both Web and VM platforms,
@@ -15,8 +14,6 @@ import 'thumbnail_worker_activator.dart'
     if (dart.library.js) 'package:squadron_sample/src/thumbnails/browser/thumbnail_worker_activator.dart'
     if (dart.library.html) 'package:squadron_sample/src/thumbnails/browser/thumbnail_worker_activator.dart'
     if (dart.library.io) 'package:squadron_sample/src/thumbnails/vm/thumbnail_worker_activator.dart';
-
-
 
 // Implementation of ThumbnailService as a Squadron worker pool
 class ThumbnailWorkerPool extends WorkerPool<ThumbnailWorker>
@@ -29,8 +26,6 @@ class ThumbnailWorkerPool extends WorkerPool<ThumbnailWorker>
           Uint8List imageData, int thumbWidth, int thumbHeight) =>
       execute((w) => w.getThumbnail(imageData, thumbWidth, thumbHeight));
 }
-
-
 
 // Implementation of ThumbnailService as a Squadron worker
 class ThumbnailWorker extends Worker implements ThumbnailService {

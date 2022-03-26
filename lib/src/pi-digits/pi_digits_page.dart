@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -31,7 +30,7 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
   Timer? _computing;
 
   void _startCompute() {
-    log('_startCompute called from ${StackTrace.current}');
+    Squadron.info('_startCompute called from ${StackTrace.current}');
     _cancel = false;
     _cancelToken = CancellableToken('Task was cancelled by the user');
     _digits = const <int>[];
@@ -54,13 +53,17 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
       await for (var d in digits) {
         _digits[i++] = d;
       }
-      log('[_loadNDigits] computation for batch $start-${start + batch - 1} completed successfully');
+      Squadron.info(
+          '[_loadNDigits] computation for batch $start-${start + batch - 1} completed successfully');
     } on CancelledException catch (e) {
-      log('[_loadNDigits] computation for batch $start-${start + batch - 1} cancelled: ${e.message}');
+      Squadron.info(
+          '[_loadNDigits] computation for batch $start-${start + batch - 1} cancelled: ${e.message}');
     } on WorkerException catch (e) {
-      log('[_loadNDigits] computation for batch $start-${start + batch - 1} failed: ${e.message}');
+      Squadron.info(
+          '[_loadNDigits] computation for batch $start-${start + batch - 1} failed: ${e.message}');
     } catch (e) {
-      log('[_loadNDigits] computation for batch $start-${start + batch - 1} failed: $e');
+      Squadron.info(
+          '[_loadNDigits] computation for batch $start-${start + batch - 1} failed: $e');
     }
   }
 
@@ -71,25 +74,27 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
 
       var sw = Stopwatch()..start();
       if (_cancel) {
-        log('[_loadDigitsWithoutWorkers] computation has been cancelled');
+        Squadron.info(
+            '[_loadDigitsWithoutWorkers] computation has been cancelled');
       } else {
         _digits = Uint8List(widget._count);
         var piDigits = PiDigitsServiceImpl();
         try {
           await _loadNDigits(0, widget._count,
               piDigits.getNDigits(0, widget._count, _cancelToken));
-          log('[_loadDigitsWithoutWorkers] computation completed');
+          Squadron.info('[_loadDigitsWithoutWorkers] computation completed');
         } on CancelledException {
           _cancel = true;
-          log('[_loadDigitsWithoutWorkers] computation has been cancelled by user');
+          Squadron.info(
+              '[_loadDigitsWithoutWorkers] computation has been cancelled by user');
         }
       }
       sw.stop();
 
-      log('[_loadDigitsWithoutWorkers] elapsed = ${sw.elapsed}');
+      Squadron.info('[_loadDigitsWithoutWorkers] elapsed = ${sw.elapsed}');
     } catch (e, st) {
-      log('[_loadDigitsWithWorkerPool] ERROR = $e');
-      log('[_loadDigitsWithWorkerPool] TRACE = $st');
+      Squadron.info('[_loadDigitsWithWorkerPool] ERROR = $e');
+      Squadron.info('[_loadDigitsWithWorkerPool] TRACE = $st');
     } finally {
       if (!_cancel) {
         await Future.delayed(const Duration(seconds: 1));
@@ -106,7 +111,8 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
 
       var sw = Stopwatch()..start();
       if (_cancel) {
-        log('[_loadDigitsWithWorkerPool] computation has been cancelled');
+        Squadron.info(
+            '[_loadDigitsWithWorkerPool] computation has been cancelled');
       } else {
         _digits = Uint8List(widget._count);
         final futures = <Future>[];
@@ -121,21 +127,23 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
               widget._pool.getNDigits(start, batch, _cancelToken)));
           start += batch;
         }
-        log('[_loadDigitsWithWorkerPool] computation started with ${futures.length} batches');
+        Squadron.info(
+            '[_loadDigitsWithWorkerPool] computation started with ${futures.length} batches');
         try {
           await Future.wait(futures);
-          log('[_loadDigitsWithWorkerPool] computation completed');
+          Squadron.info('[_loadDigitsWithWorkerPool] computation completed');
         } on CancelledException {
           _cancel = true;
-          log('[_loadDigitsWithWorkerPool] computation has been cancelled by user');
+          Squadron.info(
+              '[_loadDigitsWithWorkerPool] computation has been cancelled by user');
         }
       }
 
       sw.stop();
-      log('[_loadDigitsWithWorkerPool] elapsed = ${sw.elapsed}');
+      Squadron.info('[_loadDigitsWithWorkerPool] elapsed = ${sw.elapsed}');
     } catch (e, st) {
-      log('[_loadDigitsWithWorkerPool] ERROR = $e');
-      log('[_loadDigitsWithWorkerPool] TRACE = $st');
+      Squadron.info('[_loadDigitsWithWorkerPool] ERROR = $e');
+      Squadron.info('[_loadDigitsWithWorkerPool] TRACE = $st');
     } finally {
       if (!_cancel) {
         await Future.delayed(const Duration(seconds: 1));

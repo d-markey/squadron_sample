@@ -29,7 +29,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  squadron: ^3.1.5
+  squadron: ^3.3.0
   image: ^3.1.1
 
   # The following adds the Cupertino Icons font to your application.

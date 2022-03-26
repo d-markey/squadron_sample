@@ -15,4 +15,5 @@
 
 import '../thumbnail_worker_pool.dart' show ThumbnailWorker;
 
-ThumbnailWorker createWorker() => ThumbnailWorker('/workers/thumbnail_worker.dart.js'); 
+ThumbnailWorker createWorker() =>
+    ThumbnailWorker('/workers/thumbnail_worker.dart.js');

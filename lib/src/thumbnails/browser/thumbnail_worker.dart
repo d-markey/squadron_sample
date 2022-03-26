@@ -17,4 +17,4 @@ import 'package:squadron/squadron_service.dart';
 
 import '../thumbnail_service.dart';
 
-void main() => run((startRequest) => ThumbnailServiceImpl()); 
+void main() => run((startRequest) => ThumbnailServiceImpl());

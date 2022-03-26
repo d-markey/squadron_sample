@@ -5,8 +5,6 @@ import 'package:image/image.dart';
 
 import 'package:squadron/squadron.dart';
 
-
-
 // this abstract class represents the functionality you want to support in your service
 //
 // in this example, there is only one functionality: given an image represented by imageData,
@@ -18,8 +16,6 @@ abstract class ThumbnailService {
   // this constant is used to identify the method to call when communicating with isolates / web workers
   static const getThumbnailCommand = 1;
 }
-
-
 
 // this class is the actual implementation of the service defined above
 class ThumbnailServiceImpl implements ThumbnailService, WorkerService {
