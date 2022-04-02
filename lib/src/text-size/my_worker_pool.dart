@@ -3,7 +3,7 @@
 import 'dart:async';
 
 import 'package:squadron/squadron.dart';
-import 'package:squadron_sample/src/text-size/size_service.dart';
+import 'package:squadron_sample/src/text-size/local_size_service.dart';
 
 // this is where the stub file comes into action
 //
@@ -22,7 +22,7 @@ abstract class MyWorkerService {
 
 // Implementation of TextSizeService as a Squadron worker pool
 class MyWorkerPool extends WorkerPool<MyWorker> implements MyWorkerService {
-  MyWorkerPool(LocalWorker<SizeService> sizeService,
+  MyWorkerPool(LocalWorker<LocalSizeService> sizeService,
       ConcurrencySettings concurrencySettings)
       : super(() => createWorker(sizeService),
             concurrencySettings: concurrencySettings);

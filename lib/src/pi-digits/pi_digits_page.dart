@@ -3,19 +3,16 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
+import 'package:squadron_sample/pools.dart';
 
 import 'pi_digits_service.dart';
-import 'pi_digits_worker_pool.dart';
 
 class PiDigitsPage extends StatefulWidget {
-  PiDigitsPage({Key? key, this.tabBar}) : super(key: key);
+  const PiDigitsPage({Key? key, this.tabBar}) : super(key: key);
 
   final _count = 5000;
 
   final TabBar? tabBar;
-
-  final PiDigitsWorkerPool _pool = PiDigitsWorkerPool(
-      const ConcurrencySettings(minWorkers: 8, maxWorkers: 8, maxParallel: 2));
 
   @override
   State<PiDigitsPage> createState() => _PiDigitsPageState();
@@ -117,14 +114,14 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
         _digits = Uint8List(widget._count);
         final futures = <Future>[];
         var batch =
-            widget._count ~/ widget._pool.concurrencySettings.maxWorkers;
+            widget._count ~/ piDigitsWorkerPool.concurrencySettings.maxWorkers;
         var start = 0;
         while (start < widget._count) {
           if (start + batch > widget._count) {
             batch = widget._count - start;
           }
           futures.add(_loadNDigits(start, batch,
-              widget._pool.getNDigits(start, batch, _cancelToken)));
+              piDigitsWorkerPool.getNDigits(start, batch, _cancelToken)));
           start += batch;
         }
         Squadron.info(
@@ -196,7 +193,7 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
                 )
               ])
             : FutureBuilder<bool>(future: Future(() async {
-                await widget._pool.start();
+                await piDigitsWorkerPool.start();
                 return true;
               }), builder: (context, snapshot) {
                 if (snapshot.hasData) {

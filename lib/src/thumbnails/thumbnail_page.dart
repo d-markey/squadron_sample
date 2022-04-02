@@ -4,17 +4,12 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
-import 'thumbnail_worker_pool.dart';
+import '../../pools.dart';
 
 class ThumbnailPage extends StatefulWidget {
-  ThumbnailPage({Key? key, this.tabBar}) : super(key: key);
+  const ThumbnailPage({Key? key, this.tabBar}) : super(key: key);
 
   final TabBar? tabBar;
-
-  // instantiate a worker pool with 1 to 4 workers
-  // adapt the sizing to your requirements
-  final ThumbnailWorkerPool _pool = ThumbnailWorkerPool(
-      const ConcurrencySettings(minWorkers: 1, maxWorkers: 4, maxParallel: 2));
 
   @override
   State<ThumbnailPage> createState() => _ThumbnailPageState();
@@ -49,7 +44,7 @@ class _ThumbnailPageState extends State<ThumbnailPage> {
       futures.add(Future<Uint8List>(() async {
         Squadron.info('Loading image #$i...');
         final sw = Stopwatch()..start();
-        final t = await widget._pool.getThumbnail(images[i], 32, 32);
+        final t = await thumbnailWorkerPool.getThumbnail(images[i], 32, 32);
         sw.stop();
         Squadron.info('Image #$i loaded in ${sw.elapsed}');
         return t;

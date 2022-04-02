@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
-import 'size_service.dart';
+import 'local_size_service.dart';
 
-class SizeServiceImpl extends SizeService {
+class LocalSizeServiceImpl extends LocalSizeService {
   @override
   Map measure(String text, {int? maxLines}) {
     final textPainter = TextPainter(
@@ -15,8 +15,17 @@ class SizeServiceImpl extends SizeService {
   }
 
   @override
+  Stream<int> sequence(int count) async* {
+    for (var i = 0; i < count; i++) {
+      yield i;
+    }
+  }
+
+  @override
   late final Map<int, CommandHandler> operations = {
-    SizeService.measureCommand: (req) =>
+    LocalSizeService.measureCommand: (req) =>
         measure(req.args[0], maxLines: req.args[1]),
+    LocalSizeService.sequenceCommand: (req) =>
+        sequence(req.args[0]),
   };
 }

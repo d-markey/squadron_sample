@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:squadron/squadron.dart';
 
-import 'size_service.dart';
+import 'local_size_service.dart';
 
 // this abstract class represents the functionality you want to support in your service
 abstract class MyWorkerService {
@@ -17,7 +17,7 @@ class MyWorkerServiceImpl implements MyWorkerService, WorkerService {
   MyWorkerServiceImpl(this._sizeService);
 
   // in Workers, the _sizeService will be set to a SizeClient to communicate with the TextSizeServer in the main Isolate
-  final SizeService _sizeService;
+  final LocalSizeService _sizeService;
 
   @override
   Future doSomethingWithTexts(List texts) async {
@@ -25,6 +25,17 @@ class MyWorkerServiceImpl implements MyWorkerService, WorkerService {
       final size = await _sizeService.measure(text);
       Squadron.info('$text --> ${size['w']}x${size['h']}');
     }
+
+    final numbers = await _sizeService.sequence(20).toList();
+    Squadron.info('received $numbers');
+
+    final ints = <int>[];
+    await for (var number in _sizeService.sequence(20)) {
+      Squadron.info('received $number');
+      ints.add(number);
+    }
+
+    Squadron.info('received ${ints.length} numbers: $ints');
   }
 
   // this map creates the correspondance between the service constants from MyWorkerService
