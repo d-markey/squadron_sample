@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
-import '../../pools.dart';
+import 'thumbnail_worker_pool.dart';
 
 class ThumbnailPage extends StatefulWidget {
   const ThumbnailPage({Key? key, this.tabBar}) : super(key: key);
@@ -39,18 +39,26 @@ class _ThumbnailPageState extends State<ThumbnailPage> {
     ];
 
     // get the thumbnails from ThumbnailService via Squadron
-    final futures = <Future<Uint8List>>[];
-    for (var i = 0; i < images.length; i++) {
-      futures.add(Future<Uint8List>(() async {
-        Squadron.info('Loading image #$i...');
-        final sw = Stopwatch()..start();
-        final t = await thumbnailWorkerPool.getThumbnail(images[i], 32, 32);
-        sw.stop();
-        Squadron.info('Image #$i loaded in ${sw.elapsed}');
-        return t;
-      }));
+    final thumbnails = <Uint8List>[];
+    late ThumbnailWorkerPool? thumbnailWorkerPool;
+    try {
+      thumbnailWorkerPool = ThumbnailWorkerPool(const ConcurrencySettings(
+          minWorkers: 1, maxWorkers: 4, maxParallel: 2));
+      final futures = <Future<Uint8List>>[];
+      for (var i = 0; i < images.length; i++) {
+        futures.add(Future<Uint8List>(() async {
+          Squadron.info('Loading image #$i...');
+          final sw = Stopwatch()..start();
+          final t = await thumbnailWorkerPool!.getThumbnail(images[i], 32, 32);
+          sw.stop();
+          Squadron.info('Image #$i loaded in ${sw.elapsed}');
+          return t;
+        }));
+      }
+      thumbnails.addAll(await Future.wait(futures));
+    } finally {
+      thumbnailWorkerPool?.stop();
     }
-    final thumbnails = await Future.wait(futures);
 
     // do something with the thumbnails, eg. display on UI, send to a backend, write to a file or database...
     setState(() {

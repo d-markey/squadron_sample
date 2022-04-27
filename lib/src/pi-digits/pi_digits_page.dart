@@ -3,9 +3,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
-import 'package:squadron_sample/pools.dart';
 
 import 'pi_digits_service.dart';
+import 'pi_digits_worker_pool.dart';
 
 class PiDigitsPage extends StatefulWidget {
   const PiDigitsPage({Key? key, this.tabBar}) : super(key: key);
@@ -23,13 +23,13 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
 
   List<int> _digits = const <int>[];
   bool _cancel = false;
-  CancellableToken? _cancelToken;
+  CancellationToken? _cancelToken;
   Timer? _computing;
 
   void _startCompute() {
     Squadron.info('_startCompute called from ${StackTrace.current}');
     _cancel = false;
-    _cancelToken = CancellableToken('Task was cancelled by the user');
+    _cancelToken = CancellationToken('Task was cancelled by the user');
     _digits = const <int>[];
     _computing = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       setState(() {});
@@ -103,7 +103,11 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
   void _loadDigitsWithWorkerPool() async {
     _startCompute();
 
+    PiDigitsWorkerPool? piDigitsWorkerPool;
     try {
+      piDigitsWorkerPool = PiDigitsWorkerPool(const ConcurrencySettings(
+          minWorkers: 8, maxWorkers: 8, maxParallel: 2));
+      await piDigitsWorkerPool.start();
       await Future.delayed(const Duration(seconds: 1));
 
       var sw = Stopwatch()..start();
@@ -142,6 +146,7 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
       Squadron.info('[_loadDigitsWithWorkerPool] ERROR = $e');
       Squadron.info('[_loadDigitsWithWorkerPool] TRACE = $st');
     } finally {
+      piDigitsWorkerPool?.stop();
       if (!_cancel) {
         await Future.delayed(const Duration(seconds: 1));
       }
@@ -192,32 +197,17 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
                   child: const Text('Cancel', textAlign: TextAlign.center),
                 )
               ])
-            : FutureBuilder<bool>(future: Future(() async {
-                await piDigitsWorkerPool.start();
-                return true;
-              }), builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        FloatingActionButton(
-                          onPressed: _loadDigitsWithoutWorkers,
-                          tooltip: 'No Pool',
-                          child: const Text('No Pool',
-                              textAlign: TextAlign.center),
-                        ),
-                        FloatingActionButton(
-                          onPressed: _loadDigitsWithWorkerPool,
-                          tooltip: 'Pool',
-                          child:
-                              const Text('Pool', textAlign: TextAlign.center),
-                        ),
-                      ]);
-                } else {
-                  return const Text('initializing...',
-                      style: TextStyle(
-                          backgroundColor: Colors.blue, color: Colors.white));
-                }
-              }));
+            : Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                FloatingActionButton(
+                  onPressed: _loadDigitsWithoutWorkers,
+                  tooltip: 'No Pool',
+                  child: const Text('No Pool', textAlign: TextAlign.center),
+                ),
+                FloatingActionButton(
+                  onPressed: _loadDigitsWithWorkerPool,
+                  tooltip: 'Pool',
+                  child: const Text('Pool', textAlign: TextAlign.center),
+                ),
+              ]));
   }
 }

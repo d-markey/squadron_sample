@@ -25,7 +25,6 @@ class LocalSizeServiceImpl extends LocalSizeService {
   late final Map<int, CommandHandler> operations = {
     LocalSizeService.measureCommand: (req) =>
         measure(req.args[0], maxLines: req.args[1]),
-    LocalSizeService.sequenceCommand: (req) =>
-        sequence(req.args[0]),
+    LocalSizeService.sequenceCommand: (req) => sequence(req.args[0]),
   };
 }
