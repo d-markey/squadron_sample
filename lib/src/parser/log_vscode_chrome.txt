@@ -1,0 +1,43 @@
+****** WITHOUT POOL ******
+[0:00:00.000000] START SPLITTING CONTENT: lines = 31662
+[0:00:00.000400] DONE SPLITTING CONTENT: chunk lengths = 31662
+[0:00:00.000000] START PARSING
+[0:00:00.000600] STARTED 1 STREAMS WITH NO POOL
+[0:00:00.000799] WAITING FOR RESULTS
+[0:00:03.291700]    start folding chunk #0 (31662 lines)
+[0:00:39.473100]    done folding chunk #0
+[0:00:39.473600]    start folding consolidated list
+[0:00:39.520600] DONE PARSING: total items = 20000
+[0:00:39.521200]    first: #20: a = 1
+[0:00:39.522299]    last: #132960: b = 0
+****** WITHOUT POOL (compute) ******
+[0:00:00.000000] START SPLITTING CONTENT: lines = 31662
+[0:00:00.000301] DONE SPLITTING CONTENT: chunk lengths = 31662
+[0:00:00.000000] START PARSING
+[0:00:00.001000] STARTED 1 STREAMS WITH NO POOL
+[0:00:00.001200] WAITING FOR RESULTS
+[0:00:03.544200]    start folding chunk #0 (31662 lines)
+[0:00:41.577399]    done folding chunk #0
+[0:00:41.578100]    start folding consolidated list
+[0:00:41.637899] DONE PARSING: total items = 20000
+[0:00:41.639000]    first: #20: a = 1
+[0:00:41.640700]    last: #132960: b = 0
+****** WITH POOL ******
+[0:00:00.000000] START SPLITTING CONTENT: lines = 31662
+[0:00:00.016799] DONE SPLITTING CONTENT: chunk lengths = 10557, 10555, 10550
+[0:00:00.000000] START PARSING
+[0:00:00.001400] STARTED 3 STREAMS WITH A POOL OF 1-3 WORKERS
+[0:00:00.001900] WAITING FOR RESULTS
+[0:00:00.170799]    start folding chunk #0 (10557 lines)
+[0:00:00.197700]    start folding chunk #1 (10555 lines)
+[0:00:00.246100]    start folding chunk #2 (10550 lines)
+[0:00:00.583600]    done folding chunk #0
+[0:00:00.650100]    done folding chunk #1
+[0:00:00.778700]    done folding chunk #2
+[0:00:00.779600]    start folding consolidated list
+[0:00:00.846000] DONE PARSING: total items = 20000
+[0:00:00.846900]    first: #20: a = 1
+[0:00:00.853000]    last: #132960: b = 0
+* #0 IDLE current=0 / total=1 max=1 errors=0
+* #1 IDLE current=0 / total=1 max=1 errors=0
+* #2 IDLE current=0 / total=1 max=1 errors=0

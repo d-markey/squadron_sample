@@ -18,5 +18,5 @@ class ParserWorker extends Worker implements ParserService {
 
   @override
   Stream<List> streamParser(List lines) =>
-      stream(ParserService.streamCommand, [lines]);
+      stream(ParserService.streamCommand, [lines], null);
 }

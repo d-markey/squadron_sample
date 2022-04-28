@@ -1,17 +1,18 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
-import 'parser_service.dart';
+import 'parser_runner.dart';
 import 'parser_worker_activator.dart'
     if (dart.library.js) 'package:squadron_sample/src/parser/browser/parser_worker_activator.dart'
     if (dart.library.html) 'package:squadron_sample/src/parser/browser/parser_worker_activator.dart'
     if (dart.library.io) 'package:squadron_sample/src/parser/vm/parser_worker_activator.dart';
 
-import 'parser_worker_pool.dart';
-import 'signal_value.dart';
 import 'vcd_generator.dart';
+import 'parser_service.dart';
+import 'parser_worker_pool.dart';
 
 class ParserPage extends StatefulWidget {
   const ParserPage({Key? key, this.tabBar}) : super(key: key);
@@ -26,7 +27,6 @@ class _ParserPageState extends State<ParserPage> {
   _ParserPageState();
 
   Timer? _parsing;
-  final _sw = Stopwatch()..start();
 
   void _start() {
     _parsing = Timer.periodic(const Duration(milliseconds: 100), (timer) {
@@ -42,127 +42,72 @@ class _ParserPageState extends State<ParserPage> {
     });
   }
 
-  final _oneSec = const Duration(seconds: 1);
+  final _maxEntries = 500000;
 
-  List<T> Function(List<T> previous, List element) _flatten<T>(String name,
-      {T Function(dynamic entry)? converter}) {
-    return (previous, element) {
-      if (previous.isEmpty) {
-        print('[${_sw.elapsed}]    start folding $name');
-      }
-      final mapper = converter ?? (data) => data;
-      previous.addAll(element.map(mapper));
-      return previous;
-    };
+  final _chunks = 6;
+
+  Future<ParserWorkerPool> _startPool() async {
+    final pool = ParserWorkerPool(
+      createWorker,
+      concurrencySettings: ConcurrencySettings(
+        minWorkers: 1,
+        maxWorkers: _chunks,
+        maxParallel: 1,
+      ),
+    );
+    await pool.start();
+    return pool;
   }
 
-  Future<List> _run(
-      ParserService parser, int maxEntries, int nbOfChunks) async {
-    _start();
+  List<String>? _vcd;
 
-    await Future.delayed(_oneSec);
-
-    final contents = generateVCDData(maxEntries).toList();
-
-    _sw.reset();
-
-    print(
-        '[${_sw.elapsed}] START SPLITTING CONTENT: lines = ${contents.length}');
-
-    final linesPerBatch = contents.length ~/ nbOfChunks;
-    final chunks = <List>[];
-    while (contents.length > linesPerBatch) {
-      final part = contents.sublist(0, linesPerBatch);
-      // avoid keeping duplicate stuff in memory so it can be garbage collected
-      contents.removeRange(0, linesPerBatch);
-      while (contents.isNotEmpty && !contents[0].startsWith('#')) {
-        part.add(contents.removeAt(0));
-      }
-      chunks.add(part);
-    }
-    if (contents.isNotEmpty) {
-      chunks.add(contents);
-    }
-
-    print(
-        '[${_sw.elapsed}] DONE SPLITTING CONTENT: chunk lengths = ${chunks.map((p) => p.length).join(', ')}');
-
-    await Future.delayed(_oneSec);
-
-    _sw.reset();
-
-    print('[${_sw.elapsed}] START PARSING');
-
-    var futures = <Future<List<SignalValue>>>[];
-    for (var i = 0; i < chunks.length; i++) {
-      // streamParser() returns partial results so we use fold() to produce a single list
-      // the items returned by streamParser() are 'raw' Map objects so we also convert these maps into SignalValues
-      final future = parser.streamParser(chunks[i]).fold<List<SignalValue>>(
-        <SignalValue>[],
-        _flatten<SignalValue>(
-          'chunk #$i (${chunks[i].length} lines)',
-          converter: (data) => SignalValue.load(data),
-        ),
-      ).whenComplete(() => print('[${_sw.elapsed}]    done folding chunk #$i'));
-      futures.add(future);
-    }
-
-    if (parser is WorkerPool) {
-      final concurrency = (parser as WorkerPool).concurrencySettings;
-      print(
-          '[${_sw.elapsed}] STARTED ${futures.length} STREAMS WITH A POOL OF ${concurrency.minWorkers}-${concurrency.maxWorkers} WORKERS');
-    } else {
-      print('[${_sw.elapsed}] STARTED ${futures.length} STREAMS WITH NO POOL');
-    }
-
-    print('[${_sw.elapsed}] WAITING FOR RESULTS');
-
-    // each future will produce a partial List<SignalValue>
-    // flatten these results to finally get a consolidated List<SignalValue>
-    final list = (await Future.wait(futures)).fold(
-      <SignalValue>[],
-      _flatten<SignalValue>('consolidated list'),
-    ).toList();
-
-    print('[${_sw.elapsed}] DONE PARSING: total items = ${list.length}');
-    print('[${_sw.elapsed}]    first: ${list.first}');
-    print('[${_sw.elapsed}]    last: ${list.last}');
-
-    await Future.delayed(_oneSec);
-
-    _done();
-
-    return list;
+  Future _all() async {
+    // same data for all tests
+    _vcd = generateVCDData(_maxEntries).toList();
+    await _withoutPool();
+    await _withCompute();
+    await _withPool();
+    // reset data
+    _vcd = null;
   }
 
-  final _maxEntries = 100000;
-  final _chunks = 3; // 8 CPU --> 1 UI + 7 Workers
-
-  void _withoutPool() async {
-    print('****** WITHOUT POOL ******');
-    await _run(ParserService(), _maxEntries, 1);
+  Future _withoutPool() async {
+    log?.call('****** WITHOUT POOL ******');
+    try {
+      _start();
+      _vcd ??= generateVCDData(_maxEntries).toList();
+      await parse(ParseArguments(ParserService(), _vcd!.toList(), 1));
+    } finally {
+      _done();
+    }
   }
 
-  void _withPool() async {
-    print('****** WITH POOL ******');
+  Future _withCompute() async {
+    log?.call('****** WITHOUT POOL (compute) ******');
+    try {
+      _start();
+      _vcd ??= generateVCDData(_maxEntries).toList();
+      await compute(
+          parse, ParseArguments(ParserService(), _vcd!.toList(), 1));
+    } finally {
+      _done();
+    }
+  }
+
+  Future _withPool() async {
+    log?.call('****** WITH POOL ******');
     ParserWorkerPool? pool;
     try {
-      pool = ParserWorkerPool(
-        createWorker,
-        concurrencySettings: ConcurrencySettings(
-          minWorkers: 1,
-          maxWorkers: _chunks,
-          maxParallel: 1,
-        ),
-      );
-      await pool.start();
-
-      await _run(pool, _maxEntries, _chunks);
+      _start();
+      pool = await _startPool();
+      _vcd ??= generateVCDData(_maxEntries).toList();
+      await parse(ParseArguments(pool, _vcd!.toList(), _chunks));
     } finally {
+      _done();
       final stats = pool?.fullStats.toList() ?? [];
       for (var i = 0; i < stats.length; i++) {
         final stat = stats[i];
-        print(
+        log?.call(
             '* #$i ${stat.status} current=${stat.workload} / total=${stat.totalWorkload} max=${stat.maxWorkload} errors=${stat.totalErrors}');
       }
       pool?.stop();
@@ -194,9 +139,19 @@ class _ParserPageState extends State<ParserPage> {
               ])
             : Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                 FloatingActionButton(
+                  onPressed: _all,
+                  tooltip: 'ALL',
+                  child: const Text('ALL', textAlign: TextAlign.center),
+                ),
+                FloatingActionButton(
                   onPressed: _withoutPool,
                   tooltip: 'No Pool',
                   child: const Text('No Pool', textAlign: TextAlign.center),
+                ),
+                FloatingActionButton(
+                  onPressed: _withCompute,
+                  tooltip: 'Compute',
+                  child: const Text('Compute', textAlign: TextAlign.center),
                 ),
                 FloatingActionButton(
                   onPressed: _withPool,

@@ -1,0 +1,43 @@
+I/flutter ( 4441): ****** WITHOUT POOL ******
+I/flutter ( 4441): [0:00:00.000009] START SPLITTING CONTENT: lines = 31683
+I/flutter ( 4441): [0:00:00.001243] DONE SPLITTING CONTENT: chunk lengths = 31683
+I/flutter ( 4441): [0:00:00.000007] START PARSING
+I/flutter ( 4441): [0:00:00.001504] STARTED 1 STREAMS WITH NO POOL
+I/flutter ( 4441): [0:00:00.001665] WAITING FOR RESULTS
+I/flutter ( 4441): [0:00:00.473292]    start folding chunk #0 (31683 lines)
+I/flutter ( 4441): [0:00:05.290554]    done folding chunk #0
+I/flutter ( 4441): [0:00:05.294069]    start folding consolidated list
+I/flutter ( 4441): [0:00:05.295232] DONE PARSING: total items = 20000
+I/flutter ( 4441): [0:00:05.295931]    first: #10: a = 1
+I/flutter ( 4441): [0:00:05.296128]    last: #133910: a = 1
+I/flutter ( 4441): ****** WITHOUT POOL (compute) ******
+I/flutter ( 4441): [0:00:00.000012] START SPLITTING CONTENT: lines = 31683
+I/flutter ( 4441): [0:00:00.000423] DONE SPLITTING CONTENT: chunk lengths = 31683
+I/flutter ( 4441): [0:00:00.000013] START PARSING
+I/flutter ( 4441): [0:00:00.000320] STARTED 1 STREAMS WITH NO POOL
+I/flutter ( 4441): [0:00:00.000416] WAITING FOR RESULTS
+I/flutter ( 4441): [0:00:00.826407]    start folding chunk #0 (31683 lines)
+I/flutter ( 4441): [0:00:06.053737]    done folding chunk #0
+I/flutter ( 4441): [0:00:06.053991]    start folding consolidated list
+I/flutter ( 4441): [0:00:06.054924] DONE PARSING: total items = 20000
+I/flutter ( 4441): [0:00:06.055201]    first: #10: a = 1
+I/flutter ( 4441): [0:00:06.055375]    last: #133910: a = 1
+I/flutter ( 4441): ****** WITH POOL ******
+I/flutter ( 4441): [0:00:00.000013] START SPLITTING CONTENT: lines = 31683
+I/flutter ( 4441): [0:00:00.006221] DONE SPLITTING CONTENT: chunk lengths = 10562, 10561, 10560
+I/flutter ( 4441): [0:00:00.000010] START PARSING
+I/flutter ( 4441): [0:00:00.003051] STARTED 3 STREAMS WITH A POOL OF 1-3 WORKERS
+I/flutter ( 4441): [0:00:00.003176] WAITING FOR RESULTS
+I/flutter ( 4441): [0:00:02.816216]    start folding chunk #1 (10561 lines)
+I/flutter ( 4441): [0:00:02.827439]    start folding chunk #2 (10560 lines)
+I/flutter ( 4441): [0:00:02.934641]    start folding chunk #0 (10562 lines)
+I/flutter ( 4441): [0:00:04.126667]    done folding chunk #1
+I/flutter ( 4441): [0:00:04.148193]    done folding chunk #2
+I/flutter ( 4441): [0:00:04.385160]    done folding chunk #0
+I/flutter ( 4441): [0:00:04.387783]    start folding consolidated list
+I/flutter ( 4441): [0:00:04.390774] DONE PARSING: total items = 20000
+I/flutter ( 4441): [0:00:04.398291]    first: #10: a = 1
+I/flutter ( 4441): [0:00:04.418467]    last: #133910: a = 1
+I/flutter ( 4441): * #0 IDLE current=0 / total=1 max=1 errors=0
+I/flutter ( 4441): * #1 IDLE current=0 / total=1 max=1 errors=0
+I/flutter ( 4441): * #2 IDLE current=0 / total=1 max=1 errors=0
