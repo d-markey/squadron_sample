@@ -9,7 +9,12 @@ class ParserWorkerPool extends WorkerPool<ParserWorker>
       : super(entryPoint, concurrencySettings: concurrencySettings);
 
   @override
-  Stream<List> streamParser(List lines) => stream((w) => w.streamParser(lines));
+  Stream<List> streamParser(List lines, [CancellationToken? token]) =>
+      stream((w) => w.streamParser(lines, token));
+
+  @override
+  Stream<List> streamParserOptimized(List lines, [CancellationToken? token]) =>
+      stream((w) => w.streamParserOptimized(lines, token));
 }
 
 class ParserWorker extends Worker implements ParserService {
@@ -17,6 +22,10 @@ class ParserWorker extends Worker implements ParserService {
       : super(entryPoint, id: id, args: args);
 
   @override
-  Stream<List> streamParser(List lines) =>
-      stream(ParserService.streamCommand, [lines], null);
+  Stream<List> streamParser(List lines, [CancellationToken? token]) =>
+      stream(ParserService.streamCommand, [lines], token);
+
+  @override
+  Stream<List> streamParserOptimized(List lines, [CancellationToken? token]) =>
+      stream(ParserService.streamCommand, [lines], token, false, false);
 }

@@ -1,0 +1,9 @@
+,,,,(results in values/ms)
+Device,Mode,maxEntries,chunks,no pool,compute,pool,optimized pool
+Chrome,release,100000,6,26.9,31.5,32.4,35.4
+Edge,release,100000,6,32.4,37.0,31.8,37.4
+Firefox,release,100000,6,331.1,346.0,70.1,73.5
+Android,vs-code,100000,6,4.0,3.3,2.6,3.1
+Android,vs-code,100000,4,2.7,1.9,3.2,2.8
+Chrome,vs-code,100000,6,0.4,0.4,20.5,22.5
+Edge,vs-code,100000,6,

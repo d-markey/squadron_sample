@@ -187,10 +187,12 @@ packages:
   squadron:
     dependency: "direct main"
     description:
-      name: squadron
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.4.0"
+      path: "."
+      ref: HEAD
+      resolved-ref: e862df54d5a637465625e5b5d24a37e186be507a
+      url: "https://github.com/d-markey/squadron.git"
+    source: git
+    version: "4.0.0"
   stack_trace:
     dependency: transitive
     description:

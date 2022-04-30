@@ -7,7 +7,7 @@ class ParserService implements WorkerService {
 
   // to avoid too much serialization/deserialization, use only List and Map (not List<T> nor Map<K, V>)
   // make sure these lists and maps contain only base types (string, bool, num)
-  Stream<List> streamParser(List lines) async* {
+  Stream<List> streamParser(List lines, [CancellationToken? token]) async* {
     // load first timestamp
     // note: we KNOW that items in 'lines' are strings, so we force 'line' to be a String
     String line = lines.removeAt(0);
@@ -16,6 +16,7 @@ class ParserService implements WorkerService {
 
     var list = <Map<String, dynamic>>[];
     while (lines.isNotEmpty) {
+      if (token != null && token.cancelled) return;
       // consume lines so they can be garbage collected (hopefully)
       line = lines.removeAt(0);
       if (line.startsWith(_timeStampMarker)) {
@@ -38,6 +39,9 @@ class ParserService implements WorkerService {
       yield list;
     }
   }
+
+  Stream<List> streamParserOptimized(List lines, [CancellationToken? token]) =>
+      streamParser(lines, token);
 
   // command IDs
   static const streamCommand = 1;

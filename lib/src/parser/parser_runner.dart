@@ -8,21 +8,25 @@ final _sw = Stopwatch()..start();
 const void Function(Object? object)? log = print;
 
 class ParseArguments {
-  ParseArguments(this.parser, this.lines, this.nbOfChunks);
+  ParseArguments(
+      this.parser, this.lines, this.nbOfChunks, this.token, this.optimized);
 
   final ParserService parser;
   final List<String> lines;
   final int nbOfChunks;
+  final CancellationToken token;
+  final bool optimized;
 }
 
 const _oneSec = Duration(seconds: 1);
 
 List<T> Function(List<T> list, List chunk) _flatten<T>(String name,
-    {T Function(dynamic entry)? converter}) {
+    {T Function(dynamic entry)? converter, required CancellationToken token}) {
   return (list, chunk) {
     if (list.isEmpty) {
       log?.call('[${_sw.elapsed}]    start folding $name');
     }
+    if (token.cancelled) throw Exception('Cancelled');
     if (converter != null) {
       list.addAll(chunk.map(converter));
     } else {
@@ -36,8 +40,12 @@ Future<List> parse(ParseArguments args) async {
   final parser = args.parser;
   final lines = args.lines;
   final nbOfChunks = args.nbOfChunks;
+  final token = args.token;
+  final optimized = args.optimized;
 
+  if (token.cancelled) return [];
   await Future.delayed(_oneSec);
+  if (token.cancelled) return [];
 
   _sw.reset();
 
@@ -64,25 +72,36 @@ Future<List> parse(ParseArguments args) async {
   log?.call(
       '[${_sw.elapsed}] DONE SPLITTING CONTENT: chunk lengths = ${chunks.map((p) => p.length).join(', ')}');
 
+  if (token.cancelled) return [];
   await Future.delayed(_oneSec);
+  if (token.cancelled) return [];
 
   _sw.reset();
 
   log?.call('[${_sw.elapsed}] START PARSING');
 
+  final streamParser =
+      optimized ? parser.streamParserOptimized : parser.streamParser;
+
   var futures = <Future<List<SignalValue>>>[];
   for (var i = 0; i < chunks.length; i++) {
     // streamParser() returns partial results so we use fold() to produce a single list
     // the items returned by streamParser() are 'raw' Map objects so we also convert these maps into SignalValues
-    final future = parser.streamParser(chunks[i]).fold<List<SignalValue>>(
-      <SignalValue>[],
-      _flatten<SignalValue>(
-        'chunk #$i (${chunks[i].length} lines)',
-        converter: (data) => SignalValue.load(data),
+    futures.add(
+      streamParser(
+        chunks[i],
+        token,
+      ).fold<List<SignalValue>>(
+        <SignalValue>[],
+        _flatten<SignalValue>(
+          'chunk #$i (${chunks[i].length} lines)',
+          converter: (data) => SignalValue.load(data),
+          token: token,
+        ),
+      ).whenComplete(
+        () => log?.call('[${_sw.elapsed}]    done folding chunk #$i'),
       ),
-    ).whenComplete(
-        () => log?.call('[${_sw.elapsed}]    done folding chunk #$i'));
-    futures.add(future);
+    );
   }
 
   if (parser is WorkerPool) {
@@ -98,9 +117,22 @@ Future<List> parse(ParseArguments args) async {
 
   // each future will produce a partial List<SignalValue>
   // flatten these results to finally get a consolidated List<SignalValue>
-  final list = (await Future.wait(futures)).fold(
+  final results = await Future.wait(futures);
+  if (token.cancelled) return [];
+
+  final elapsed = _sw.elapsedMilliseconds;
+  final total = results.fold<int>(
+      0, (previousValue, element) => previousValue + element.length);
+
+  log?.call('[${_sw.elapsed}] PARSING RATE: ${total / elapsed} value/ms');
+
+  _sw.reset();
+
+  log?.call('[${_sw.elapsed}] MERGING RESULTS');
+
+  final list = results.fold(
     <SignalValue>[],
-    _flatten<SignalValue>('consolidated list'),
+    _flatten<SignalValue>('consolidated list', token: token),
   ).toList();
 
   log?.call('[${_sw.elapsed}] DONE PARSING: total items = ${list.length}');

@@ -15,9 +15,13 @@ import 'parser_service.dart';
 import 'parser_worker_pool.dart';
 
 class ParserPage extends StatefulWidget {
-  const ParserPage({Key? key, this.tabBar}) : super(key: key);
+  ParserPage({Key? key, this.tabBar}) : super(key: key);
 
   final TabBar? tabBar;
+
+  final TextEditingController _chunks = TextEditingController(text: '6');
+  final TextEditingController _maxEntries =
+      TextEditingController(text: '100000');
 
   @override
   State<ParserPage> createState() => _ParserPageState();
@@ -42,9 +46,11 @@ class _ParserPageState extends State<ParserPage> {
     });
   }
 
-  final _maxEntries = 500000;
+  int get _maxEntries => int.parse(widget._maxEntries.text);
 
-  final _chunks = 6;
+  int get _chunks => int.parse(widget._chunks.text);
+
+  late CancellationToken _token = _createToken();
 
   Future<ParserWorkerPool> _startPool() async {
     final pool = ParserWorkerPool(
@@ -62,46 +68,57 @@ class _ParserPageState extends State<ParserPage> {
   List<String>? _vcd;
 
   Future _all() async {
+    final token = _token;
     // same data for all tests
     _vcd = generateVCDData(_maxEntries).toList();
-    await _withoutPool();
-    await _withCompute();
-    await _withPool();
+    if (token.cancelled) return;
+    await _withoutPool(token);
+    if (token.cancelled) return;
+    await _withCompute(token);
+    if (token.cancelled) return;
+    await _withPool(token);
+    if (token.cancelled) return;
+    await _withPoolOptimized(token);
+    if (token.cancelled) return;
     // reset data
     _vcd = null;
   }
 
-  Future _withoutPool() async {
+  Future _withoutPool([CancellationToken? token]) async {
     log?.call('****** WITHOUT POOL ******');
     try {
       _start();
       _vcd ??= generateVCDData(_maxEntries).toList();
-      await parse(ParseArguments(ParserService(), _vcd!.toList(), 1));
+      await parse(ParseArguments(
+          ParserService(), _vcd!.toList(), _chunks, token ?? _token, false));
     } finally {
       _done();
     }
   }
 
-  Future _withCompute() async {
+  Future _withCompute([CancellationToken? token]) async {
     log?.call('****** WITHOUT POOL (compute) ******');
     try {
       _start();
       _vcd ??= generateVCDData(_maxEntries).toList();
       await compute(
-          parse, ParseArguments(ParserService(), _vcd!.toList(), 1));
+          parse,
+          ParseArguments(ParserService(), _vcd!.toList(), _chunks,
+              token ?? _token, false));
     } finally {
       _done();
     }
   }
 
-  Future _withPool() async {
+  Future _withPool([CancellationToken? token]) async {
     log?.call('****** WITH POOL ******');
     ParserWorkerPool? pool;
     try {
       _start();
       pool = await _startPool();
       _vcd ??= generateVCDData(_maxEntries).toList();
-      await parse(ParseArguments(pool, _vcd!.toList(), _chunks));
+      await parse(ParseArguments(
+          pool, _vcd!.toList(), _chunks, token ?? _token, false));
     } finally {
       _done();
       final stats = pool?.fullStats.toList() ?? [];
@@ -114,6 +131,40 @@ class _ParserPageState extends State<ParserPage> {
     }
   }
 
+  Future _withPoolOptimized([CancellationToken? token]) async {
+    log?.call('****** WITH POOL (optimized) ******');
+    ParserWorkerPool? pool;
+    try {
+      _start();
+      pool = await _startPool();
+      _vcd ??= generateVCDData(_maxEntries).toList();
+      await parse(
+          ParseArguments(pool, _vcd!.toList(), _chunks, token ?? _token, true));
+    } finally {
+      _done();
+      final stats = pool?.fullStats.toList() ?? [];
+      for (var i = 0; i < stats.length; i++) {
+        final stat = stats[i];
+        log?.call(
+            '* #$i ${stat.status} current=${stat.workload} / total=${stat.totalWorkload} max=${stat.maxWorkload} errors=${stat.totalErrors}');
+      }
+      pool?.stop();
+    }
+  }
+
+  CancellationToken _createToken() {
+    final token = CancellationToken();
+    token.addListener(() {
+      print('Token cancelled');
+    });
+    return token;
+  }
+
+  void _cancel() {
+    _token.cancel();
+    _token = _createToken();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,10 +175,29 @@ class _ParserPageState extends State<ParserPage> {
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Text(
-                'Parser test',
-              ),
+            children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                const Flexible(
+                    child: Text(
+                  'MaxEntries:',
+                )),
+                Flexible(
+                    child: TextField(
+                  controller: widget._maxEntries,
+                  keyboardType: TextInputType.number,
+                ))
+              ]),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                const Flexible(
+                    child: Text(
+                  'Chunks:      ',
+                )),
+                Flexible(
+                    child: TextField(
+                  controller: widget._chunks,
+                  keyboardType: TextInputType.number,
+                ))
+              ]),
             ],
           ),
         ),
@@ -136,6 +206,11 @@ class _ParserPageState extends State<ParserPage> {
                 Text('tick = ${_parsing?.tick}',
                     style: const TextStyle(
                         backgroundColor: Colors.blue, color: Colors.white)),
+                FloatingActionButton(
+                  onPressed: _cancel,
+                  tooltip: 'Cancel',
+                  child: const Text('Cancel', textAlign: TextAlign.center),
+                ),
               ])
             : Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                 FloatingActionButton(
@@ -157,6 +232,11 @@ class _ParserPageState extends State<ParserPage> {
                   onPressed: _withPool,
                   tooltip: 'Pool',
                   child: const Text('Pool', textAlign: TextAlign.center),
+                ),
+                FloatingActionButton(
+                  onPressed: _withPoolOptimized,
+                  tooltip: 'Pool (opt)',
+                  child: const Text('Pool (opt)', textAlign: TextAlign.center),
                 ),
               ]));
   }

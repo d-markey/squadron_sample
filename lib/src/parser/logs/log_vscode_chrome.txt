@@ -1,43 +1,113 @@
+Launching lib\main.dart on Chrome in debug mode...
+This app is linked to the debug service: ws://127.0.0.1:8107/_0MDpr_awRI=/ws
+Debug service listening on ws://127.0.0.1:8107/_0MDpr_awRI=/ws
+ Running with sound null safety
+Connecting to VM Service at ws://127.0.0.1:8107/_0MDpr_awRI=/ws
 ****** WITHOUT POOL ******
-[0:00:00.000000] START SPLITTING CONTENT: lines = 31662
-[0:00:00.000400] DONE SPLITTING CONTENT: chunk lengths = 31662
+[0:00:00.000100] START SPLITTING CONTENT: lines = 158535
+[0:00:00.091000] DONE SPLITTING CONTENT: chunk lengths = 26423, 26422, 26422, 26423, 26423, 26422
 [0:00:00.000000] START PARSING
-[0:00:00.000600] STARTED 1 STREAMS WITH NO POOL
-[0:00:00.000799] WAITING FOR RESULTS
-[0:00:03.291700]    start folding chunk #0 (31662 lines)
-[0:00:39.473100]    done folding chunk #0
-[0:00:39.473600]    start folding consolidated list
-[0:00:39.520600] DONE PARSING: total items = 20000
-[0:00:39.521200]    first: #20: a = 1
-[0:00:39.522299]    last: #132960: b = 0
+[0:00:00.010100] STARTED 6 STREAMS WITH NO POOL
+[0:00:00.010200] WAITING FOR RESULTS
+[0:00:28.972100]    start folding chunk #0 (26423 lines)
+[0:00:36.253500]    start folding chunk #1 (26422 lines)
+[0:00:42.031000]    start folding chunk #2 (26422 lines)
+[0:00:48.958800]    start folding chunk #3 (26423 lines)
+[0:00:54.081200]    start folding chunk #4 (26423 lines)
+[0:01:00.507100]    start folding chunk #5 (26422 lines)
+[0:03:59.892200]    done folding chunk #0
+[0:03:59.892800]    done folding chunk #1
+[0:03:59.893399]    done folding chunk #2
+[0:03:59.894000]    done folding chunk #3
+[0:03:59.894500]    done folding chunk #4
+[0:03:59.895100]    done folding chunk #5
+[0:03:59.897399] PARSING RATE: 0.4168455628874058 value/ms
+[0:00:00.000000] MERGING RESULTS
+[0:00:00.000700]    start folding consolidated list
+[0:00:00.101700] DONE PARSING: total items = 100000
+[0:00:00.104399]    first: #10: a = 1
+[0:00:00.105300]    last: #668180: b = 1
 ****** WITHOUT POOL (compute) ******
-[0:00:00.000000] START SPLITTING CONTENT: lines = 31662
-[0:00:00.000301] DONE SPLITTING CONTENT: chunk lengths = 31662
+[0:00:00.000100] START SPLITTING CONTENT: lines = 158535
+[0:00:00.083100] DONE SPLITTING CONTENT: chunk lengths = 26423, 26422, 26422, 26423, 26423, 26422
 [0:00:00.000000] START PARSING
-[0:00:00.001000] STARTED 1 STREAMS WITH NO POOL
-[0:00:00.001200] WAITING FOR RESULTS
-[0:00:03.544200]    start folding chunk #0 (31662 lines)
-[0:00:41.577399]    done folding chunk #0
-[0:00:41.578100]    start folding consolidated list
-[0:00:41.637899] DONE PARSING: total items = 20000
-[0:00:41.639000]    first: #20: a = 1
-[0:00:41.640700]    last: #132960: b = 0
+[0:00:00.002899] STARTED 6 STREAMS WITH NO POOL
+[0:00:00.003800] WAITING FOR RESULTS
+[0:00:23.271899]    start folding chunk #0 (26423 lines)
+[0:00:26.405700]    start folding chunk #1 (26422 lines)
+[0:00:29.962399]    start folding chunk #2 (26422 lines)
+[0:00:34.640300]    start folding chunk #3 (26423 lines)
+[0:00:37.945399]    start folding chunk #4 (26423 lines)
+[0:00:41.178300]    start folding chunk #5 (26422 lines)
+[0:03:55.733399]    done folding chunk #0
+[0:03:55.734000]    done folding chunk #1
+[0:03:55.742600]    done folding chunk #2
+[0:03:55.746100]    done folding chunk #3
+[0:03:55.749500]    done folding chunk #4
+[0:03:55.798200]    done folding chunk #5
+[0:03:55.800300] PARSING RATE: 0.42408821034775235 value/ms
+[0:00:00.000000] MERGING RESULTS
+[0:00:00.001801]    start folding consolidated list
+[0:00:00.165701] DONE PARSING: total items = 100000
+[0:00:00.166601]    first: #10: a = 1
+[0:00:00.170401]    last: #668180: b = 1
 ****** WITH POOL ******
-[0:00:00.000000] START SPLITTING CONTENT: lines = 31662
-[0:00:00.016799] DONE SPLITTING CONTENT: chunk lengths = 10557, 10555, 10550
+[0:00:00.000101] START SPLITTING CONTENT: lines = 158535
+[0:00:00.156701] DONE SPLITTING CONTENT: chunk lengths = 26423, 26422, 26422, 26423, 26423, 26422
 [0:00:00.000000] START PARSING
-[0:00:00.001400] STARTED 3 STREAMS WITH A POOL OF 1-3 WORKERS
-[0:00:00.001900] WAITING FOR RESULTS
-[0:00:00.170799]    start folding chunk #0 (10557 lines)
-[0:00:00.197700]    start folding chunk #1 (10555 lines)
-[0:00:00.246100]    start folding chunk #2 (10550 lines)
-[0:00:00.583600]    done folding chunk #0
-[0:00:00.650100]    done folding chunk #1
-[0:00:00.778700]    done folding chunk #2
-[0:00:00.779600]    start folding consolidated list
-[0:00:00.846000] DONE PARSING: total items = 20000
-[0:00:00.846900]    first: #20: a = 1
-[0:00:00.853000]    last: #132960: b = 0
+[0:00:00.006200] STARTED 6 STREAMS WITH A POOL OF 1-6 WORKERS
+[0:00:00.006599] WAITING FOR RESULTS
+[0:00:00.720800]    start folding chunk #0 (26423 lines)
+[0:00:00.852800]    start folding chunk #2 (26422 lines)
+[0:00:00.926400]    start folding chunk #1 (26422 lines)
+[0:00:01.032500]    start folding chunk #4 (26423 lines)
+[0:00:01.175200]    start folding chunk #5 (26422 lines)
+[0:00:01.251900]    start folding chunk #3 (26423 lines)
+[0:00:04.426800]    done folding chunk #0
+[0:00:04.496800]    done folding chunk #2
+[0:00:04.648599]    done folding chunk #3
+[0:00:04.732900]    done folding chunk #1
+[0:00:04.836400]    done folding chunk #4
+[0:00:04.881000]    done folding chunk #5
+[0:00:04.881599] PARSING RATE: 20.48760499897562 value/ms
+[0:00:00.000099] MERGING RESULTS
+[0:00:00.001599]    start folding consolidated list
+[0:00:00.155700] DONE PARSING: total items = 100000
+[0:00:00.156200]    first: #10: a = 1
+[0:00:00.157300]    last: #668180: b = 1
 * #0 IDLE current=0 / total=1 max=1 errors=0
 * #1 IDLE current=0 / total=1 max=1 errors=0
 * #2 IDLE current=0 / total=1 max=1 errors=0
+* #3 IDLE current=0 / total=1 max=1 errors=0
+* #4 IDLE current=0 / total=1 max=1 errors=0
+* #5 IDLE current=0 / total=1 max=1 errors=0
+****** WITH POOL (optimized) ******
+[0:00:00.000000] START SPLITTING CONTENT: lines = 158535
+[0:00:00.310900] DONE SPLITTING CONTENT: chunk lengths = 26423, 26422, 26422, 26423, 26423, 26422
+[0:00:00.000000] START PARSING
+[0:00:00.002000] STARTED 6 STREAMS WITH A POOL OF 1-6 WORKERS
+[0:00:00.002700] WAITING FOR RESULTS
+[0:00:00.412500]    start folding chunk #0 (26423 lines)
+[0:00:00.460200]    start folding chunk #2 (26422 lines)
+[0:00:00.602399]    start folding chunk #3 (26423 lines)
+[0:00:00.830100]    start folding chunk #4 (26423 lines)
+[0:00:01.039800]    start folding chunk #1 (26422 lines)
+[0:00:01.063800]    start folding chunk #5 (26422 lines)
+[0:00:03.257600]    done folding chunk #3
+[0:00:03.524000]    done folding chunk #0
+[0:00:03.775000]    done folding chunk #4
+[0:00:04.050500]    done folding chunk #5
+[0:00:04.112800]    done folding chunk #2
+[0:00:04.451200]    done folding chunk #1
+[0:00:04.452300] PARSING RATE: 22.461814914645103 value/ms
+[0:00:00.000000] MERGING RESULTS
+[0:00:00.008700]    start folding consolidated list
+[0:00:00.329800] DONE PARSING: total items = 100000
+[0:00:00.330500]    first: #10: a = 1
+[0:00:00.332300]    last: #668180: b = 1
+* #0 IDLE current=0 / total=1 max=1 errors=0
+* #1 IDLE current=0 / total=1 max=1 errors=0
+* #2 IDLE current=0 / total=1 max=1 errors=0
+* #3 IDLE current=0 / total=1 max=1 errors=0
+* #4 IDLE current=0 / total=1 max=1 errors=0
+* #5 IDLE current=0 / total=1 max=1 errors=0
