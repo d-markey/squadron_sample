@@ -1,0 +1,52 @@
+****** WITHOUT POOL ****** main.dart.js:16881:78
+[0:00:00.000000] START SPLITTING CONTENT: lines = 792120 main.dart.js:16881:78
+[0:00:00.001000] DONE SPLITTING CONTENT: chunk lengths = 792120 main.dart.js:16881:78
+[0:00:00.000000] START PARSING main.dart.js:16881:78
+[0:00:00.000000] STARTED 1 STREAMS WITH NO POOL main.dart.js:16881:78
+[0:00:00.001000] WAITING FOR RESULTS main.dart.js:16881:78
+[0:00:00.002000]    start folding chunk #0 (792120 lines) main.dart.js:16881:78
+[0:00:02.347000]    done folding chunk #0 main.dart.js:16881:78
+[0:00:02.348000]    start folding consolidated list main.dart.js:16881:78
+[0:00:02.489000] DONE PARSING: total items = 500000 main.dart.js:16881:78
+[0:00:02.490000]    first: #10: a = 1 main.dart.js:16881:78
+[0:00:02.490000]    last: #3339650: b = 1 main.dart.js:16881:78
+****** WITHOUT POOL (compute) ****** main.dart.js:16881:78
+[0:00:00.000000] START SPLITTING CONTENT: lines = 792120 main.dart.js:16881:78
+[0:00:00.000000] DONE SPLITTING CONTENT: chunk lengths = 792120 main.dart.js:16881:78
+[0:00:00.000000] START PARSING main.dart.js:16881:78
+[0:00:00.000000] STARTED 1 STREAMS WITH NO POOL main.dart.js:16881:78
+[0:00:00.001000] WAITING FOR RESULTS main.dart.js:16881:78
+[0:00:00.003000]    start folding chunk #0 (792120 lines) main.dart.js:16881:78
+[0:00:01.514000]    done folding chunk #0 main.dart.js:16881:78
+[0:00:01.514000]    start folding consolidated list main.dart.js:16881:78
+[0:00:01.688000] DONE PARSING: total items = 500000 main.dart.js:16881:78
+[0:00:01.688000]    first: #10: a = 1 main.dart.js:16881:78
+[0:00:01.689000]    last: #3339650: b = 1 main.dart.js:16881:78
+****** WITH POOL ****** main.dart.js:16881:78
+[0:00:00.000000] START SPLITTING CONTENT: lines = 792120 main.dart.js:16881:78
+[0:00:00.046000] DONE SPLITTING CONTENT: chunk lengths = 132020, 132021, 132022, 132021, 132021, 132015 main.dart.js:16881:78
+[0:00:00.000000] START PARSING main.dart.js:16881:78
+[0:00:00.004000] STARTED 6 STREAMS WITH A POOL OF 1-6 WORKERS main.dart.js:16881:78
+[0:00:00.005000] WAITING FOR RESULTS main.dart.js:16881:78
+[0:00:00.586000]    start folding chunk #1 (132021 lines) main.dart.js:16881:78
+[0:00:00.665000]    start folding chunk #2 (132022 lines) main.dart.js:16881:78
+[0:00:00.786000]    start folding chunk #4 (132021 lines) main.dart.js:16881:78
+[0:00:00.796000]    start folding chunk #3 (132021 lines) main.dart.js:16881:78
+[0:00:00.913000]    start folding chunk #5 (132015 lines) main.dart.js:16881:78
+[0:00:00.992000]    start folding chunk #0 (132020 lines) main.dart.js:16881:78
+[0:00:04.843000]    done folding chunk #1 main.dart.js:16881:78
+[0:00:04.929000]    done folding chunk #2 main.dart.js:16881:78
+[0:00:04.938000]    done folding chunk #3 main.dart.js:16881:78
+[0:00:04.948000]    done folding chunk #4 main.dart.js:16881:78
+[0:00:04.959000]    done folding chunk #5 main.dart.js:16881:78
+[0:00:04.963000]    done folding chunk #0 main.dart.js:16881:78
+[0:00:04.964000]    start folding consolidated list main.dart.js:16881:78
+[0:00:05.092000] DONE PARSING: total items = 500000 main.dart.js:16881:78
+[0:00:05.093000]    first: #10: a = 1 main.dart.js:16881:78
+[0:00:05.093000]    last: #3339650: b = 1 main.dart.js:16881:78
+* #0 IDLE current=0 / total=1 max=1 errors=0 main.dart.js:16881:78
+* #1 IDLE current=0 / total=1 max=1 errors=0 main.dart.js:16881:78
+* #2 IDLE current=0 / total=1 max=1 errors=0 main.dart.js:16881:78
+* #3 IDLE current=0 / total=1 max=1 errors=0 main.dart.js:16881:78
+* #4 IDLE current=0 / total=1 max=1 errors=0 main.dart.js:16881:78
+* #5 IDLE current=0 / total=1 max=1 errors=0 main.dart.js:16881:78

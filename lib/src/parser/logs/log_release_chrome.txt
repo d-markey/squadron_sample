@@ -1,0 +1,58 @@
+main.dart.js:16881 ****** WITHOUT POOL ******
+main.dart.js:3976 [Violation] 'pointerup' handler took 235ms
+main.dart.js:16881 [0:00:00.000000] START SPLITTING CONTENT: lines = 791564
+main.dart.js:16881 [0:00:00.000299] DONE SPLITTING CONTENT: chunk lengths = 791564
+main.dart.js:16881 [0:00:00.000000] START PARSING
+main.dart.js:16881 [0:00:00.004700] STARTED 1 STREAMS WITH NO POOL
+main.dart.js:16881 [0:00:00.044301] WAITING FOR RESULTS
+main.dart.js:16881 [0:00:00.327400]    start folding chunk #0 (791564 lines)
+main.dart.js:16881 [0:08:29.564400]    done folding chunk #0
+main.dart.js:16881 [0:08:29.564601]    start folding consolidated list
+main.dart.js:16881 [0:08:29.670601] DONE PARSING: total items = 500000
+main.dart.js:16881 [0:08:29.671200]    first: #10: a = 1
+main.dart.js:16881 [0:08:29.671700]    last: #3330380: c = 0
+main.dart.js:3976 [Violation] 'setTimeout' handler took 509626ms
+main.dart.js:16881 ****** WITHOUT POOL (compute) ******
+main.dart.js:16881 [0:00:00.000000] START SPLITTING CONTENT: lines = 791564
+main.dart.js:16881 [0:00:00.000401] DONE SPLITTING CONTENT: chunk lengths = 791564
+main.dart.js:16881 [0:00:00.000101] START PARSING
+main.dart.js:16881 [0:00:00.000601] STARTED 1 STREAMS WITH NO POOL
+main.dart.js:16881 [0:00:00.001101] WAITING FOR RESULTS
+main.dart.js:16881 [0:00:00.178700]    start folding chunk #0 (791564 lines)
+main.dart.js:16881 [0:10:35.693401]    done folding chunk #0
+main.dart.js:16881 [0:10:35.694700]    start folding consolidated list
+main.dart.js:16881 [0:10:35.862401] DONE PARSING: total items = 500000
+main.dart.js:16881 [0:10:35.862700]    first: #10: a = 1
+main.dart.js:16881 [0:10:35.863200]    last: #3330380: c = 0
+main.dart.js:3976 [Violation] 'setTimeout' handler took 635870ms
+main.dart.js:16881 ****** WITH POOL ******
+main.dart.js:16881 [0:00:00.000000] START SPLITTING CONTENT: lines = 791564
+main.dart.js:16881 [0:00:00.072899] DONE SPLITTING CONTENT: chunk lengths = 131928, 131928, 131928, 131929, 131928, 131923
+main.dart.js:3976 [Violation] 'setTimeout' handler took 73ms
+main.dart.js:16881 [0:00:00.000000] START PARSING
+main.dart.js:16881 [0:00:00.001500] STARTED 6 STREAMS WITH A POOL OF 1-6 WORKERS
+main.dart.js:16881 [0:00:00.001801] WAITING FOR RESULTS
+main.dart.js:3976 [Violation] 'message' handler took 426ms
+main.dart.js:16881 [0:00:02.552400]    start folding chunk #2 (131928 lines)
+main.dart.js:16881 [0:00:02.717900]    start folding chunk #1 (131928 lines)
+main.dart.js:16881 [0:00:02.876301]    start folding chunk #3 (131929 lines)
+main.dart.js:16881 [0:00:02.930500]    start folding chunk #4 (131928 lines)
+main.dart.js:16881 [0:00:03.043101]    start folding chunk #0 (131928 lines)
+main.dart.js:16881 [0:00:03.242801]    start folding chunk #5 (131923 lines)
+main.dart.js:16881 [0:00:59.372500]    done folding chunk #3
+main.dart.js:16881 [0:00:59.448400]    done folding chunk #1
+main.dart.js:16881 [0:00:59.548801]    done folding chunk #2
+main.dart.js:16881 [0:00:59.690601]    done folding chunk #4
+main.dart.js:16881 [0:00:59.726500]    done folding chunk #5
+main.dart.js:16881 [0:00:59.766000]    done folding chunk #0
+main.dart.js:16881 [0:00:59.767000]    start folding consolidated list
+main.dart.js:16881 [0:01:00.090801] DONE PARSING: total items = 500000
+main.dart.js:16881 [0:01:00.092400]    first: #10: a = 1
+main.dart.js:16881 [0:01:00.094500]    last: #3330380: c = 0
+main.dart.js:3976 [Violation] 'message' handler took 330ms
+main.dart.js:16881 * #0 IDLE current=0 / total=1 max=1 errors=0
+main.dart.js:16881 * #1 IDLE current=0 / total=1 max=1 errors=0
+main.dart.js:16881 * #2 IDLE current=0 / total=1 max=1 errors=0
+main.dart.js:16881 * #3 IDLE current=0 / total=1 max=1 errors=0
+main.dart.js:16881 * #4 IDLE current=0 / total=1 max=1 errors=0
+main.dart.js:16881 * #5 IDLE current=0 / total=1 max=1 errors=0
