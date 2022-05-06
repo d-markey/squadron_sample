@@ -10,8 +10,7 @@ class Parser3Service {
   static const _timeStampMarker = '#';
   final int maxDelayInMs;
 
-  Future<List<SignalValue>> parse(List<String> lines,
-      [CancellationToken? token]) async {
+  Future<List<SignalValue>> parse(List<String> lines, [CancellationToken? token]) async {
     final sw = Stopwatch()..start();
 
     String line = lines[0];
@@ -34,13 +33,13 @@ class Parser3Service {
       }
 
       if (sw.elapsedMilliseconds > maxDelayInMs) {
+        // introducing this future will suspend parsing; pending UI events will be processed; eventually, parsing will resume
         await Future.delayed(Duration.zero);
         sw.reset();
       }
     }
 
-    Squadron.info(
-        '[${sw.elapsed}] parsed ${lines.length} and extracted ${signalValues.length} signal values');
+    Squadron.info('[${sw.elapsed}] parsed ${lines.length} and extracted ${signalValues.length} signal values');
     return signalValues;
   }
 }
