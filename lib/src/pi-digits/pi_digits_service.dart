@@ -26,9 +26,9 @@ class PiDigitsServiceImpl implements PiDigitsService, WorkerService {
       yield getNth(i);
       i++;
       if (i >= end) break;
-      if (i % 10 == 0) {
+      if (i % 50 == 0) {
         // avoid flooding the event loop with noop Futures
-        // check every 10 digits only
+        // check every 50 digits only
         await noop();
         if (token?.cancelled ?? false) {
           throw CancelledException();

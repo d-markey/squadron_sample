@@ -1,31 +1,27 @@
 import 'package:squadron/squadron.dart';
 
+import 'parser_activator.dart'
+    if (dart.library.js) 'package:squadron_sample/src/parser/browser/parser_worker_activator.dart'
+    if (dart.library.html) 'package:squadron_sample/src/parser/browser/parser_worker_activator.dart'
+    if (dart.library.io) 'package:squadron_sample/src/parser/vm/parser_worker_activator.dart';
+
 import 'parser_service.dart';
 
 class ParserWorkerPool extends WorkerPool<ParserWorker>
     implements ParserService {
-  ParserWorkerPool(dynamic entryPoint,
-      {ConcurrencySettings? concurrencySettings})
-      : super(entryPoint, concurrencySettings: concurrencySettings);
+  ParserWorkerPool({ConcurrencySettings? concurrencySettings})
+      : super(createWorker, concurrencySettings: concurrencySettings);
 
   @override
-  Stream<List> streamParser(List lines, [CancellationToken? token]) =>
-      stream((w) => w.streamParser(lines, token));
-
-  @override
-  Stream<List> streamParserOptimized(List lines, [CancellationToken? token]) =>
-      stream((w) => w.streamParserOptimized(lines, token));
+  Future<List> parse(List lines, [CancellationToken? token]) =>
+      execute((w) => w.parse(lines, token));
 }
 
 class ParserWorker extends Worker implements ParserService {
-  ParserWorker(dynamic entryPoint, {String? id, List args = const []})
-      : super(entryPoint, id: id, args: args);
+  ParserWorker(dynamic entryPoint, {List args = const []})
+      : super(entryPoint, args: args);
 
   @override
-  Stream<List> streamParser(List lines, [CancellationToken? token]) =>
-      stream(ParserService.streamCommand, [lines], token);
-
-  @override
-  Stream<List> streamParserOptimized(List lines, [CancellationToken? token]) =>
-      stream(ParserService.streamCommand, [lines], token, false, false);
+  Future<List> parse(List lines, [CancellationToken? token]) =>
+      send(ParserService.parseCommand, lines, token);
 }

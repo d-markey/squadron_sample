@@ -20,8 +20,8 @@ class PiDigitsWorkerPool extends WorkerPool<PiDigitsWorker>
 }
 
 class PiDigitsWorker extends Worker implements PiDigitsService {
-  PiDigitsWorker(dynamic entryPoint, {String? id, List args = const []})
-      : super(entryPoint, id: id, args: args);
+  PiDigitsWorker(dynamic entryPoint, {List args = const []})
+      : super(entryPoint, args: args);
 
   @override
   Future<int> getNth(int n) => send(PiDigitsService.getNthCommand, [n]);

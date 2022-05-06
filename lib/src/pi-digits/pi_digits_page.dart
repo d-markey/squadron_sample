@@ -26,6 +26,13 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
   CancellationToken? _cancelToken;
   Timer? _computing;
 
+  @override
+  void dispose() {
+    _computing?.cancel();
+    _computing = null;
+    super.dispose();
+  }
+
   void _startCompute() {
     Squadron.info('_startCompute called from ${StackTrace.current}');
     _cancel = false;

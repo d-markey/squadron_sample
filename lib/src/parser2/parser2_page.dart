@@ -5,25 +5,26 @@ import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
 import 'vcd_generator.dart';
-import 'parser_runner.dart';
-import 'parser_service.dart';
-import 'parser_worker_pool.dart';
+import 'parser2_runner.dart';
+import 'parser2_service.dart';
+import 'parser2_worker_pool.dart';
 
-class ParserPage extends StatefulWidget {
-  ParserPage({Key? key, this.tabBar}) : super(key: key);
+class Parser2Page extends StatefulWidget {
+  Parser2Page({Key? key, this.tabBar}) : super(key: key);
 
   final TabBar? tabBar;
 
   final TextEditingController _maxEntries =
       TextEditingController(text: '1000000');
-  final TextEditingController _chunks = TextEditingController(text: '6');
+  final TextEditingController _chunks = TextEditingController(text: '2');
+  final TextEditingController _batchSize = TextEditingController(text: '250');
 
   @override
-  State<ParserPage> createState() => _ParserPageState();
+  State<Parser2Page> createState() => _Parser2PageState();
 }
 
-class _ParserPageState extends State<ParserPage> {
-  _ParserPageState();
+class _Parser2PageState extends State<Parser2Page> {
+  _Parser2PageState();
 
   Timer? _parsing;
 
@@ -52,10 +53,13 @@ class _ParserPageState extends State<ParserPage> {
 
   int get _chunks => int.parse(widget._chunks.text);
 
+  int get _batchSize => int.parse(widget._batchSize.text);
+
   late CancellationToken _token = _createToken();
 
-  Future<ParserWorkerPool> _startPool() async {
-    final pool = ParserWorkerPool(
+  Future<Parser2WorkerPool> _startPool() async {
+    final pool = Parser2WorkerPool(
+      batchSize: _batchSize,
       concurrencySettings: ConcurrencySettings(
         minWorkers: _chunks,
         maxWorkers: _chunks,
@@ -88,8 +92,8 @@ class _ParserPageState extends State<ParserPage> {
     try {
       _start();
       final vcd = (_vcd ??= generateVCDData(_maxEntries).toList()).toList();
-      await parse(
-          ParseArguments(ParserService(), vcd, _chunks, token ?? _token));
+      await parse(ParseArguments(Parser2Service(_maxEntries), vcd, 1,
+          token ?? _token)); // force 1 stream and 1 batch
     } finally {
       _done();
     }
@@ -100,8 +104,10 @@ class _ParserPageState extends State<ParserPage> {
     try {
       _start();
       final vcd = (_vcd ??= generateVCDData(_maxEntries).toList()).toList();
-      await compute(parse,
-          ParseArguments(ParserService(), vcd, _chunks, token ?? _token));
+      await compute(
+          parse,
+          ParseArguments(
+              Parser2Service(_batchSize), vcd, _chunks, token ?? _token));
     } finally {
       _done();
     }
@@ -109,7 +115,7 @@ class _ParserPageState extends State<ParserPage> {
 
   Future _withPool([CancellationToken? token]) async {
     log?.call('****** PARSE - WITH POOL ******');
-    ParserWorkerPool? pool;
+    Parser2WorkerPool? pool;
     try {
       _start();
       pool = await _startPool();
@@ -138,7 +144,7 @@ class _ParserPageState extends State<ParserPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('SQUADRON SAMPLE - PARSER (LIST)'),
+          title: const Text('SQUADRON SAMPLE - PARSER (STREAM)'),
           bottom: widget.tabBar,
         ),
         body: Center(
@@ -167,6 +173,17 @@ class _ParserPageState extends State<ParserPage> {
                 Flexible(
                     child: TextField(
                   controller: widget._chunks,
+                  keyboardType: TextInputType.number,
+                ))
+              ]),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                const Flexible(
+                    child: Text(
+                  'Batch size:  ',
+                )),
+                Flexible(
+                    child: TextField(
+                  controller: widget._batchSize,
                   keyboardType: TextInputType.number,
                 ))
               ]),

@@ -1,7 +1,7 @@
 import 'package:squadron/squadron.dart';
 
-import 'parser_service.dart';
-import 'signal_value.dart';
+import 'parser2_service.dart';
+import 'signal_values.dart';
 
 final _sw = Stopwatch()..start();
 
@@ -12,13 +12,18 @@ const void Function(Object? object)? log = _log;
 class ParseArguments {
   ParseArguments(this.parser, this.lines, this.nbOfChunks, this.token);
 
-  final ParserService parser;
+  final Parser2Service parser;
   final List<String> lines;
   final int nbOfChunks;
   final CancellationToken token;
 }
 
 const _oneSec = Duration(seconds: 1);
+
+List<SignalValues> _materialize(List<dynamic> list) {
+  return List.generate(list.length, (i) => SignalValues.load(list[i]),
+      growable: false);
+}
 
 Future<List> parse(ParseArguments args) async {
   final parser = args.parser;
@@ -44,7 +49,7 @@ Future<List> parse(ParseArguments args) async {
         'START: lines = ${lines.length} / nb of chunks = $nbOfChunks / no pool');
   }
 
-  final futures = <Future<List>>[];
+  final futures = <Future<List<List<SignalValues>>>>[];
 
   // split & start parsing
   while (lines.length > linesPerBatch) {
@@ -57,12 +62,13 @@ Future<List> parse(ParseArguments args) async {
     }
     // parse chunk
     log?.call('    batch #${futures.length + 1} = ${chunk.length} lines');
-    futures.add(parser.parse(chunk, token));
+    futures.add(parser.parse(chunk, token).map(_materialize).toList());
   }
+
   // parse last chunk
   if (lines.isNotEmpty) {
     log?.call('    batch #${futures.length + 1} = ${lines.length} lines');
-    futures.add(parser.parse(lines, token));
+    futures.add(parser.parse(lines, token).map(_materialize).toList());
   }
 
   log?.call('STARTED ${futures.length} FUTURES, WAITING FOR RESULTS...');
@@ -71,9 +77,12 @@ Future<List> parse(ParseArguments args) async {
   if (token.cancelled) return [];
 
   log?.call('MERGING AND CONVERTING RESULTS');
-  final signalValues = <SignalValue>[];
+  final signalValues = <SignalValues>[];
   for (var i = 0; i < chunks.length; i++) {
-    signalValues.addAll(chunks[i].map((data) => SignalValue.load(data)));
+    final chunk = chunks[i];
+    for (var j = 0; j < chunk.length; j++) {
+      signalValues.addAll(chunk[j]);
+    }
   }
 
   final elapsed = _sw.elapsedMilliseconds;

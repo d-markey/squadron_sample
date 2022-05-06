@@ -33,8 +33,8 @@ class MyWorkerPool extends WorkerPool<MyWorker> implements MyWorkerService {
 }
 
 class MyWorker extends Worker implements MyWorkerService {
-  MyWorker(dynamic entryPoint, {String? id, List args = const []})
-      : super(entryPoint, id: id, args: args);
+  MyWorker(dynamic entryPoint, {List args = const []})
+      : super(entryPoint, args: args);
 
   @override
   Future doSomethingWithTexts(List texts) =>

@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
+import 'src/parser3/parser3_page.dart';
 import 'src/pi-digits/pi_digits_page.dart';
 import 'src/text-size/text_size_page.dart';
 import 'src/thumbnails/thumbnail_page.dart';
 import 'src/parser/parser_page.dart';
+import 'src/parser2/parser2_page.dart';
 
 void main() {
-  Squadron.setId('Flutter');
-  Squadron.logger = ConsoleSquadronLogger();
-  Squadron.logLevel = SquadronLogLevel.off;
+  Squadron.setId('FlutterDemo');
+  Squadron.setLogger(ConsoleSquadronLogger());
+  Squadron.logLevel = SquadronLogLevel.all;
+  Squadron.debugMode = true;
   runApp(const SampleApp());
 }
 
@@ -26,7 +29,9 @@ class _SampleAppState extends State<SampleApp>
     Tab(text: 'Pi Digits'),
     Tab(text: 'Thumbnails'),
     Tab(text: 'TextSize'),
-    Tab(text: 'Parser'),
+    Tab(text: 'Parser (list)'),
+    Tab(text: 'Parser (stream)'),
+    Tab(text: 'Parser (yield)'),
   ];
 
   late TabController _tabController;
@@ -53,6 +58,8 @@ class _SampleAppState extends State<SampleApp>
     if (_tabController.index == 1) return ThumbnailPage(tabBar: _tabBar());
     if (_tabController.index == 2) return TextSizePage(tabBar: _tabBar());
     if (_tabController.index == 3) return ParserPage(tabBar: _tabBar());
+    if (_tabController.index == 4) return Parser2Page(tabBar: _tabBar());
+    if (_tabController.index == 5) return Parser3Page(tabBar: _tabBar());
     return Text('_tabController.index = ${_tabController.index}');
   }
 

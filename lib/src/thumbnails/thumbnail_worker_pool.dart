@@ -29,8 +29,8 @@ class ThumbnailWorkerPool extends WorkerPool<ThumbnailWorker>
 
 // Implementation of ThumbnailService as a Squadron worker
 class ThumbnailWorker extends Worker implements ThumbnailService {
-  ThumbnailWorker(dynamic entryPoint, {String? id, List args = const []})
-      : super(entryPoint, id: id, args: args);
+  ThumbnailWorker(dynamic entryPoint, {List args = const []})
+      : super(entryPoint, args: args);
 
   @override
   Future<Uint8List> getThumbnail(

@@ -4,26 +4,27 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
+import 'parser3_runner.dart';
 import 'vcd_generator.dart';
-import 'parser_runner.dart';
-import 'parser_service.dart';
-import 'parser_worker_pool.dart';
+import 'parser3_service.dart';
 
-class ParserPage extends StatefulWidget {
-  ParserPage({Key? key, this.tabBar}) : super(key: key);
+class Parser3Page extends StatefulWidget {
+  Parser3Page({Key? key, this.tabBar}) : super(key: key);
 
   final TabBar? tabBar;
 
   final TextEditingController _maxEntries =
       TextEditingController(text: '1000000');
-  final TextEditingController _chunks = TextEditingController(text: '6');
+
+  final TextEditingController _maxDelayInMs =
+      TextEditingController(text: '100');
 
   @override
-  State<ParserPage> createState() => _ParserPageState();
+  State<Parser3Page> createState() => _Parser3PageState();
 }
 
-class _ParserPageState extends State<ParserPage> {
-  _ParserPageState();
+class _Parser3PageState extends State<Parser3Page> {
+  _Parser3PageState();
 
   Timer? _parsing;
 
@@ -50,21 +51,9 @@ class _ParserPageState extends State<ParserPage> {
 
   int get _maxEntries => int.parse(widget._maxEntries.text);
 
-  int get _chunks => int.parse(widget._chunks.text);
+  int get _maxDelayInMs => int.parse(widget._maxDelayInMs.text);
 
   late CancellationToken _token = _createToken();
-
-  Future<ParserWorkerPool> _startPool() async {
-    final pool = ParserWorkerPool(
-      concurrencySettings: ConcurrencySettings(
-        minWorkers: _chunks,
-        maxWorkers: _chunks,
-        maxParallel: 1,
-      ),
-    );
-    await pool.start();
-    return pool;
-  }
 
   List<String>? _vcd;
 
@@ -77,8 +66,6 @@ class _ParserPageState extends State<ParserPage> {
     if (token.cancelled) return;
     await _withCompute(token);
     if (token.cancelled) return;
-    await _withPool(token);
-    if (token.cancelled) return;
     // reset data
     _vcd = null;
   }
@@ -89,7 +76,7 @@ class _ParserPageState extends State<ParserPage> {
       _start();
       final vcd = (_vcd ??= generateVCDData(_maxEntries).toList()).toList();
       await parse(
-          ParseArguments(ParserService(), vcd, _chunks, token ?? _token));
+          ParseArguments(Parser3Service(_maxDelayInMs), vcd, token ?? _token));
     } finally {
       _done();
     }
@@ -101,23 +88,9 @@ class _ParserPageState extends State<ParserPage> {
       _start();
       final vcd = (_vcd ??= generateVCDData(_maxEntries).toList()).toList();
       await compute(parse,
-          ParseArguments(ParserService(), vcd, _chunks, token ?? _token));
+          ParseArguments(Parser3Service(_maxDelayInMs), vcd, token ?? _token));
     } finally {
       _done();
-    }
-  }
-
-  Future _withPool([CancellationToken? token]) async {
-    log?.call('****** PARSE - WITH POOL ******');
-    ParserWorkerPool? pool;
-    try {
-      _start();
-      pool = await _startPool();
-      final vcd = (_vcd ??= generateVCDData(_maxEntries).toList()).toList();
-      await parse(ParseArguments(pool, vcd, _chunks, token ?? _token));
-    } finally {
-      _done();
-      pool?.stop();
     }
   }
 
@@ -162,11 +135,11 @@ class _ParserPageState extends State<ParserPage> {
               Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
                 const Flexible(
                     child: Text(
-                  'Chunks:      ',
+                  'Max delay (ms): ',
                 )),
                 Flexible(
                     child: TextField(
-                  controller: widget._chunks,
+                  controller: widget._maxDelayInMs,
                   keyboardType: TextInputType.number,
                 ))
               ]),
@@ -199,11 +172,6 @@ class _ParserPageState extends State<ParserPage> {
                   onPressed: _withCompute,
                   tooltip: 'Compute',
                   child: const Text('Compute', textAlign: TextAlign.center),
-                ),
-                FloatingActionButton(
-                  onPressed: _withPool,
-                  tooltip: 'Pool',
-                  child: const Text('Pool', textAlign: TextAlign.center),
                 ),
               ]));
   }

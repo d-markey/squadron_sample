@@ -143,7 +143,7 @@ packages:
       name: mime
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   mime_type:
     dependency: transitive
     description:
@@ -189,7 +189,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: e862df54d5a637465625e5b5d24a37e186be507a
+      resolved-ref: "85e9578b2fcb4f6d2b9c26b67a6f4bddc1df5bae"
       url: "https://github.com/d-markey/squadron.git"
     source: git
     version: "4.0.0"
