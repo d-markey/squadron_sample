@@ -8,11 +8,15 @@ import 'src/thumbnails/thumbnail_page.dart';
 import 'src/parser/parser_page.dart';
 import 'src/parser2/parser2_page.dart';
 
-void main() {
-  Squadron.setId('FlutterDemo');
+void initSquadron(String id) {
+  Squadron.setId(id);
   Squadron.setLogger(ConsoleSquadronLogger());
   Squadron.logLevel = SquadronLogLevel.all;
   Squadron.debugMode = true;
+}
+
+void main() {
+  initSquadron('FlutterDemo');
   runApp(const SampleApp());
 }
 

@@ -88,7 +88,7 @@ class _Parser2PageState extends State<Parser2Page> {
   }
 
   Future _withoutPool([CancellationToken? token]) async {
-    log?.call('****** PARSE - WITHOUT POOL ******');
+    Squadron.info('****** PARSE - WITHOUT POOL ******');
     try {
       _start();
       final vcd = (_vcd ??= generateVCDData(_maxEntries).toList()).toList();
@@ -100,7 +100,7 @@ class _Parser2PageState extends State<Parser2Page> {
   }
 
   Future _withCompute([CancellationToken? token]) async {
-    log?.call('****** PARSE - WITHOUT POOL (compute) ******');
+    Squadron.info('****** PARSE - WITHOUT POOL (compute) ******');
     try {
       _start();
       final vcd = (_vcd ??= generateVCDData(_maxEntries).toList()).toList();
@@ -114,7 +114,7 @@ class _Parser2PageState extends State<Parser2Page> {
   }
 
   Future _withPool([CancellationToken? token]) async {
-    log?.call('****** PARSE - WITH POOL ******');
+    Squadron.info('****** PARSE - WITH POOL ******');
     Parser2WorkerPool? pool;
     try {
       _start();
@@ -130,7 +130,7 @@ class _Parser2PageState extends State<Parser2Page> {
   CancellationToken _createToken() {
     final token = CancellationToken();
     token.addListener(() {
-      log?.call('Token cancelled');
+      Squadron.info('Token cancelled');
     });
     return token;
   }

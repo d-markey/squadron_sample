@@ -23,7 +23,8 @@ class MyWorkerServiceImpl implements MyWorkerService, WorkerService {
   Future doSomethingWithTexts(List texts) async {
     for (String text in texts) {
       final size = await _sizeService.measure(text);
-      Squadron.info('${text.replaceAll('\r', '\\r').replaceAll('\n', '\\n')} --> ${size['w']}x${size['h']}');
+      Squadron.info(
+          '${text.replaceAll('\r', '\\r').replaceAll('\n', '\\n')} --> ${size['w']}x${size['h']}');
     }
   }
 

@@ -189,7 +189,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "874796bbb44b8164a085ffa36665a7bceb66823f"
+      resolved-ref: "5b442e3d660c391aeafb174b8eedfb7d4ca1f90e"
       url: "https://github.com/d-markey/squadron.git"
     source: git
     version: "4.0.0"

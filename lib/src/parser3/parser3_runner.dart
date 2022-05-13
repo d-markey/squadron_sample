@@ -1,12 +1,9 @@
 import 'package:squadron/squadron.dart';
 
+import '../../main.dart';
 import 'parser3_service.dart';
 
 final _sw = Stopwatch()..start();
-
-void _log(dynamic message) => Squadron.info(message);
-
-const void Function(Object? object)? log = _log;
 
 class ParseArguments {
   ParseArguments(this.parser, this.lines, this.token);
@@ -19,6 +16,11 @@ class ParseArguments {
 const _oneSec = Duration(seconds: 1);
 
 Future<List> parse(ParseArguments args) async {
+  if (!Squadron.isInitialized) {
+    // we're being called from a compute context
+    initSquadron('compute');
+  }
+
   final parser = args.parser;
   final lines = args.lines;
   final token = args.token;
@@ -35,17 +37,17 @@ Future<List> parse(ParseArguments args) async {
 
   final elapsed = _sw.elapsedMilliseconds;
 
-  log?.call(
+  Squadron.info(
       'DONE PARSING: total items = ${signalValues.length} in ${_sw.elapsed}, ${signalValues.length / elapsed} item/ms');
-  log?.call('    first = ${signalValues.first}');
-  log?.call('    last = ${signalValues.last}');
+  Squadron.info('    first = ${signalValues.first}');
+  Squadron.info('    last = ${signalValues.last}');
 
   if (pool != null) {
-    log?.call('Pool stats');
+    Squadron.info('Pool stats');
     final stats = pool.fullStats.toList();
     for (var i = 0; i < stats.length; i++) {
       final stat = stats[i];
-      log?.call(
+      Squadron.info(
           '    #$i ${stat.status} current = ${stat.workload} / total/max/errors = ${stat.totalWorkload}/${stat.maxWorkload}/${stat.totalErrors}');
     }
   }
