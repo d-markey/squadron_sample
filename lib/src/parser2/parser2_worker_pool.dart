@@ -25,5 +25,5 @@ class Parser2Worker extends Worker implements Parser2Service {
 
   @override
   Stream<List> parse(List lines, [CancellationToken? token]) =>
-      stream(Parser2Service.parseCommand, lines, token);
+      stream(Parser2Service.parseCommand, args: lines, token: token);
 }

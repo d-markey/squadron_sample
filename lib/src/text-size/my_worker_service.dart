@@ -21,21 +21,10 @@ class MyWorkerServiceImpl implements MyWorkerService, WorkerService {
 
   @override
   Future doSomethingWithTexts(List texts) async {
-    for (var text in texts) {
+    for (String text in texts) {
       final size = await _sizeService.measure(text);
-      Squadron.info('$text --> ${size['w']}x${size['h']}');
+      Squadron.info('${text.replaceAll('\r', '\\r').replaceAll('\n', '\\n')} --> ${size['w']}x${size['h']}');
     }
-
-    final numbers = await _sizeService.sequence(20).toList();
-    Squadron.info('received $numbers');
-
-    final ints = <int>[];
-    await for (var number in _sizeService.sequence(20)) {
-      Squadron.info('received $number');
-      ints.add(number);
-    }
-
-    Squadron.info('received ${ints.length} numbers: $ints');
   }
 
   // this map creates the correspondance between the service constants from MyWorkerService

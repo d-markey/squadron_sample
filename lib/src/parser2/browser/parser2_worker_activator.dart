@@ -11,7 +11,7 @@ class WebParser2Worker extends Parser2Worker {
 
   @override
   Stream<List> parse(List lines, [CancellationToken? token]) =>
-      stream(Parser2Service.parseCommand, lines, token, false, false).map(
+      stream(Parser2Service.parseCommand, args: lines, token: token).map(
           (list) =>
               jsonDecode(list)); // decode back to List when receiving results
 }

@@ -15,16 +15,8 @@ class LocalSizeServiceImpl extends LocalSizeService {
   }
 
   @override
-  Stream<int> sequence(int count) async* {
-    for (var i = 0; i < count; i++) {
-      yield i;
-    }
-  }
-
-  @override
   late final Map<int, CommandHandler> operations = {
     LocalSizeService.measureCommand: (req) =>
         measure(req.args[0], maxLines: req.args[1]),
-    LocalSizeService.sequenceCommand: (req) => sequence(req.args[0]),
   };
 }

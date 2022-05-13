@@ -38,5 +38,5 @@ class MyWorker extends Worker implements MyWorkerService {
 
   @override
   Future doSomethingWithTexts(List texts) =>
-      send(MyWorkerService.doSomethingWithTextsCommand, [texts]);
+      send(MyWorkerService.doSomethingWithTextsCommand, args: [texts]);
 }

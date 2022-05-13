@@ -24,9 +24,9 @@ class PiDigitsWorker extends Worker implements PiDigitsService {
       : super(entryPoint, args: args);
 
   @override
-  Future<int> getNth(int n) => send(PiDigitsService.getNthCommand, [n]);
+  Future<int> getNth(int n) => send(PiDigitsService.getNthCommand, args: [n]);
 
   @override
   Stream<int> getNDigits(int start, int n, CancellationToken? token) =>
-      stream(PiDigitsService.getNDigitsCommand, [start, n], token);
+      stream(PiDigitsService.getNDigitsCommand, args: [start, n], token: token);
 }

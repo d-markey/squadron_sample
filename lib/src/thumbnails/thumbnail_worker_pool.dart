@@ -36,5 +36,5 @@ class ThumbnailWorker extends Worker implements ThumbnailService {
   Future<Uint8List> getThumbnail(
           Uint8List imageData, int thumbWidth, int thumbHeight) =>
       send(ThumbnailService.getThumbnailCommand,
-          [imageData, thumbWidth, thumbHeight]);
+          args: [imageData, thumbWidth, thumbHeight]);
 }

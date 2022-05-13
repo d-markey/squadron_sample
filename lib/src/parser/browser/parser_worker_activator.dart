@@ -11,8 +11,7 @@ class WebParserWorker extends ParserWorker {
 
   @override
   Future<List> parse(List lines, [CancellationToken? token]) async =>
-      jsonDecode(await send(ParserService.parseCommand, lines, token, false,
-          false)); // decode back to List when receiving results
+      jsonDecode(await send(ParserService.parseCommand, args: lines, token: token)); // decode back to List when receiving results
 }
 
 ParserWorker createWorker() =>

@@ -23,5 +23,5 @@ class ParserWorker extends Worker implements ParserService {
 
   @override
   Future<List> parse(List lines, [CancellationToken? token]) =>
-      send(ParserService.parseCommand, lines, token);
+      send(ParserService.parseCommand, args: lines, token: token);
 }
