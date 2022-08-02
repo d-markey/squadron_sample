@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
+import 'src/codegen/codegen_page.dart';
 import 'src/parser3/parser3_page.dart';
 import 'src/pi-digits/pi_digits_page.dart';
 import 'src/text-size/text_size_page.dart';
@@ -36,6 +37,7 @@ class _SampleAppState extends State<SampleApp>
     Tab(text: 'Parser (list)'),
     Tab(text: 'Parser (stream)'),
     Tab(text: 'Parser (yield)'),
+    Tab(text: 'Codegen'),
   ];
 
   late TabController _tabController;
@@ -64,6 +66,7 @@ class _SampleAppState extends State<SampleApp>
     if (_tabController.index == 3) return ParserPage(tabBar: _tabBar());
     if (_tabController.index == 4) return Parser2Page(tabBar: _tabBar());
     if (_tabController.index == 5) return Parser3Page(tabBar: _tabBar());
+    if (_tabController.index == 6) return CodeGenPage(tabBar: _tabBar());
     return Text('_tabController.index = ${_tabController.index}');
   }
 

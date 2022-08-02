@@ -4,6 +4,8 @@ Flutter demo for Squadron with sample use-cases:
 * parallel computation of hexadecimal digits of Pi.
 * parallel thumbnail generation
 
+Also includes a minimal example of using Squadron annotations together with [squadron_builder](https://pub.dev/packages/squadron_builder) to generate the actual Web Worker/Isolate workers and pools.
+
 See [Squadron Dart package](https://pub.dev/packages/squadron) for more information on Squadron.
 
 # Pi Digits
@@ -53,6 +55,10 @@ dart compile js ./lib/src/thumbnail/browser/thumbnail_worker.dart -o ./web/worke
 
 # Note
 
-Before running the sample, in case any modification was made to worker services or their dependencies, the JavaScript workers must be recompiled.
+This sample must be built using:
 
-The sample provides a script to automate building the Web workers, cf. `build_web_worker.bat`.
+```
+dart run build_runner build
+```
+
+Before running the Web-version of the sample, the JavaScript workers must be compiled. The sample provides a script to automate building the Web workers, cf. `build_web_worker.bat`. Rebuilding Web Workers is mandatory whenever a worker service or one of its dependencies has been modified or updated.

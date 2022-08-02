@@ -1,9 +1,12 @@
 file:///C:/Flutter/src/flutter/bin/cache/dart-sdk/lib/_internal/dart2js_platform.dill
 file:///C:/Flutter/src/flutter/bin/cache/dart-sdk/lib/libraries.json
 file:///C:/_Projects/github/squadron/lib/squadron.dart
+file:///C:/_Projects/github/squadron/lib/squadron_annotations.dart
 file:///C:/_Projects/github/squadron/lib/squadron_local_worker.dart
 file:///C:/_Projects/github/squadron/lib/squadron_service.dart
 file:///C:/_Projects/github/squadron/lib/squadron_worker.dart
+file:///C:/_Projects/github/squadron/lib/src/annotations/squadron_method.dart
+file:///C:/_Projects/github/squadron/lib/src/annotations/squadron_service.dart
 file:///C:/_Projects/github/squadron/lib/src/bootstrapper.dart
 file:///C:/_Projects/github/squadron/lib/src/browser/_bootstrapper.dart
 file:///C:/_Projects/github/squadron/lib/src/browser/_channel.dart
@@ -42,5 +45,7 @@ file:///C:/_Projects/github/squadron/lib/src/xplat/_worker_stream_task.dart
 file:///C:/_Projects/github/squadron/lib/src/xplat/_worker_task.dart
 file:///C:/_Projects/github/squadron/lib/src/xplat/_worker_value_task.dart
 file:///C:/_Projects/github/squadron_sample/.dart_tool/package_config.json
-file:///C:/_Projects/github/squadron_sample/lib/src/pi-digits/browser/pi_digits_worker.dart
-file:///C:/_Projects/github/squadron_sample/lib/src/pi-digits/pi_digits_service.dart
+file:///C:/_Projects/github/squadron_sample/lib/src/codegen/codegen.activator.g.dart
+file:///C:/_Projects/github/squadron_sample/lib/src/codegen/codegen.dart
+file:///C:/_Projects/github/squadron_sample/lib/src/codegen/codegen.web.g.dart
+file:///C:/_Projects/github/squadron_sample/lib/src/codegen/codegen.worker.g.dart
