@@ -21,23 +21,28 @@ class PiDigitsPage extends StatefulWidget {
 class _PiDigitsPageState extends State<PiDigitsPage> {
   _PiDigitsPageState();
 
-  List<int> _digits = const <int>[];
+  late final _digits = Uint8List(widget._count);
   bool _cancel = false;
   CancellationToken? _cancelToken;
   Timer? _computing;
+
+  final _piDigitsService = PiDigitsServiceImpl();
+  final PiDigitsWorkerPool _piDigitsWorkerPool = PiDigitsWorkerPool(
+      const ConcurrencySettings(minWorkers: 7, maxWorkers: 7))
+    ..start();
 
   @override
   void dispose() {
     _computing?.cancel();
     _computing = null;
+    _piDigitsWorkerPool.stop();
     super.dispose();
   }
 
   void _startCompute() {
-    Squadron.info('_startCompute called from ${StackTrace.current}');
     _cancel = false;
     _cancelToken = CancellationToken('Task was cancelled by the user');
-    _digits = const <int>[];
+    _digits.fillRange(0, _digits.length, 0);
     _computing = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       setState(() {});
     });
@@ -81,11 +86,10 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
         Squadron.info(
             '[_loadDigitsWithoutWorkers] computation has been cancelled');
       } else {
-        _digits = Uint8List(widget._count);
-        var piDigits = PiDigitsServiceImpl();
+        _digits.fillRange(0, _digits.length, 0);
         try {
           await _loadNDigits(0, widget._count,
-              piDigits.getNDigits(0, widget._count, _cancelToken));
+              _piDigitsService.getNDigits(0, widget._count, _cancelToken));
           Squadron.info('[_loadDigitsWithoutWorkers] computation completed');
         } on CancelledException {
           _cancel = true;
@@ -110,29 +114,27 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
   void _loadDigitsWithWorkerPool() async {
     _startCompute();
 
-    PiDigitsWorkerPool? piDigitsWorkerPool;
     try {
-      piDigitsWorkerPool = PiDigitsWorkerPool(const ConcurrencySettings(
-          minWorkers: 8, maxWorkers: 8, maxParallel: 2));
-      await piDigitsWorkerPool.start();
-      await Future.delayed(const Duration(seconds: 1));
-
       var sw = Stopwatch()..start();
       if (_cancel) {
         Squadron.info(
             '[_loadDigitsWithWorkerPool] computation has been cancelled');
       } else {
-        _digits = Uint8List(widget._count);
+        _digits.fillRange(0, _digits.length, 0);
         final futures = <Future>[];
-        var batch =
-            widget._count ~/ piDigitsWorkerPool.concurrencySettings.maxWorkers;
+        final nb = (widget._count %
+                    _piDigitsWorkerPool.concurrencySettings.maxWorkers >
+                0)
+            ? _piDigitsWorkerPool.concurrencySettings.maxWorkers + 1
+            : _piDigitsWorkerPool.concurrencySettings.maxWorkers;
+        var batch = widget._count ~/ nb;
         var start = 0;
         while (start < widget._count) {
           if (start + batch > widget._count) {
             batch = widget._count - start;
           }
           futures.add(_loadNDigits(start, batch,
-              piDigitsWorkerPool.getNDigits(start, batch, _cancelToken)));
+              _piDigitsWorkerPool.getNDigits(start, batch, _cancelToken)));
           start += batch;
         }
         Squadron.info(
@@ -153,7 +155,6 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
       Squadron.info('[_loadDigitsWithWorkerPool] ERROR = $e');
       Squadron.info('[_loadDigitsWithWorkerPool] TRACE = $st');
     } finally {
-      piDigitsWorkerPool?.stop();
       if (!_cancel) {
         await Future.delayed(const Duration(seconds: 1));
       }
@@ -167,13 +168,9 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
     // widget._pool.cancel();
   }
 
-  String get _pi => _digits.isEmpty
-      ? ''
-      : [
-          _digits[0].toRadixString(16),
-          '.',
-          ..._digits.skip(1).map((d) => d.toRadixString(16))
-        ].join('');
+  static String _hex(int d) => d.toRadixString(16);
+
+  String get _pi => '${_hex(_digits[0])}.${_digits.skip(1).map(_hex).join('')}';
 
   @override
   Widget build(BuildContext context) {

@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
-import 'vcd_generator.dart';
+import '../vcd_generator.dart';
 import 'parser_runner.dart';
 import 'parser_service.dart';
 import 'parser_worker_pool.dart';
@@ -27,10 +27,19 @@ class _ParserPageState extends State<ParserPage> {
 
   Timer? _parsing;
 
+  ParserWorkerPool? _pool;
+
+  @override
+  void initState() {
+    super.initState();
+    _startPool();
+  }
+
   @override
   void dispose() {
     _parsing?.cancel();
     _parsing = null;
+    _pool?.stop();
     super.dispose();
   }
 
@@ -55,15 +64,22 @@ class _ParserPageState extends State<ParserPage> {
   late CancellationToken _token = _createToken();
 
   Future<ParserWorkerPool> _startPool() async {
-    final pool = ParserWorkerPool(
-      concurrencySettings: ConcurrencySettings(
-        minWorkers: _chunks,
-        maxWorkers: _chunks,
-        maxParallel: 1,
-      ),
-    );
-    await pool.start();
-    return pool;
+    final chunks = _chunks;
+    if (_pool != null && _pool!.concurrencySettings.minWorkers != chunks) {
+      _pool!.stop();
+      _pool = null;
+    }
+    if (_pool == null) {
+      _pool = ParserWorkerPool(
+        concurrencySettings: ConcurrencySettings(
+          minWorkers: chunks,
+          maxWorkers: chunks,
+          maxParallel: 1,
+        ),
+      );
+      await _pool!.start();
+    }
+    return _pool!;
   }
 
   List<String>? _vcd;
@@ -109,15 +125,13 @@ class _ParserPageState extends State<ParserPage> {
 
   Future _withPool([CancellationToken? token]) async {
     Squadron.info('****** PARSE - WITH POOL ******');
-    ParserWorkerPool? pool;
     try {
       _start();
-      pool = await _startPool();
+      _startPool();
       final vcd = (_vcd ??= generateVCDData(_maxEntries).toList()).toList();
-      await parse(ParseArguments(pool, vcd, _chunks, token ?? _token));
+      await parse(ParseArguments(_pool!, vcd, _chunks, token ?? _token));
     } finally {
       _done();
-      pool?.stop();
     }
   }
 

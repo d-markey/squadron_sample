@@ -32,7 +32,7 @@ class MyWorkerServiceImpl implements MyWorkerService, WorkerService {
   // and the method implementations in MyWorkerServiceImpl
   @override
   late final Map<int, CommandHandler> operations = {
-    MyWorkerService.doSomethingWithTextsCommand: (WorkerRequest r) =>
+    MyWorkerService.doSomethingWithTextsCommand: (r) =>
         doSomethingWithTexts(r.args[0])
   };
 }

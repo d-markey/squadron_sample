@@ -9,6 +9,15 @@ class Parser2Service implements WorkerService {
 
   final int _batchSize;
 
+  static Map<String, dynamic> _register(
+      List<Map<String, dynamic>> signals, int timeStamp) {
+    var current = <String, dynamic>{};
+    current['#'] = timeStamp;
+    current['v'] = <String, num>{};
+    signals.add(current);
+    return current;
+  }
+
   // to avoid too much serialization/deserialization, use only List and Map (not List<T> nor Map<K, V>)
   // make sure these lists and maps contain only base types (string, bool, num)
   Stream<List<dynamic>> parse(List lines, [CancellationToken? token]) async* {
@@ -22,11 +31,8 @@ class Parser2Service implements WorkerService {
     }
     int timeStamp = int.parse(line.substring(_timeStampMarker.length));
 
-    var signalValues = [];
-    var current = <String, dynamic>{};
-    current['#'] = timeStamp;
-    current['v'] = <String, num>{};
-    signalValues.add(current);
+    var signalValues = <Map<String, dynamic>>[];
+    var current = _register(signalValues, timeStamp);
     var values = current['v'];
 
     for (var i = 1; i < lines.length; i++) {
@@ -41,10 +47,7 @@ class Parser2Service implements WorkerService {
         }
         // new timestamp
         timeStamp = int.parse(line.substring(_timeStampMarker.length));
-        var current = <String, dynamic>{};
-        current['#'] = timeStamp;
-        current['v'] = <String, num>{};
-        signalValues.add(current);
+        current = _register(signalValues, timeStamp);
         values = current['v'];
       } else {
         // new value change

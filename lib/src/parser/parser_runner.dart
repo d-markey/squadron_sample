@@ -3,7 +3,7 @@ import 'package:squadron/squadron.dart';
 import '../../main.dart';
 
 import 'parser_service.dart';
-import 'signal_value.dart';
+import '../signal_value.dart';
 
 final _sw = Stopwatch()..start();
 
@@ -76,7 +76,10 @@ Future<List> parse(ParseArguments args) async {
   Squadron.info('MERGING AND CONVERTING RESULTS');
   final signalValues = <SignalValue>[];
   for (var i = 0; i < chunks.length; i++) {
-    signalValues.addAll(chunks[i].map((data) => SignalValue.load(data)));
+    final chunk = chunks[i];
+    for (var j = 0; j < chunk.length; j += 3) {
+      signalValues.add(SignalValue(chunk[j], chunk[j + 1], chunk[j + 2]));
+    }
   }
 
   final elapsed = _sw.elapsedMilliseconds;

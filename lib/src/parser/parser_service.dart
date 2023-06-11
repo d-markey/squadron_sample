@@ -17,7 +17,7 @@ class ParserService implements WorkerService {
     if (!line.startsWith(_timeStampMarker)) throw Exception('Invalid data');
     int timeStamp = int.parse(line.substring(_timeStampMarker.length));
 
-    var signalValues = <Map<String, dynamic>>[];
+    var signalValues = [];
     for (var i = 1; i < lines.length; i++) {
       final cancelledException = token?.exception;
       if (cancelledException != null) throw cancelledException;
@@ -29,13 +29,12 @@ class ParserService implements WorkerService {
       } else {
         // new value change
         final data = line.split(' ');
-        signalValues
-            .add({'#': timeStamp, 'n': data[1], 'v': num.parse(data[0])});
+        signalValues.addAll([timeStamp, data[1], num.parse(data[0])]);
       }
     }
 
     Squadron.info(
-        '[${sw.elapsed}] parsed ${lines.length} and extracted ${signalValues.length} signal values');
+        '[${sw.elapsed}] parsed ${lines.length} and extracted ${signalValues.length / 3} signal values');
     return signalValues;
   }
 

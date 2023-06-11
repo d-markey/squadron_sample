@@ -32,7 +32,7 @@ class ThumbnailServiceImpl implements ThumbnailService, WorkerService {
   // and the method implementations in ThumbnailServiceImpl
   @override
   late final Map<int, CommandHandler> operations = {
-    ThumbnailService.getThumbnailCommand: (WorkerRequest r) {
+    ThumbnailService.getThumbnailCommand: (r) {
       Squadron.info('Received getThumbnailCommand in ${r.travelTime} µs');
       return getThumbnail(r.args[0], r.args[1], r.args[2]);
     }

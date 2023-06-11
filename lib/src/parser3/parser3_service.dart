@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:squadron/squadron_service.dart';
 
-import 'signal_value.dart';
+import '../signal_value.dart';
 
 class Parser3Service {
   Parser3Service(this.maxDelayInMs);
@@ -34,7 +34,8 @@ class Parser3Service {
       }
 
       if (sw.elapsedMilliseconds > maxDelayInMs) {
-        // introducing this future will suspend parsing; pending UI events will be processed; eventually, parsing will resume
+        // introducing this future will suspend parsing; pending UI events will
+        // be processed and parsing will eventually resume
         await Future.delayed(Duration.zero);
         sw.reset();
       }

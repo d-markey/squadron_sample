@@ -15,17 +15,25 @@ class CodeGenPage extends StatefulWidget {
 }
 
 class _CodeGenPageState extends State<CodeGenPage> {
-  _CodeGenPageState();
+  _CodeGenPageState() {
+    _worker.start();
+  }
 
-  int? result;
+  final _worker = CodeGenWorker();
+
+  @override
+  void dispose() {
+    _worker.stop();
+    super.dispose();
+  }
+
+  String result = '';
 
   Future _execWithWorker() async {
-    final worker = CodeGenWorker();
-    await worker.start();
-    final n = await worker.service1(42);
-    worker.stop();
+    result = '';
+    final n = await _worker.inc(42);
     setState(() {
-      result = n;
+      result = n.toString();
     });
   }
 
@@ -33,10 +41,10 @@ class _CodeGenPageState extends State<CodeGenPage> {
     final pool = CodeGenWorkerPool(
         concurrencySettings: ConcurrencySettings.threeCpuThreads);
     await pool.start();
-    final n = await pool.service1(42);
+    final n = await pool.inc(42);
     pool.stop();
     setState(() {
-      result = n;
+      result = n.toString();
     });
   }
 
@@ -52,7 +60,7 @@ class _CodeGenPageState extends State<CodeGenPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                result?.toString() ?? '<no result yet>',
+                result.isEmpty ? '<no result yet>' : result,
               ),
             ],
           ),

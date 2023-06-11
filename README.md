@@ -24,12 +24,6 @@ Squadron takes care of all the rest: bootstrapping the workers, communicating to
 
 The main app uses the worker pool to have 5,000 digits of Pi computed in parallel (see `_loadDigitsWithWorkerPool()` in `pi_digits_page.dart`).
 
-*NOTE FOR WEB PLATFORM:* the Worker must be compiled manually before running the app:
-
-```
-dart compile js ./lib/src/pi-digits/browser/pi_digits_worker.dart -o ./web/workers/pi_digits_worker.dart.js -m
-```
-
 # Thumbnails
 
 The structure of the code is very similar to that for pi digits:
@@ -46,12 +40,21 @@ Squadron takes care of all the rest: bootstrapping the workers, communicating to
 
 The main app uses the Flutter icon as a sample image. In a production app, you'd ask the user to pick images or take pictures with the camera.
 
-*NOTE FOR WEB PLATFORM:* the Worker must be compiled manually before running the app:
+# Codegen and Perf
+
+Provided as examples of code generation using Squadron annotations with `squadron_builder`.
+
+`Codegen` is a basic example while `Perf` leverages more advanced features such as platform-specific marshallers to try and control serialization overhead.
+
+To generate the code for workers and worker pools, run the following command:
 
 ```
-dart compile js ./lib/src/thumbnail/browser/thumbnail_worker.dart -o ./web/workers/thumbnail_worker.dart.js -m
+dart run build_runner build
 ```
 
+# Parser, Parser1 and Parser2
+
+Various attempts at parsing a (somewhat large) `Value Change Dump` dataset (see https://en.wikipedia.org/wiki/Value_change_dump). 
 
 # Note
 
@@ -61,4 +64,4 @@ This sample must be built using:
 dart run build_runner build
 ```
 
-Before running the Web-version of the sample, the JavaScript workers must be compiled. The sample provides a script to automate building the Web workers, cf. `build_web_worker.bat`. Rebuilding Web Workers is mandatory whenever a worker service or one of its dependencies has been modified or updated.
+Before running the Web-version of the sample, the JavaScript workers must also be compiled. The sample provides a script to automate building the Web workers, cf. `build_web_worker.bat`. Rebuilding Web Workers is mandatory whenever a worker service or one of its dependencies has been modified or updated.

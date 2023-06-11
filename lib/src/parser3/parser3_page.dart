@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
+import '../vcd_generator.dart';
 import 'parser3_runner.dart';
-import 'vcd_generator.dart';
 import 'parser3_service.dart';
 
 class Parser3Page extends StatefulWidget {

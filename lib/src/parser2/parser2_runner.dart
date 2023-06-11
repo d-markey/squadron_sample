@@ -2,7 +2,7 @@ import 'package:squadron/squadron.dart';
 
 import '../../main.dart';
 import 'parser2_service.dart';
-import 'signal_values.dart';
+import '../signal_values.dart';
 
 final _sw = Stopwatch()..start();
 

@@ -1,24 +1,20 @@
 targets:
   $default:
-    builders: 
-      squadron_builder:service_builder: 
-        generate_for: 
-         - lib/**
+    builders:
+      squadron_builder:worker_builder:
+        generate_for:
+          - lib/**
         enabled: true
-
-
-builders:
-  # name of the builder
-  squadron_builder:service_builder:
-    # library URI containing the builder
-    import: 'package:squadron_builder/squadron_builder.dart'
-    # Name of the function in the above library to call.
-    builder_factories: [ 'squadronServiceBuilder' ]
-    # The mapping from the source extension to the generated file extension
-    build_extensions: { '.dart': [ '.worker.g.dart', '.vm.g.dart', '.web.g.dart', '.xplat.g.dart', '.activator.g.dart' ] }
-    # Will automatically run on any package that depends on it
-    auto_apply: dependents
-    # Generate to a hidden cache dir
-    build_to: source
-    # Combine the parts from each builder into one part file.
-    applies_builders: ["source_gen|combining_builder"]
+        options:
+          build_extensions:
+            {
+              "{{dir}}/{{file}}.dart":
+                [
+                  "{{dir}}/generated/{{file}}.worker.g.dart",
+                  "{{dir}}/generated/{{file}}.vm.g.dart",
+                  "{{dir}}/generated/{{file}}.web.g.dart",
+                  "{{dir}}/generated/{{file}}.stub.g.dart",
+                  "{{dir}}/generated/{{file}}.activator.g.dart",
+                ],
+            }
+          with_finalizers: true
