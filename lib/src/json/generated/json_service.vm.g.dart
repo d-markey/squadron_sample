@@ -6,4 +6,10 @@
 
 import 'package:squadron/squadron.dart';
 
-EntryPoint $getCodeGenActivator() => throw UnimplementedError();
+import '../json_service.dart';
+
+/// VM entry point for JsonService
+void _start$JsonService(List<dynamic> command) =>
+    run($JsonServiceInitializer, command, ParentSquadronLogger());
+
+EntryPoint $getJsonServiceActivator() => _start$JsonService;

@@ -1,41 +1,53 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../codegen.dart';
+part of '../json_service.dart';
 
 // **************************************************************************
 // Generator: WorkerGenerator 2.3.1
 // **************************************************************************
 
-/// Operations map for CodeGen
-mixin $CodeGenOperations on WorkerService {
+/// Operations map for JsonService
+mixin $JsonServiceOperations on WorkerService {
   Map<int, CommandHandler>? _operations;
 
   @override
   Map<int, CommandHandler> get operations {
     var ops = _operations;
     if (ops == null) {
-      ops = {_$incId: (req) => (this as CodeGen).inc(req.args[0])};
+      ops = {
+        _$decodeId: (req) => (this as JsonService).decode(req.args[0]),
+        _$hydrateId: (req) async => (const PersonMarshaller())
+            .marshall((await (this as JsonService).hydrate(req.args[0])))
+      };
       _operations = ops;
     }
     return ops;
   }
 
-  static const int _$incId = 1;
+  static const int _$decodeId = 1;
+  static const int _$hydrateId = 2;
 }
 
-/// Service initializer for CodeGen
-CodeGen $CodeGenInitializer(WorkerRequest startRequest) => CodeGen();
+/// Service initializer for JsonService
+JsonService $JsonServiceInitializer(WorkerRequest startRequest) =>
+    JsonService();
 
-/// Worker for CodeGen
-class _CodeGenWorker extends Worker implements CodeGen {
-  _CodeGenWorker({PlatformWorkerHook? platformWorkerHook})
-      : super($CodeGenActivator, platformWorkerHook: platformWorkerHook);
+/// Worker for JsonService
+class _JsonServiceWorker extends Worker implements JsonService {
+  _JsonServiceWorker({PlatformWorkerHook? platformWorkerHook})
+      : super($JsonServiceActivator, platformWorkerHook: platformWorkerHook);
 
   @override
-  Future<int> inc(int n) => send(
-        $CodeGenOperations._$incId,
-        args: [n],
+  Future<dynamic> decode(String source) => send(
+        $JsonServiceOperations._$decodeId,
+        args: [source],
       );
+
+  @override
+  Future<Person> hydrate(String source) => send(
+        $JsonServiceOperations._$hydrateId,
+        args: [source],
+      ).then(($res) => (const PersonMarshaller()).unmarshall($res));
 
   @override
   Map<int, CommandHandler>? _operations;
@@ -43,17 +55,17 @@ class _CodeGenWorker extends Worker implements CodeGen {
   final Object _detachToken = Object();
 }
 
-/// Finalizable worker wrapper for CodeGen
-class CodeGenWorker implements _CodeGenWorker {
-  CodeGenWorker({PlatformWorkerHook? platformWorkerHook})
-      : _worker = _CodeGenWorker(platformWorkerHook: platformWorkerHook) {
+/// Finalizable worker wrapper for JsonService
+class JsonServiceWorker implements _JsonServiceWorker {
+  JsonServiceWorker({PlatformWorkerHook? platformWorkerHook})
+      : _worker = _JsonServiceWorker(platformWorkerHook: platformWorkerHook) {
     _finalizer.attach(this, _worker, detach: _worker._detachToken);
   }
 
-  final _CodeGenWorker _worker;
+  final _JsonServiceWorker _worker;
 
-  static final Finalizer<_CodeGenWorker> _finalizer =
-      Finalizer<_CodeGenWorker>((w) {
+  static final Finalizer<_JsonServiceWorker> _finalizer =
+      Finalizer<_JsonServiceWorker>((w) {
     try {
       _finalizer.detach(w._detachToken);
       w.stop();
@@ -63,7 +75,10 @@ class CodeGenWorker implements _CodeGenWorker {
   });
 
   @override
-  Future<int> inc(int n) => _worker.inc(n);
+  Future<dynamic> decode(String source) => _worker.decode(source);
+
+  @override
+  Future<Person> hydrate(String source) => _worker.hydrate(source);
 
   @override
   Map<int, CommandHandler>? _operations;
@@ -144,16 +159,20 @@ class CodeGenWorker implements _CodeGenWorker {
   Object get _detachToken => _worker._detachToken;
 }
 
-/// Worker pool for CodeGen
-class _CodeGenWorkerPool extends WorkerPool<CodeGenWorker> implements CodeGen {
-  _CodeGenWorkerPool(
+/// Worker pool for JsonService
+class _JsonServiceWorkerPool extends WorkerPool<JsonServiceWorker>
+    implements JsonService {
+  _JsonServiceWorkerPool(
       {ConcurrencySettings? concurrencySettings,
       PlatformWorkerHook? platformWorkerHook})
-      : super(() => CodeGenWorker(platformWorkerHook: platformWorkerHook),
+      : super(() => JsonServiceWorker(platformWorkerHook: platformWorkerHook),
             concurrencySettings: concurrencySettings);
 
   @override
-  Future<int> inc(int n) => execute(($w) => $w.inc(n));
+  Future<dynamic> decode(String source) => execute(($w) => $w.decode(source));
+
+  @override
+  Future<Person> hydrate(String source) => execute(($w) => $w.hydrate(source));
 
   @override
   Map<int, CommandHandler>? _operations;
@@ -161,21 +180,21 @@ class _CodeGenWorkerPool extends WorkerPool<CodeGenWorker> implements CodeGen {
   final Object _detachToken = Object();
 }
 
-/// Finalizable worker pool wrapper for CodeGen
-class CodeGenWorkerPool implements _CodeGenWorkerPool {
-  CodeGenWorkerPool(
+/// Finalizable worker pool wrapper for JsonService
+class JsonServiceWorkerPool implements _JsonServiceWorkerPool {
+  JsonServiceWorkerPool(
       {ConcurrencySettings? concurrencySettings,
       PlatformWorkerHook? platformWorkerHook})
-      : _pool = _CodeGenWorkerPool(
+      : _pool = _JsonServiceWorkerPool(
             concurrencySettings: concurrencySettings,
             platformWorkerHook: platformWorkerHook) {
     _finalizer.attach(this, _pool, detach: _pool._detachToken);
   }
 
-  final _CodeGenWorkerPool _pool;
+  final _JsonServiceWorkerPool _pool;
 
-  static final Finalizer<_CodeGenWorkerPool> _finalizer =
-      Finalizer<_CodeGenWorkerPool>((p) {
+  static final Finalizer<_JsonServiceWorkerPool> _finalizer =
+      Finalizer<_JsonServiceWorkerPool>((p) {
     try {
       _finalizer.detach(p._detachToken);
       p.stop();
@@ -185,7 +204,10 @@ class CodeGenWorkerPool implements _CodeGenWorkerPool {
   });
 
   @override
-  Future<int> inc(int n) => _pool.inc(n);
+  Future<dynamic> decode(String source) => _pool.decode(source);
+
+  @override
+  Future<Person> hydrate(String source) => _pool.hydrate(source);
 
   @override
   Map<int, CommandHandler>? _operations;
@@ -245,37 +267,39 @@ class CodeGenWorkerPool implements _CodeGenWorkerPool {
   FutureOr start() => _pool.start();
 
   @override
-  int stop([bool Function(CodeGenWorker worker)? predicate]) =>
+  int stop([bool Function(JsonServiceWorker worker)? predicate]) =>
       _pool.stop(predicate);
 
   @override
   Object registerWorkerPoolListener(
-          void Function(CodeGenWorker worker, bool removed) listener) =>
+          void Function(JsonServiceWorker worker, bool removed) listener) =>
       _pool.registerWorkerPoolListener(listener);
 
   @override
   void unregisterWorkerPoolListener(
-          {void Function(CodeGenWorker worker, bool removed)? listener,
+          {void Function(JsonServiceWorker worker, bool removed)? listener,
           Object? token}) =>
       _pool.unregisterWorkerPoolListener(listener: listener, token: token);
 
   @override
-  Future<T> execute<T>(Future<T> Function(CodeGenWorker worker) task,
+  Future<T> execute<T>(Future<T> Function(JsonServiceWorker worker) task,
           {PerfCounter? counter}) =>
       _pool.execute<T>(task, counter: counter);
 
   @override
-  StreamTask<T> scheduleStream<T>(Stream<T> Function(CodeGenWorker worker) task,
+  StreamTask<T> scheduleStream<T>(
+          Stream<T> Function(JsonServiceWorker worker) task,
           {PerfCounter? counter}) =>
       _pool.scheduleStream<T>(task, counter: counter);
 
   @override
-  ValueTask<T> scheduleTask<T>(Future<T> Function(CodeGenWorker worker) task,
+  ValueTask<T> scheduleTask<T>(
+          Future<T> Function(JsonServiceWorker worker) task,
           {PerfCounter? counter}) =>
       _pool.scheduleTask<T>(task, counter: counter);
 
   @override
-  Stream<T> stream<T>(Stream<T> Function(CodeGenWorker worker) task,
+  Stream<T> stream<T>(Stream<T> Function(JsonServiceWorker worker) task,
           {PerfCounter? counter}) =>
       _pool.stream<T>(task, counter: counter);
 

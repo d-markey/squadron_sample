@@ -6,4 +6,11 @@
 
 import 'package:squadron/squadron.dart';
 
-EntryPoint $getCodeGenActivator() => throw UnimplementedError();
+import '../json_service.dart';
+
+void main() {
+  /// Web entry point for JsonService
+  run($JsonServiceInitializer, null, ParentSquadronLogger());
+}
+
+EntryPoint $getJsonServiceActivator() => '/workers/json_service.web.g.dart.js';

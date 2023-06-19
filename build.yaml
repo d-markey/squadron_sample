@@ -1,6 +1,13 @@
 targets:
   $default:
     builders:
+      json_serializable:
+        generate_for:
+          - lib/**/model/**
+        enabled: true
+        options:
+          any_map: true
+          field_rename: snake
       squadron_builder:worker_builder:
         generate_for:
           - lib/**

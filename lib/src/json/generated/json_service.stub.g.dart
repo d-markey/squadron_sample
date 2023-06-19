@@ -6,4 +6,4 @@
 
 import 'package:squadron/squadron.dart';
 
-EntryPoint $getCodeGenActivator() => throw UnimplementedError();
+EntryPoint $getJsonServiceActivator() => throw UnimplementedError();

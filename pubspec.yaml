@@ -29,7 +29,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  squadron:
+  squadron: ^5.1.0
+  json_serializable: ^6.7.0
+  json_annotation: ^4.8.1
   image: ^4.0.15
 
   # The following adds the Cupertino Icons font to your application.
@@ -39,7 +41,7 @@ dependencies:
 dev_dependencies:
   alfred: ^1.1.0
   build_runner: ^2.3.3
-  squadron_builder: ^2.3.0
+  squadron_builder: ^2.3.1
   flutter_test:
     sdk: flutter
 

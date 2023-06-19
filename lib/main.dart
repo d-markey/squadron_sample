@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
 import 'src/codegen/codegen_page.dart';
+import 'src/json/json_page.dart';
 import 'src/parser3/parser3_page.dart';
 import 'src/perf/perf_page.dart';
 import 'src/pi-digits/pi_digits_page.dart';
@@ -38,6 +39,7 @@ class _SampleAppState extends State<SampleApp>
     Tab(text: 'Parser (list)'),
     Tab(text: 'Parser (stream)'),
     Tab(text: 'Parser (yield)'),
+    Tab(text: 'Json'),
     Tab(text: 'Codegen'),
     Tab(text: 'Perf'),
   ];
@@ -59,18 +61,25 @@ class _SampleAppState extends State<SampleApp>
     super.dispose();
   }
 
-  TabBar _tabBar() => TabBar(tabs: myTabs, controller: _tabController);
+  late final _pages = [
+    (tabBar) => PiDigitsPage(tabBar: tabBar),
+    (tabBar) => ThumbnailPage(tabBar: tabBar),
+    (tabBar) => TextSizePage(tabBar: tabBar),
+    (tabBar) => ParserPage(tabBar: tabBar),
+    (tabBar) => Parser2Page(tabBar: tabBar),
+    (tabBar) => Parser3Page(tabBar: tabBar),
+    (tabBar) => JsonPage(tabBar: tabBar),
+    (tabBar) => CodeGenPage(tabBar: tabBar),
+    (tabBar) => PerfPage(tabBar: tabBar),
+  ];
 
   Widget _home(BuildContext context) {
-    if (_tabController.index == 0) return PiDigitsPage(tabBar: _tabBar());
-    if (_tabController.index == 1) return ThumbnailPage(tabBar: _tabBar());
-    if (_tabController.index == 2) return TextSizePage(tabBar: _tabBar());
-    if (_tabController.index == 3) return ParserPage(tabBar: _tabBar());
-    if (_tabController.index == 4) return Parser2Page(tabBar: _tabBar());
-    if (_tabController.index == 5) return Parser3Page(tabBar: _tabBar());
-    if (_tabController.index == 6) return CodeGenPage(tabBar: _tabBar());
-    if (_tabController.index == 7) return PerfPage(tabBar: _tabBar());
-    return Text('_tabController.index = ${_tabController.index}');
+    if (0 <= _tabController.index && _tabController.index < _pages.length) {
+      final widget = _pages[_tabController.index];
+      return widget(TabBar(tabs: myTabs, controller: _tabController));
+    } else {
+      return Text('_tabController.index = ${_tabController.index}');
+    }
   }
 
   @override

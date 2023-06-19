@@ -190,7 +190,7 @@ class _PiDigitsPageState extends State<PiDigitsPage> {
             ],
           ),
         ),
-        floatingActionButton: _computing != null
+        floatingActionButton: (_computing != null)
             ? Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                 Text('tick = ${_computing?.tick}',
                     style: const TextStyle(

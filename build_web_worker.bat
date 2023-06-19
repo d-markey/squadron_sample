@@ -4,4 +4,5 @@ call dart compile js .\lib\src\text-size\browser\my_worker.dart -o .\web\workers
 call dart compile js .\lib\src\parser\browser\parser_worker.dart -o .\web\workers\parser_worker.dart.js -m
 call dart compile js .\lib\src\parser2\browser\parser2_worker.dart -o .\web\workers\parser2_worker.dart.js -m
 call dart compile js .\lib\src\codegen\generated\codegen.web.g.dart -o .\web\workers\codegen.web.g.dart.js -m
-call dart compile js .\lib\src\perf\generated\perf.web.g.dart -o .\web\workers\perf.web.g.dart.js
+call dart compile js .\lib\src\perf\generated\perf.web.g.dart -o .\web\workers\perf.web.g.dart.js -m
+call dart compile js .\lib\src\json\generated\json_service.web.g.dart -o .\web\workers\json_service.web.g.dart.js -m
