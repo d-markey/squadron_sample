@@ -1,7 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 // **************************************************************************
-// Generator: WorkerGenerator 2.3.1
+// Generator: WorkerGenerator 2.4.1
 // **************************************************************************
 
 import 'perf.stub.g.dart'

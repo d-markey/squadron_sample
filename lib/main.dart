@@ -10,6 +10,7 @@ import 'src/text-size/text_size_page.dart';
 import 'src/thumbnails/thumbnail_page.dart';
 import 'src/parser/parser_page.dart';
 import 'src/parser2/parser2_page.dart';
+import 'src/data-uri/data_uri_page.dart';
 
 void initSquadron(String id) {
   Squadron.setId(id);
@@ -42,6 +43,7 @@ class _SampleAppState extends State<SampleApp>
     Tab(text: 'Json'),
     Tab(text: 'Codegen'),
     Tab(text: 'Perf'),
+    Tab(text: 'Uri'),
   ];
 
   late TabController _tabController;
@@ -71,6 +73,7 @@ class _SampleAppState extends State<SampleApp>
     (tabBar) => JsonPage(tabBar: tabBar),
     (tabBar) => CodeGenPage(tabBar: tabBar),
     (tabBar) => PerfPage(tabBar: tabBar),
+    (tabBar) => UriParserPage(tabBar: tabBar),
   ];
 
   Widget _home(BuildContext context) {

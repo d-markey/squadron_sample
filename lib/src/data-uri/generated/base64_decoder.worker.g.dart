@@ -1,62 +1,64 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../codegen.dart';
+part of '../base64_decoder.dart';
 
 // **************************************************************************
 // Generator: WorkerGenerator 2.4.1
 // **************************************************************************
 
-/// WorkerService class for CodeGen
-class _$CodeGenWorkerService extends CodeGen implements WorkerService {
-  _$CodeGenWorkerService() : super();
+/// WorkerService class for Base64Decoder
+class _$Base64DecoderWorkerService extends Base64Decoder
+    implements WorkerService {
+  _$Base64DecoderWorkerService() : super();
 
   @override
   Map<int, CommandHandler> get operations => _operations;
 
   late final Map<int, CommandHandler> _operations = {
-    _$incId: ($) => inc($.args[0])
+    _$decodeId: ($) => decode($.args[0])
   };
 
-  static const int _$incId = 1;
+  static const int _$decodeId = 1;
 }
 
-/// Service initializer for CodeGen
-WorkerService $CodeGenInitializer(WorkerRequest startRequest) =>
-    _$CodeGenWorkerService();
+/// Service initializer for Base64Decoder
+WorkerService $Base64DecoderInitializer(WorkerRequest startRequest) =>
+    _$Base64DecoderWorkerService();
 
-/// Operations map for CodeGen
+/// Operations map for Base64Decoder
 @Deprecated(
     'squadron_builder now supports "plain old Dart objects" as services. '
     'Services do not need to derive from WorkerService nor do they need to mix in '
-    'with \$CodeGenOperations anymore.')
-mixin $CodeGenOperations on WorkerService {
+    'with \$Base64DecoderOperations anymore.')
+mixin $Base64DecoderOperations on WorkerService {
   @override
   // not needed anymore, generated for compatibility with previous versions of squadron_builder
   Map<int, CommandHandler> get operations => WorkerService.noOperations;
 }
 
-/// Worker for CodeGen
-class _$CodeGenWorker extends Worker implements CodeGen {
-  _$CodeGenWorker({PlatformWorkerHook? platformWorkerHook})
-      : super($CodeGenActivator, platformWorkerHook: platformWorkerHook);
+/// Worker for Base64Decoder
+class _$Base64DecoderWorker extends Worker implements Base64Decoder {
+  _$Base64DecoderWorker({PlatformWorkerHook? platformWorkerHook})
+      : super($Base64DecoderActivator, platformWorkerHook: platformWorkerHook);
 
   @override
-  Future<int> inc(int n) => send(_$CodeGenWorkerService._$incId, args: [n]);
+  Future<Uint8List> decode(String base64Data) =>
+      send(_$Base64DecoderWorkerService._$decodeId, args: [base64Data]);
 
   final Object _detachToken = Object();
 }
 
-/// Finalizable worker wrapper for CodeGen
-class CodeGenWorker implements _$CodeGenWorker {
-  CodeGenWorker({PlatformWorkerHook? platformWorkerHook})
-      : _$w = _$CodeGenWorker(platformWorkerHook: platformWorkerHook) {
+/// Finalizable worker wrapper for Base64Decoder
+class Base64DecoderWorker implements _$Base64DecoderWorker {
+  Base64DecoderWorker({PlatformWorkerHook? platformWorkerHook})
+      : _$w = _$Base64DecoderWorker(platformWorkerHook: platformWorkerHook) {
     _finalizer.attach(this, _$w, detach: _$w._detachToken);
   }
 
-  final _$CodeGenWorker _$w;
+  final _$Base64DecoderWorker _$w;
 
-  static final Finalizer<_$CodeGenWorker> _finalizer =
-      Finalizer<_$CodeGenWorker>((w) {
+  static final Finalizer<_$Base64DecoderWorker> _finalizer =
+      Finalizer<_$Base64DecoderWorker>((w) {
     try {
       _finalizer.detach(w._detachToken);
       w.stop();
@@ -66,7 +68,7 @@ class CodeGenWorker implements _$CodeGenWorker {
   });
 
   @override
-  Future<int> inc(int n) => _$w.inc(n);
+  Future<Uint8List> decode(String base64Data) => _$w.decode(base64Data);
 
   @override
   List get args => _$w.args;
@@ -144,35 +146,37 @@ class CodeGenWorker implements _$CodeGenWorker {
   Map<int, CommandHandler> get operations => WorkerService.noOperations;
 }
 
-/// Worker pool for CodeGen
-class _$CodeGenWorkerPool extends WorkerPool<CodeGenWorker> implements CodeGen {
-  _$CodeGenWorkerPool(
+/// Worker pool for Base64Decoder
+class _$Base64DecoderWorkerPool extends WorkerPool<Base64DecoderWorker>
+    implements Base64Decoder {
+  _$Base64DecoderWorkerPool(
       {ConcurrencySettings? concurrencySettings,
       PlatformWorkerHook? platformWorkerHook})
-      : super(() => CodeGenWorker(platformWorkerHook: platformWorkerHook),
+      : super(() => Base64DecoderWorker(platformWorkerHook: platformWorkerHook),
             concurrencySettings: concurrencySettings);
 
   @override
-  Future<int> inc(int n) => execute((w) => w.inc(n));
+  Future<Uint8List> decode(String base64Data) =>
+      execute((w) => w.decode(base64Data));
 
   final Object _detachToken = Object();
 }
 
-/// Finalizable worker pool wrapper for CodeGen
-class CodeGenWorkerPool implements _$CodeGenWorkerPool {
-  CodeGenWorkerPool(
+/// Finalizable worker pool wrapper for Base64Decoder
+class Base64DecoderWorkerPool implements _$Base64DecoderWorkerPool {
+  Base64DecoderWorkerPool(
       {ConcurrencySettings? concurrencySettings,
       PlatformWorkerHook? platformWorkerHook})
-      : _$p = _$CodeGenWorkerPool(
+      : _$p = _$Base64DecoderWorkerPool(
             concurrencySettings: concurrencySettings,
             platformWorkerHook: platformWorkerHook) {
     _finalizer.attach(this, _$p, detach: _$p._detachToken);
   }
 
-  final _$CodeGenWorkerPool _$p;
+  final _$Base64DecoderWorkerPool _$p;
 
-  static final Finalizer<_$CodeGenWorkerPool> _finalizer =
-      Finalizer<_$CodeGenWorkerPool>((p) {
+  static final Finalizer<_$Base64DecoderWorkerPool> _finalizer =
+      Finalizer<_$Base64DecoderWorkerPool>((p) {
     try {
       _finalizer.detach(p._detachToken);
       p.stop();
@@ -182,7 +186,7 @@ class CodeGenWorkerPool implements _$CodeGenWorkerPool {
   });
 
   @override
-  Future<int> inc(int n) => _$p.inc(n);
+  Future<Uint8List> decode(String base64Data) => _$p.decode(base64Data);
 
   @override
   ConcurrencySettings get concurrencySettings => _$p.concurrencySettings;
@@ -236,37 +240,39 @@ class CodeGenWorkerPool implements _$CodeGenWorkerPool {
   FutureOr start() => _$p.start();
 
   @override
-  int stop([bool Function(CodeGenWorker worker)? predicate]) =>
+  int stop([bool Function(Base64DecoderWorker worker)? predicate]) =>
       _$p.stop(predicate);
 
   @override
   Object registerWorkerPoolListener(
-          void Function(CodeGenWorker worker, bool removed) listener) =>
+          void Function(Base64DecoderWorker worker, bool removed) listener) =>
       _$p.registerWorkerPoolListener(listener);
 
   @override
   void unregisterWorkerPoolListener(
-          {void Function(CodeGenWorker worker, bool removed)? listener,
+          {void Function(Base64DecoderWorker worker, bool removed)? listener,
           Object? token}) =>
       _$p.unregisterWorkerPoolListener(listener: listener, token: token);
 
   @override
-  Future<T> execute<T>(Future<T> Function(CodeGenWorker worker) task,
+  Future<T> execute<T>(Future<T> Function(Base64DecoderWorker worker) task,
           {PerfCounter? counter}) =>
       _$p.execute<T>(task, counter: counter);
 
   @override
-  StreamTask<T> scheduleStream<T>(Stream<T> Function(CodeGenWorker worker) task,
+  StreamTask<T> scheduleStream<T>(
+          Stream<T> Function(Base64DecoderWorker worker) task,
           {PerfCounter? counter}) =>
       _$p.scheduleStream<T>(task, counter: counter);
 
   @override
-  ValueTask<T> scheduleTask<T>(Future<T> Function(CodeGenWorker worker) task,
+  ValueTask<T> scheduleTask<T>(
+          Future<T> Function(Base64DecoderWorker worker) task,
           {PerfCounter? counter}) =>
       _$p.scheduleTask<T>(task, counter: counter);
 
   @override
-  Stream<T> stream<T>(Stream<T> Function(CodeGenWorker worker) task,
+  Stream<T> stream<T>(Stream<T> Function(Base64DecoderWorker worker) task,
           {PerfCounter? counter}) =>
       _$p.stream<T>(task, counter: counter);
 

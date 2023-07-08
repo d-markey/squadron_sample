@@ -6,10 +6,10 @@
 
 import 'package:squadron/squadron.dart';
 
-import '../json_service.dart';
+import '../base64_decoder.dart';
 
-/// VM entry point for JsonService
-void _start$JsonService(List<dynamic> command) =>
-    run($JsonServiceInitializer, command, ParentSquadronLogger());
+/// VM entry point for Base64Decoder
+void _start$Base64Decoder(List<dynamic> command) =>
+    run($Base64DecoderInitializer, command, ParentSquadronLogger());
 
-EntryPoint $getJsonServiceActivator() => _start$JsonService;
+EntryPoint $getBase64DecoderActivator() => _start$Base64Decoder;
