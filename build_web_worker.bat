@@ -6,4 +6,4 @@ call dart compile js .\lib\src\parser2\browser\parser2_worker.dart -o .\web\work
 call dart compile js .\lib\src\codegen\generated\codegen.web.g.dart -o .\web\workers\codegen.web.g.dart.js -m
 call dart compile js .\lib\src\perf\generated\perf.web.g.dart -o .\web\workers\perf.web.g.dart.js -m
 call dart compile js .\lib\src\json\generated\json_service.web.g.dart -o .\web\workers\json_service.web.g.dart.js -m
-call dart compile js .\lib\src\data-uri\generated\base64_decoder.web.g.dart -o .\web\workers\base64_decoder.web.g.dart.js -m
+call dart compile js .\lib\src\binary-data-uri\generated\base64_uri_data_decoder.web.g.dart -o .\web\workers\base64_uri_data_decoder.web.g.dart.js -m

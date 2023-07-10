@@ -53,10 +53,11 @@ file:///C:/Users/DMA/AppData/Local/Pub/Cache/hosted/pub.dev/squadron-5.1.1/lib/s
 file:///C:/Users/DMA/AppData/Local/Pub/Cache/hosted/pub.dev/squadron-5.1.1/lib/src/xplat/_worker_task.dart
 file:///C:/Users/DMA/AppData/Local/Pub/Cache/hosted/pub.dev/squadron-5.1.1/lib/src/xplat/_worker_value_task.dart
 file:///C:/_Projects/github/squadron_sample/.dart_tool/package_config.json
-file:///C:/_Projects/github/squadron_sample/lib/src/data-uri/base64_decoder.dart
-file:///C:/_Projects/github/squadron_sample/lib/src/data-uri/generated/base64_decoder.activator.g.dart
-file:///C:/_Projects/github/squadron_sample/lib/src/data-uri/generated/base64_decoder.web.g.dart
-file:///C:/_Projects/github/squadron_sample/lib/src/data-uri/generated/base64_decoder.worker.g.dart
+file:///C:/_Projects/github/squadron_sample/lib/src/binary-data-uri/base64_uri_data_decoder.dart
+file:///C:/_Projects/github/squadron_sample/lib/src/binary-data-uri/binary_data_uri.dart
+file:///C:/_Projects/github/squadron_sample/lib/src/binary-data-uri/generated/base64_uri_data_decoder.activator.g.dart
+file:///C:/_Projects/github/squadron_sample/lib/src/binary-data-uri/generated/base64_uri_data_decoder.web.g.dart
+file:///C:/_Projects/github/squadron_sample/lib/src/binary-data-uri/generated/base64_uri_data_decoder.worker.g.dart
 org-dartlang-sdk:///lib/_http/crypto.dart
 org-dartlang-sdk:///lib/_http/embedder_config.dart
 org-dartlang-sdk:///lib/_http/http.dart

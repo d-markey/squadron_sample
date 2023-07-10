@@ -6,4 +6,4 @@
 
 import 'package:squadron/squadron.dart';
 
-EntryPoint $getBase64DecoderActivator() => throw UnimplementedError();
+EntryPoint $getBase64UriDataDecoderActivator() => throw UnimplementedError();

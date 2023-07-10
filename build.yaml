@@ -24,4 +24,4 @@ targets:
                   "{{dir}}/generated/{{file}}.activator.g.dart",
                 ],
             }
-          with_finalizers: true
+          with_finalizers: false

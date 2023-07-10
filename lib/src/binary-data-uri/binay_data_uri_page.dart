@@ -3,56 +3,122 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
-import 'base64_decoder.dart';
+import 'base64_uri_data_decoder.dart';
+import 'binary_data_uri.dart';
 
-class UriParserPage extends StatefulWidget {
-  const UriParserPage({Key? key, this.tabBar}) : super(key: key);
+class BinaryDataUriParserPage extends StatefulWidget {
+  const BinaryDataUriParserPage({Key? key, this.tabBar}) : super(key: key);
 
   final TabBar? tabBar;
 
   @override
-  State<UriParserPage> createState() => _UriParserPageState();
+  State<BinaryDataUriParserPage> createState() =>
+      _BinaryDataUriParserPageState();
 }
 
-class _UriParserPageState extends State<UriParserPage> {
-  _UriParserPageState();
+class _BinaryDataUriParserPageState extends State<BinaryDataUriParserPage> {
+  _BinaryDataUriParserPageState();
 
-  Base64DecoderWorker? _base64Decoder;
-
-  @override
-  void initState() {
-    if (_base64Decoder == null) {
-      _base64Decoder = Base64DecoderWorker();
-      _base64Decoder!.start();
-    }
-    super.initState();
-  }
+  Base64UriDataDecoder? _base64UriDataDecoder;
 
   @override
   void dispose() {
-    _base64Decoder?.stop();
+    _stopDecoder();
     super.dispose();
+  }
+
+  static const _sync = "sync";
+  static const _worker = "worker";
+  static const _pool = "worker pool";
+
+  Future<void> _startDecoder(String mode) async {
+    Base64UriDataDecoder? decoder = _base64UriDataDecoder;
+    switch (mode) {
+      case _sync:
+        // runs asynchronously in the main (UI) thread
+        _stopDecoder();
+        _base64UriDataDecoder = Base64UriDataDecoder();
+        break;
+      case _worker:
+        // runs asynchronously in a dedicated (non-UI) thread
+        if (decoder is! Base64UriDataDecoderWorker) {
+          _stopDecoder();
+          decoder = Base64UriDataDecoderWorker();
+          await decoder.start();
+          _base64UriDataDecoder = decoder;
+        }
+        break;
+      case _pool:
+        // runs asynchronously in a worker pool (non-UI) thread
+        if (decoder is! Base64UriDataDecoderWorkerPool) {
+          _stopDecoder();
+          decoder = Base64UriDataDecoderWorkerPool();
+          await decoder.start();
+          _base64UriDataDecoder = decoder;
+        }
+        break;
+    }
+  }
+
+  void _stopDecoder() {
+    final decoder = _base64UriDataDecoder;
+    if (decoder is Base64UriDataDecoderWorker) {
+      decoder.stop();
+    } else if (decoder is Base64UriDataDecoderWorkerPool) {
+      decoder.stop();
+    }
+    _base64UriDataDecoder = null;
   }
 
   Timer? _processing;
 
-  Future parse(String base64Data, String mimeType) async {
-    Squadron.debug('Start processing...');
+  Future parse(String mode, String base64Data) async {
     if (_processing == null) {
+      Squadron.debug('Start processing...');
       _processing = Timer.periodic(const Duration(milliseconds: 50), (timer) {
         Squadron.debug('   parsing pending...');
+        setState(() {/* refresh UI periodically */});
       });
       try {
-        final bytes = await _base64Decoder!.decode(base64Data * 500);
-        Squadron.debug('Processing done, received ${bytes.length} bytes');
-        final uri = Uri.dataFromBytes(bytes, mimeType: mimeType);
-        Squadron.debug('Uri = ${uri.runtimeType}');
+        setState(() {/* initial refresh */});
+
+        // decode 5 uris of various sizes
+        // if mode == _sync: data uris are computed one after the other and UI is blocked
+        // if mode == _worker: data uris are computed one after the other and UI is not blocked
+        // if mode == _pool: data uris are computed in parallel and UI is not blocked
+        await _startDecoder(mode);
+
+        final sw = Stopwatch()..start();
+        final tasks = <Future<Uri>>[];
+        var done = 0;
+
+        Uri buildUri(BinaryUriData data) {
+          done++;
+          Squadron.debug('Result $done/${tasks.length} at ${sw.elapsed}');
+          return BinaryDataUri(data);
+        }
+
+        tasks.addAll([
+          _base64UriDataDecoder!.decode(base64Data * 500).then(buildUri),
+          _base64UriDataDecoder!.decode(base64Data * 800).then(buildUri),
+          _base64UriDataDecoder!.decode(base64Data * 300).then(buildUri),
+          _base64UriDataDecoder!.decode(base64Data * 700).then(buildUri),
+          _base64UriDataDecoder!.decode(base64Data * 500).then(buildUri),
+        ]);
+
+        final results = await Future.wait(tasks);
+
+        Squadron.debug('Processing done ($mode)');
+        Squadron.debug('Decoded ${results.length} items in ${sw.elapsed}');
       } catch (ex) {
         Squadron.debug('Error = $ex');
       } finally {
         _processing?.cancel();
         _processing = null;
+        setState(() {/* final refresh */});
       }
+    } else {
+      Squadron.debug('Already busy processing');
     }
   }
 
@@ -68,9 +134,19 @@ class _UriParserPageState extends State<UriParserPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextButton(
-              onPressed: () => parse(squadronIcon, 'image/png'),
-              child: const Text('Create Data Uri'),
+              onPressed: () => parse(_sync, squadronIcon),
+              child: const Text('Create Data Uri (sync)'),
             ),
+            TextButton(
+              onPressed: () => parse(_worker, squadronIcon),
+              child: const Text('Create Data Uri (worker)'),
+            ),
+            TextButton(
+              onPressed: () => parse(_pool, squadronIcon),
+              child: const Text('Create Data Uri (pool)'),
+            ),
+            if (_processing != null) Text('tick: ${_processing!.tick}'),
+            if (_processing != null) const CircularProgressIndicator(),
           ],
         ),
       ),
