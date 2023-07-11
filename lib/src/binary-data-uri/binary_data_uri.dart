@@ -99,10 +99,14 @@ class BinaryDataUri implements Uri {
 
   @override
   String get userInfo => '';
+
+  @override
+  String toString() => data.contentText;
 }
 
 class BinaryUriData implements UriData {
-  BinaryUriData(this.bytes, {this.mimeType = 'application/octet-stream'}) {
+  BinaryUriData(this.contentText, this.bytes,
+      {this.mimeType = 'application/octet-stream'}) {
     uri = BinaryDataUri(this);
   }
 
@@ -124,7 +128,7 @@ class BinaryUriData implements UriData {
   String contentAsString({Encoding? encoding}) => contentText;
 
   @override
-  String get contentText => 'data:$mimeType;base64,${base64Encode(bytes)}';
+  final String contentText;
 
   @override
   bool get isBase64 => true;
@@ -143,8 +147,13 @@ class BinaryUriData implements UriData {
   @override
   Map<String, String> get parameters => const {};
 
-  Map marshal() => {'m': mimeType, 'b': bytes};
+  // For use with Squadron. Web platforms won't allow custom classes to cross
+  // Web worker boundaries, so some sort of serialization/deserialization is
+  // necessary. squadron_builder generates
 
-  static BinaryUriData unmarshal(Map data) => BinaryUriData(data['b'],
-      mimeType: data['m'] ?? 'application/octet-stream');
+  Map marshal() => {'c': contentText, 'm': mimeType, 'b': bytes};
+
+  static BinaryUriData unmarshal(Map data) =>
+      BinaryUriData(data['c'], data['b'],
+          mimeType: data['m'] ?? 'application/octet-stream');
 }
