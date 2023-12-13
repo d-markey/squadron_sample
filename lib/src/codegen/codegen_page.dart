@@ -6,7 +6,7 @@ import 'package:squadron/squadron.dart';
 import 'codegen.dart';
 
 class CodeGenPage extends StatefulWidget {
-  const CodeGenPage({Key? key, this.tabBar}) : super(key: key);
+  const CodeGenPage({super.key, this.tabBar});
 
   final TabBar? tabBar;
 

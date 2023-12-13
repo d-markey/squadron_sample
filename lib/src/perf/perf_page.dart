@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
@@ -8,7 +9,7 @@ import 'generic_data.dart';
 import 'perf.dart';
 
 class PerfPage extends StatefulWidget {
-  const PerfPage({Key? key, this.tabBar}) : super(key: key);
+  const PerfPage({super.key, this.tabBar});
 
   final TabBar? tabBar;
 
@@ -46,6 +47,13 @@ class _PerfPageState extends State<PerfPage> {
     final futures = <Future>[];
     const len = 1000, loops = 100;
 
+    void reset() {
+      futures.clear();
+      sw
+        ..reset()
+        ..start();
+    }
+
     void checkBigInt(BigInt res, BigInt expected) async {
       await Future.delayed(Duration.zero);
       if (res != expected) {
@@ -55,9 +63,7 @@ class _PerfPageState extends State<PerfPage> {
 
     var a = BigInt.zero;
     var b = BigInt.zero;
-    sw
-      ..reset()
-      ..start();
+    reset();
     for (var i = 0; i < loops; i++) {
       a = a + BigInt.one;
       b = BigInt.zero;
@@ -75,7 +81,7 @@ class _PerfPageState extends State<PerfPage> {
     sw.stop();
     Squadron.info('[${perfTester.runtimeType}] add bigInts: ${sw.elapsed}');
 
-    final me = Person('MARKEY', 'David', DateTime(1975, 07, 16));
+    final me = Person('DOE', 'John', DateTime(1980, 01, 01));
     void checkPerson(Person res) async {
       await Future.delayed(Duration.zero);
       if (res.lastName != me.lastName ||
@@ -85,9 +91,7 @@ class _PerfPageState extends State<PerfPage> {
       }
     }
 
-    sw
-      ..reset()
-      ..start();
+    reset();
     for (var i = 0; i < loops; i++) {
       futures.add(perfTester
           .sendGenericData(GenericData('whatever', me))
@@ -97,9 +101,7 @@ class _PerfPageState extends State<PerfPage> {
     sw.stop();
     Squadron.info('[${perfTester.runtimeType}] sendGenericData: ${sw.elapsed}');
 
-    sw
-      ..reset()
-      ..start();
+    reset();
     for (var i = 0; i < loops; i++) {
       futures.add(perfTester
           .sendGenericDataAsJson(
@@ -121,9 +123,7 @@ class _PerfPageState extends State<PerfPage> {
 
     // measure perf when sending argments
 
-    sw
-      ..reset()
-      ..start();
+    reset();
     for (var i = 0; i < loops; i++) {
       futures.add(perfTester.negateWithListInput(list).then(checkList));
     }
@@ -131,10 +131,7 @@ class _PerfPageState extends State<PerfPage> {
     sw.stop();
     Squadron.info('[${perfTester.runtimeType}] in list: ${sw.elapsed}');
 
-    futures.clear();
-    sw
-      ..reset()
-      ..start();
+    reset();
     for (var i = 0; i < loops; i++) {
       futures.add(perfTester.negateWithByteBufferInput(list).then(checkList));
     }
@@ -142,10 +139,7 @@ class _PerfPageState extends State<PerfPage> {
     sw.stop();
     Squadron.info('[${perfTester.runtimeType}] in buffer: ${sw.elapsed}');
 
-    futures.clear();
-    sw
-      ..reset()
-      ..start();
+    reset();
     for (var i = 0; i < loops; i++) {
       futures.add(perfTester.negateWithStringInput(list).then(checkList));
     }
@@ -155,9 +149,7 @@ class _PerfPageState extends State<PerfPage> {
 
     // measure perf when receiving results
 
-    sw
-      ..reset()
-      ..start();
+    reset();
     for (var i = 0; i < loops; i++) {
       futures.add(perfTester.negateWithListOutput(list).then(checkList));
     }
@@ -165,10 +157,7 @@ class _PerfPageState extends State<PerfPage> {
     sw.stop();
     Squadron.info('[${perfTester.runtimeType}] out list: ${sw.elapsed}');
 
-    futures.clear();
-    sw
-      ..reset()
-      ..start();
+    reset();
     for (var i = 0; i < loops; i++) {
       futures.add(perfTester
           .negateWithByteBufferOutput(list)
@@ -179,10 +168,7 @@ class _PerfPageState extends State<PerfPage> {
     sw.stop();
     Squadron.info('[${perfTester.runtimeType}] out buffer: ${sw.elapsed}');
 
-    futures.clear();
-    sw
-      ..reset()
-      ..start();
+    reset();
     for (var i = 0; i < loops; i++) {
       futures.add(perfTester
           .negateWithJsonOutput(list)
@@ -192,6 +178,51 @@ class _PerfPageState extends State<PerfPage> {
     await Future.wait(futures);
     sw.stop();
     Squadron.info('[${perfTester.runtimeType}] out json: ${sw.elapsed}');
+
+    // native data structures
+    const keys = 'abcdefghijklmnopqrstuvwxyz';
+
+    final dataIn = Map.fromIterables(
+        List.generate(keys.length, (index) => keys[index]),
+        List.generate(keys.length, (index) => List.filled(index * len, 0)));
+    reset();
+    for (var i = 0; i < loops; i++) {
+      futures.add(perfTester.native(dataIn));
+    }
+    await Future.wait(futures);
+    sw.stop();
+    Squadron.info(
+        '[${perfTester.runtimeType}] native with List<int>: ${sw.elapsed}');
+
+    reset();
+    for (var i = 0; i < loops; i++) {
+      futures.add(perfTester.native_inspect(dataIn));
+    }
+    await Future.wait(futures);
+    sw.stop();
+    Squadron.info(
+        '[${perfTester.runtimeType}] native_inspect with List<int>: ${sw.elapsed}');
+
+    final dataIn2 = Map.fromIterables(
+        List.generate(keys.length, (index) => keys[index]),
+        List.generate(keys.length, (index) => Uint32List(index * len)));
+    reset();
+    for (var i = 0; i < loops; i++) {
+      futures.add(perfTester.native(dataIn2));
+    }
+    await Future.wait(futures);
+    sw.stop();
+    Squadron.info(
+        '[${perfTester.runtimeType}] native with Uint32List: ${sw.elapsed}');
+
+    reset();
+    for (var i = 0; i < loops; i++) {
+      futures.add(perfTester.native_inspect(dataIn2));
+    }
+    await Future.wait(futures);
+    sw.stop();
+    Squadron.info(
+        '[${perfTester.runtimeType}] native_inspect with Uint32List: ${sw.elapsed}');
   }
 
   @override

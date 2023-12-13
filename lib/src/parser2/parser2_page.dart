@@ -10,7 +10,7 @@ import 'parser2_service.dart';
 import 'parser2_worker_pool.dart';
 
 class Parser2Page extends StatefulWidget {
-  Parser2Page({Key? key, this.tabBar}) : super(key: key);
+  Parser2Page({super.key, this.tabBar});
 
   final TabBar? tabBar;
 

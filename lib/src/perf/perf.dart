@@ -2,17 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:squadron/squadron_annotations.dart';
 import 'package:squadron/squadron.dart';
-
-import 'generic_data.dart';
-import 'marshallers/marshallers.dart';
+import 'package:squadron/squadron_annotations.dart';
 
 import 'generated/perf.activator.g.dart';
+import 'generic_data.dart';
+import 'marshalers/marshalers.dart';
 
 part 'generated/perf.worker.g.dart';
 
-@SerializeWith(personMarshaller)
+@SerializeWith(personMarshaler)
 class Person {
   Person(this.lastName, this.firstName, this.dob);
 
@@ -42,24 +41,24 @@ class PerfContext {
 }
 
 @SquadronService(baseUrl: '/workers')
-class Perf extends WorkerService with $PerfOperations {
+class Perf {
   Perf(PerfContext context);
 
   @SquadronMethod()
-  @SerializeWith(bigIntMarshaller)
+  @SerializeWith(bigIntMarshaler)
   Future<BigInt> add(
-    @SerializeWith(bigIntMarshaller) BigInt a,
-    @SerializeWith(bigIntMarshaller) BigInt b,
+    @SerializeWith(bigIntMarshaler) BigInt a,
+    @SerializeWith(bigIntMarshaler) BigInt b,
   ) async =>
       a + b;
 
   @SquadronMethod()
-  @SerializeWith(personMarshaller)
+  // @SerializeWith(personMarshaler)
   Future<Person> sendGenericData(GenericData<Person> personData) async =>
       personData.value!;
 
   @SquadronMethod()
-  @SerializeWith(personMarshaller)
+  // @SerializeWith(personMarshaler)
   Future<Person> sendGenericDataAsJson(String json) async {
     final personData = GenericData<Person>.fromJson(jsonDecode(json));
     return personData.value!;
@@ -67,17 +66,17 @@ class Perf extends WorkerService with $PerfOperations {
 
   @SquadronMethod()
   Future<List<int>> negateWithListInput(
-          @SerializeWith(intListAsBufferMarshaller) List<int> data) async =>
+          @SerializeWith(intListAsBufferMarshaler) List<int> data) async =>
       data.map((n) => -n).toList();
 
   @SquadronMethod()
   Future<List<int>> negateWithByteBufferInput(
-          @SerializeWith(intListAsBufferMarshaller) List<int> data) async =>
+          @SerializeWith(intListAsBufferMarshaler) List<int> data) async =>
       data.map((n) => -n).toList();
 
   @SquadronMethod()
   Future<List<int>> negateWithStringInput(
-          @SerializeWith(intListAsStringMarshaller) List<int> data) async =>
+          @SerializeWith(intListAsStringMarshaler) List<int> data) async =>
       data.map((n) => -n).toList();
 
   @SquadronMethod()
@@ -91,4 +90,12 @@ class Perf extends WorkerService with $PerfOperations {
   @SquadronMethod()
   Future<String> negateWithJsonOutput(List<int> data) async =>
       jsonEncode(data.map((n) => -n).toList());
+
+  @SquadronMethod(inspectRequest: true, inspectResponse: true)
+  Future<Map<String, dynamic>> native_inspect(
+          Map<String, dynamic> data) async =>
+      data;
+
+  @SquadronMethod()
+  Future<Map<String, dynamic>> native(Map<String, dynamic> data) async => data;
 }

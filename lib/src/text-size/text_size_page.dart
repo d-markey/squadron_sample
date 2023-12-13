@@ -6,7 +6,7 @@ import 'local_size_service_impl.dart';
 import 'my_worker_pool.dart';
 
 class TextSizePage extends StatefulWidget {
-  const TextSizePage({Key? key, this.tabBar}) : super(key: key);
+  const TextSizePage({super.key, this.tabBar});
 
   final TabBar? tabBar;
 

@@ -4,7 +4,6 @@ import 'parser_activator.dart'
     if (dart.library.js) 'package:squadron_sample/src/parser/browser/parser_worker_activator.dart'
     if (dart.library.html) 'package:squadron_sample/src/parser/browser/parser_worker_activator.dart'
     if (dart.library.io) 'package:squadron_sample/src/parser/vm/parser_worker_activator.dart';
-
 import 'parser_service.dart';
 
 class ParserWorkerPool extends WorkerPool<ParserWorker>
@@ -18,8 +17,7 @@ class ParserWorkerPool extends WorkerPool<ParserWorker>
 }
 
 class ParserWorker extends Worker implements ParserService {
-  ParserWorker(dynamic entryPoint, {List args = const []})
-      : super(entryPoint, args: args);
+  ParserWorker(super.entryPoint, {super.args});
 
   @override
   Future<List> parse(List lines, [CancellationToken? token]) =>

@@ -8,7 +8,7 @@ import 'generated/codegen.activator.g.dart';
 part 'generated/codegen.worker.g.dart';
 
 @SquadronService(baseUrl: '/workers')
-class CodeGen extends WorkerService with $CodeGenOperations {
+class CodeGen {
   @SquadronMethod()
   Future<int> inc(int n) async => n + 1;
 }

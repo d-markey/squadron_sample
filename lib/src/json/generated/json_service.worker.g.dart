@@ -3,7 +3,7 @@
 part of '../json_service.dart';
 
 // **************************************************************************
-// Generator: WorkerGenerator 2.4.1
+// Generator: WorkerGenerator 2.4.2
 // **************************************************************************
 
 /// WorkerService class for JsonService
@@ -13,11 +13,12 @@ class _$JsonServiceWorkerService extends JsonService implements WorkerService {
   @override
   Map<int, CommandHandler> get operations => _operations;
 
-  late final Map<int, CommandHandler> _operations = {
+  late final Map<int, CommandHandler> _operations =
+      Map.unmodifiable(<int, CommandHandler>{
     _$decodeId: ($) => decode($.args[0]),
     _$hydrateId: ($) async =>
-        (const PersonMarshaller()).marshall((await hydrate($.args[0])))
-  };
+        (const PersonMarshaler()).marshal((await hydrate($.args[0]))),
+  });
 
   static const int _$decodeId = 1;
   static const int _$hydrateId = 2;
@@ -50,7 +51,7 @@ class JsonServiceWorker extends Worker implements JsonService {
   @override
   Future<Person> hydrate(String source) =>
       send(_$JsonServiceWorkerService._$hydrateId, args: [source])
-          .then((_) => (const PersonMarshaller()).unmarshall(_));
+          .then((_) => (const PersonMarshaler()).unmarshal(_));
 }
 
 /// Worker pool for JsonService

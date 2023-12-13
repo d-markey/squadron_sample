@@ -1,4 +1,4 @@
-import 'package:squadron/squadron_local_worker.dart';
+import 'package:squadron/squadron.dart';
 
 import '../my_worker_pool.dart' show MyWorker;
 import '../local_size_service.dart';

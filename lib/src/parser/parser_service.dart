@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:squadron/squadron_service.dart';
+import 'package:squadron/squadron.dart';
 
 class ParserService implements WorkerService {
   ParserService();

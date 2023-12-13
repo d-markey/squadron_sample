@@ -3,7 +3,7 @@
 part of '../perf.dart';
 
 // **************************************************************************
-// Generator: WorkerGenerator 2.4.1
+// Generator: WorkerGenerator 2.4.2
 // **************************************************************************
 
 /// WorkerService class for Perf
@@ -13,41 +13,49 @@ class _$PerfWorkerService extends Perf implements WorkerService {
   @override
   Map<int, CommandHandler> get operations => _operations;
 
-  late final Map<int, CommandHandler> _operations = {
-    _$addId: ($) async => bigIntMarshaller.marshall((await add(
-        bigIntMarshaller.unmarshall($.args[0]),
-        bigIntMarshaller.unmarshall($.args[1])))),
+  late final Map<int, CommandHandler> _operations =
+      Map.unmodifiable(<int, CommandHandler>{
+    _$addId: ($) async => bigIntMarshaler.marshal((await add(
+        bigIntMarshaler.unmarshal($.args[0]),
+        bigIntMarshaler.unmarshal($.args[1])))),
+    _$nativeId: ($) async => (await native($.args[0].cast<String, dynamic>()))
+        .cast<String, dynamic>(),
+    _$native_inspectId: ($) async =>
+        (await native_inspect($.args[0].cast<String, dynamic>()))
+            .cast<String, dynamic>(),
     _$negateWithByteBufferInputId: ($) async =>
         (await negateWithByteBufferInput(
-                intListAsBufferMarshaller.unmarshall($.args[0])))
+                intListAsBufferMarshaler.unmarshal($.args[0])))
             .cast<int>(),
     _$negateWithByteBufferOutputId: ($) =>
         negateWithByteBufferOutput($.args[0].cast<int>()),
     _$negateWithJsonOutputId: ($) =>
         negateWithJsonOutput($.args[0].cast<int>()),
     _$negateWithListInputId: ($) async => (await negateWithListInput(
-            intListAsBufferMarshaller.unmarshall($.args[0])))
+            intListAsBufferMarshaler.unmarshal($.args[0])))
         .cast<int>(),
     _$negateWithListOutputId: ($) async =>
         (await negateWithListOutput($.args[0].cast<int>())).cast<int>(),
     _$negateWithStringInputId: ($) async => (await negateWithStringInput(
-            intListAsStringMarshaller.unmarshall($.args[0])))
+            intListAsStringMarshaler.unmarshal($.args[0])))
         .cast<int>(),
-    _$sendGenericDataId: ($) async => personMarshaller.marshall(
+    _$sendGenericDataId: ($) async => personMarshaler.marshal(
         (await sendGenericData(GenericData<Person>.fromJson($.args[0])))),
     _$sendGenericDataAsJsonId: ($) async =>
-        personMarshaller.marshall((await sendGenericDataAsJson($.args[0])))
-  };
+        personMarshaler.marshal((await sendGenericDataAsJson($.args[0]))),
+  });
 
   static const int _$addId = 1;
-  static const int _$negateWithByteBufferInputId = 2;
-  static const int _$negateWithByteBufferOutputId = 3;
-  static const int _$negateWithJsonOutputId = 4;
-  static const int _$negateWithListInputId = 5;
-  static const int _$negateWithListOutputId = 6;
-  static const int _$negateWithStringInputId = 7;
-  static const int _$sendGenericDataId = 8;
-  static const int _$sendGenericDataAsJsonId = 9;
+  static const int _$nativeId = 2;
+  static const int _$native_inspectId = 3;
+  static const int _$negateWithByteBufferInputId = 4;
+  static const int _$negateWithByteBufferOutputId = 5;
+  static const int _$negateWithJsonOutputId = 6;
+  static const int _$negateWithListInputId = 7;
+  static const int _$negateWithListOutputId = 8;
+  static const int _$negateWithStringInputId = 9;
+  static const int _$sendGenericDataId = 10;
+  static const int _$sendGenericDataAsJsonId = 11;
 }
 
 /// Service initializer for Perf
@@ -73,13 +81,26 @@ class PerfWorker extends Worker implements Perf {
 
   @override
   Future<BigInt> add(BigInt a, BigInt b) => send(_$PerfWorkerService._$addId,
-          args: [bigIntMarshaller.marshall(a), bigIntMarshaller.marshall(b)])
-      .then((_) => bigIntMarshaller.unmarshall(_));
+          args: [bigIntMarshaler.marshal(a), bigIntMarshaler.marshal(b)])
+      .then((_) => bigIntMarshaler.unmarshal(_));
+
+  @override
+  Future<Map<String, dynamic>> native(Map<String, dynamic> data) =>
+      send(_$PerfWorkerService._$nativeId, args: [data.cast<String, dynamic>()])
+          .then((_) => _.cast<String, dynamic>());
+
+  @override
+  Future<Map<String, dynamic>> native_inspect(Map<String, dynamic> data) =>
+      send(_$PerfWorkerService._$native_inspectId,
+              args: [data.cast<String, dynamic>()],
+              inspectRequest: true,
+              inspectResponse: true)
+          .then((_) => _.cast<String, dynamic>());
 
   @override
   Future<List<int>> negateWithByteBufferInput(List<int> data) =>
       send(_$PerfWorkerService._$negateWithByteBufferInputId,
-              args: [intListAsBufferMarshaller.marshall(data)])
+              args: [intListAsBufferMarshaler.marshal(data)])
           .then((_) => _.cast<int>());
 
   @override
@@ -95,7 +116,7 @@ class PerfWorker extends Worker implements Perf {
   @override
   Future<List<int>> negateWithListInput(List<int> data) =>
       send(_$PerfWorkerService._$negateWithListInputId,
-              args: [intListAsBufferMarshaller.marshall(data)])
+              args: [intListAsBufferMarshaler.marshal(data)])
           .then((_) => _.cast<int>());
 
   @override
@@ -106,18 +127,18 @@ class PerfWorker extends Worker implements Perf {
   @override
   Future<List<int>> negateWithStringInput(List<int> data) =>
       send(_$PerfWorkerService._$negateWithStringInputId,
-              args: [intListAsStringMarshaller.marshall(data)])
+              args: [intListAsStringMarshaler.marshal(data)])
           .then((_) => _.cast<int>());
 
   @override
   Future<Person> sendGenericData(GenericData<Person> personData) =>
       send(_$PerfWorkerService._$sendGenericDataId, args: [personData.toJson()])
-          .then((_) => personMarshaller.unmarshall(_));
+          .then((_) => personMarshaler.unmarshal(_));
 
   @override
   Future<Person> sendGenericDataAsJson(String json) =>
       send(_$PerfWorkerService._$sendGenericDataAsJsonId, args: [json])
-          .then((_) => personMarshaller.unmarshall(_));
+          .then((_) => personMarshaler.unmarshal(_));
 }
 
 /// Worker pool for Perf
@@ -130,6 +151,14 @@ class PerfWorkerPool extends WorkerPool<PerfWorker> implements Perf {
 
   @override
   Future<BigInt> add(BigInt a, BigInt b) => execute((w) => w.add(a, b));
+
+  @override
+  Future<Map<String, dynamic>> native(Map<String, dynamic> data) =>
+      execute((w) => w.native(data));
+
+  @override
+  Future<Map<String, dynamic>> native_inspect(Map<String, dynamic> data) =>
+      execute((w) => w.native_inspect(data));
 
   @override
   Future<List<int>> negateWithByteBufferInput(List<int> data) =>

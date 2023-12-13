@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:squadron/squadron.dart';
-import 'package:squadron/squadron_service.dart';
 
 abstract class PiDigitsService {
   Stream<int> getNDigits(int start, int n, CancellationToken? token);

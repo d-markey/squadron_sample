@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:squadron/squadron_service.dart';
+import 'package:squadron/squadron.dart';
 
 import '../signal_value.dart';
 

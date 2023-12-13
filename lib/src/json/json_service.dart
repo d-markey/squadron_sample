@@ -5,14 +5,14 @@ import 'package:squadron/squadron.dart';
 import 'package:squadron/squadron_annotations.dart';
 
 import 'generated/json_service.activator.g.dart';
-import 'marshallers/person_marshaller.dart';
+import 'marshalers/person_marshaler.dart';
 import 'model/person.dart';
 
 part 'generated/json_service.worker.g.dart';
 
 @SquadronService(baseUrl: '/workers')
 @UseLogger(ParentSquadronLogger)
-class JsonService extends WorkerService with $JsonServiceOperations {
+class JsonService {
   @SquadronMethod()
   Future<dynamic> decode(String source) async {
     Squadron.info('   deserializing source, length = ${source.length}...');

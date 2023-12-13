@@ -3,7 +3,7 @@
 part of '../codegen.dart';
 
 // **************************************************************************
-// Generator: WorkerGenerator 2.4.1
+// Generator: WorkerGenerator 2.4.2
 // **************************************************************************
 
 /// WorkerService class for CodeGen
@@ -13,9 +13,10 @@ class _$CodeGenWorkerService extends CodeGen implements WorkerService {
   @override
   Map<int, CommandHandler> get operations => _operations;
 
-  late final Map<int, CommandHandler> _operations = {
-    _$incId: ($) => inc($.args[0])
-  };
+  late final Map<int, CommandHandler> _operations =
+      Map.unmodifiable(<int, CommandHandler>{
+    _$incId: ($) => inc($.args[0]),
+  });
 
   static const int _$incId = 1;
 }

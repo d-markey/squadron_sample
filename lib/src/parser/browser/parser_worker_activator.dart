@@ -1,13 +1,12 @@
 import 'dart:convert';
 
-import 'package:squadron/squadron_service.dart';
+import 'package:squadron/squadron.dart';
 
 import '../parser_service.dart';
 import '../parser_worker_pool.dart';
 
 class WebParserWorker extends ParserWorker {
-  WebParserWorker(dynamic entryPoint, {List args = const []})
-      : super(entryPoint, args: args);
+  WebParserWorker(super.entryPoint, {super.args});
 
   @override
   Future<List> parse(List lines, [CancellationToken? token]) async =>

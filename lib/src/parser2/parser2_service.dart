@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:squadron/squadron_service.dart';
+import 'package:squadron/squadron.dart';
 
 class Parser2Service implements WorkerService {
   Parser2Service(this._batchSize);

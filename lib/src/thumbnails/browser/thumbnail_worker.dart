@@ -13,7 +13,7 @@
 //
 // Of course, this can be automated in a release script (shell, batch or PowerShell depending on your dev platform)
 
-import 'package:squadron/squadron_service.dart';
+import 'package:squadron/squadron.dart';
 
 import '../thumbnail_service.dart';
 

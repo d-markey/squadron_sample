@@ -4,12 +4,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
-import 'model/person.dart';
-import 'model/address.dart';
 import 'json_service.dart';
+import 'model/address.dart';
+import 'model/person.dart';
 
 class JsonPage extends StatefulWidget {
-  const JsonPage({Key? key, this.tabBar}) : super(key: key);
+  const JsonPage({super.key, this.tabBar});
 
   final TabBar? tabBar;
 

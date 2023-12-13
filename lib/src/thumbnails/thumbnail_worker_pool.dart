@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:squadron/squadron.dart';
 
 import 'thumbnail_service.dart';
-
 // this is where the stub file comes into action
 //
 // of course, if your application does not target both Web and VM platforms,
@@ -29,8 +28,7 @@ class ThumbnailWorkerPool extends WorkerPool<ThumbnailWorker>
 
 // Implementation of ThumbnailService as a Squadron worker
 class ThumbnailWorker extends Worker implements ThumbnailService {
-  ThumbnailWorker(dynamic entryPoint, {List args = const []})
-      : super(entryPoint, args: args);
+  ThumbnailWorker(super.entryPoint, {super.args});
 
   @override
   Future<Uint8List> getThumbnail(

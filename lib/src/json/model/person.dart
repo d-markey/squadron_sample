@@ -3,14 +3,14 @@ import 'dart:typed_data';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:squadron/squadron_annotations.dart';
 
-import '../marshallers/person_marshaller.dart';
+import '../marshalers/person_marshaler.dart';
 import 'address.dart';
 import 'uint8list_to_string_converter.dart';
 
 part 'person.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-@SerializeWith(PersonMarshaller)
+@SerializeWith(PersonMarshaler)
 class Person {
   Person(
       {required int id,

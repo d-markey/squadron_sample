@@ -9,7 +9,7 @@ import 'parser3_runner.dart';
 import 'parser3_service.dart';
 
 class Parser3Page extends StatefulWidget {
-  Parser3Page({Key? key, this.tabBar}) : super(key: key);
+  Parser3Page({super.key, this.tabBar});
 
   final TabBar? tabBar;
 

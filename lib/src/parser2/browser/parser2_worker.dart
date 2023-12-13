@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:squadron/squadron_service.dart';
+import 'package:squadron/squadron.dart';
 
 import '../parser2_service.dart';
 
 class WebParser2Service extends Parser2Service {
-  WebParser2Service(int batchSize) : super(batchSize);
+  WebParser2Service(super.batchSize);
 
   // command IDs --> command implementations
   @override

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:squadron/squadron_service.dart';
+import 'package:squadron/squadron.dart';
 
 import '../parser_service.dart';
 

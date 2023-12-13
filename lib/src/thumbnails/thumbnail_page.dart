@@ -8,7 +8,7 @@ import 'package:squadron/squadron.dart';
 import 'thumbnail_worker_pool.dart';
 
 class ThumbnailPage extends StatefulWidget {
-  const ThumbnailPage({Key? key, this.tabBar}) : super(key: key);
+  const ThumbnailPage({super.key, this.tabBar});
 
   final TabBar? tabBar;
 

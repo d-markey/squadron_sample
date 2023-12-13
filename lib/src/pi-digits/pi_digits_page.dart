@@ -8,7 +8,7 @@ import 'pi_digits_service.dart';
 import 'pi_digits_worker_pool.dart';
 
 class PiDigitsPage extends StatefulWidget {
-  const PiDigitsPage({Key? key, this.tabBar}) : super(key: key);
+  const PiDigitsPage({super.key, this.tabBar});
 
   final _count = 5000;
 

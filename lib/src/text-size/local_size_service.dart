@@ -9,7 +9,7 @@ abstract class LocalSizeService implements WorkerService {
 }
 
 class LocalSizeClient extends LocalWorkerClient implements LocalSizeService {
-  LocalSizeClient(Channel channel) : super(channel);
+  LocalSizeClient(super.channel);
 
   @override
   Future<Map> measure(String text, {int? maxLines}) =>
