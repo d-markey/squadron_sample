@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:squadron/squadron.dart';
 import 'package:squadron/squadron_annotations.dart';
@@ -38,6 +39,8 @@ class PerfContext {
   factory PerfContext.fromJson(Map json) => singleton;
 
   Map toJson() => const {};
+
+  final Offset z = Offset.zero;
 }
 
 @SquadronService(baseUrl: '/workers')
