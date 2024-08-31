@@ -5,7 +5,7 @@ import 'local_size_service.dart';
 
 class LocalSizeServiceImpl extends LocalSizeService {
   @override
-  Map measure(String text, {int? maxLines}) {
+  Map<String, double> measure(String text, {int? maxLines}) {
     final textPainter = TextPainter(
         text: TextSpan(text: text),
         maxLines: maxLines,
@@ -17,6 +17,6 @@ class LocalSizeServiceImpl extends LocalSizeService {
   @override
   late final Map<int, CommandHandler> operations = {
     LocalSizeService.measureCommand: (req) =>
-        measure(req.args[0], maxLines: req.args[1]),
+        measure(req.args[0], maxLines: Cast.toNullableInt(req.args[1])),
   };
 }

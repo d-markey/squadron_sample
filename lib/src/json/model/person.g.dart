@@ -7,7 +7,7 @@ part of 'person.dart';
 // **************************************************************************
 
 Person _$PersonFromJson(Map json) => Person(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       lastName: json['last_name'] as String,
       firstName: json['first_name'] as String,
       dateOfBirth: json['date_of_birth'] == null

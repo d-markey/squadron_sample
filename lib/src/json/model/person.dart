@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:json_annotation/json_annotation.dart';
-import 'package:squadron/squadron_annotations.dart';
 
 import '../marshalers/person_marshaler.dart';
 import 'address.dart';
@@ -10,7 +9,7 @@ import 'uint8list_to_string_converter.dart';
 part 'person.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-@SerializeWith(PersonMarshaler)
+@PersonMarshaler()
 class Person {
   Person(
       {required int id,

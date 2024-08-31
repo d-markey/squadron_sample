@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:squadron/squadron.dart';
-import 'package:squadron/squadron_annotations.dart';
+import 'package:squadron_sample/web.g.dart';
 
 import 'generated/perf.activator.g.dart';
 import 'generic_data.dart';
@@ -12,7 +11,7 @@ import 'marshalers/marshalers.dart';
 
 part 'generated/perf.worker.g.dart';
 
-@SerializeWith(personMarshaler)
+@personMarshaler
 class Person {
   Person(this.lastName, this.firstName, this.dob);
 
@@ -39,29 +38,25 @@ class PerfContext {
   factory PerfContext.fromJson(Map json) => singleton;
 
   Map toJson() => const {};
-
-  final Offset z = Offset.zero;
 }
 
-@SquadronService(baseUrl: '/workers')
+@SquadronService(baseUrl: '/workers', wasm: workerExt == 'wasm')
 class Perf {
   Perf(PerfContext context);
 
   @SquadronMethod()
-  @SerializeWith(bigIntMarshaler)
+  @bigIntMarshaler
   Future<BigInt> add(
-    @SerializeWith(bigIntMarshaler) BigInt a,
-    @SerializeWith(bigIntMarshaler) BigInt b,
+    @bigIntMarshaler BigInt a,
+    @bigIntMarshaler BigInt b,
   ) async =>
       a + b;
 
   @SquadronMethod()
-  // @SerializeWith(personMarshaler)
   Future<Person> sendGenericData(GenericData<Person> personData) async =>
       personData.value!;
 
   @SquadronMethod()
-  // @SerializeWith(personMarshaler)
   Future<Person> sendGenericDataAsJson(String json) async {
     final personData = GenericData<Person>.fromJson(jsonDecode(json));
     return personData.value!;
@@ -69,17 +64,17 @@ class Perf {
 
   @SquadronMethod()
   Future<List<int>> negateWithListInput(
-          @SerializeWith(intListAsBufferMarshaler) List<int> data) async =>
+          @intListAsBufferMarshaler List<int> data) async =>
       data.map((n) => -n).toList();
 
   @SquadronMethod()
   Future<List<int>> negateWithByteBufferInput(
-          @SerializeWith(intListAsBufferMarshaler) List<int> data) async =>
+          @intListAsBufferMarshaler List<int> data) async =>
       data.map((n) => -n).toList();
 
   @SquadronMethod()
   Future<List<int>> negateWithStringInput(
-          @SerializeWith(intListAsStringMarshaler) List<int> data) async =>
+          @intListAsStringMarshaler List<int> data) async =>
       data.map((n) => -n).toList();
 
   @SquadronMethod()

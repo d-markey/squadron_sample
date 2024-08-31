@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:squadron/squadron.dart';
 
+import '../../root_logger.dart';
+
 class Parser2Service implements WorkerService {
-  Parser2Service(this._batchSize);
+  Parser2Service(int batchSize) : _batchSize = batchSize;
 
   static const _timeStampMarker = '#';
 
@@ -20,13 +22,13 @@ class Parser2Service implements WorkerService {
 
   // to avoid too much serialization/deserialization, use only List and Map (not List<T> nor Map<K, V>)
   // make sure these lists and maps contain only base types (string, bool, num)
-  Stream<List<dynamic>> parse(List lines, [CancellationToken? token]) async* {
+  Stream<List<dynamic>> parse(List lines, [CancelationToken? token]) async* {
     final sw = Stopwatch()..start();
     // load first timestamp
     // note: we KNOW that items in 'lines' are strings, so we force 'line' to be a String
     String line = lines[0];
     if (!line.startsWith(_timeStampMarker)) {
-      Squadron.shout('first line = $line');
+      rootLogger.f('first line = $line');
       throw Exception('Invalid data');
     }
     int timeStamp = int.parse(line.substring(_timeStampMarker.length));
@@ -36,8 +38,7 @@ class Parser2Service implements WorkerService {
     var values = current['v'];
 
     for (var i = 1; i < lines.length; i++) {
-      final cancelledException = token?.exception;
-      if (cancelledException != null) throw cancelledException;
+      token?.throwIfCanceled();
 
       line = lines[i];
       if (line.startsWith(_timeStampMarker)) {
@@ -60,7 +61,7 @@ class Parser2Service implements WorkerService {
       yield signalValues;
     }
 
-    Squadron.info('[${sw.elapsed}] parsed ${lines.length} lines');
+    rootLogger.i('[${sw.elapsed}] parsed ${lines.length} lines');
   }
 
   // command IDs
@@ -70,7 +71,7 @@ class Parser2Service implements WorkerService {
   @override
   Map<int, CommandHandler> get operations => {
         parseCommand: (r) {
-          Squadron.debug('parse command received in ${r.travelTime} µs');
+          rootLogger.d('parse command received in ${r.travelTime} µs');
           return parse(r.args, r.cancelToken);
         },
       };

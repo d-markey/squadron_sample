@@ -13,7 +13,9 @@
 //
 // Of course, this can be automated in a release script (shell, batch or PowerShell depending on your dev platform)
 
+import 'package:squadron_sample/web.g.dart';
+
 import '../thumbnail_worker_pool.dart' show ThumbnailWorker;
 
 ThumbnailWorker createWorker() =>
-    ThumbnailWorker('/workers/thumbnail_worker.dart.js');
+    ThumbnailWorker(Uri.parse('/workers/thumbnail_worker.dart.$workerExt'));

@@ -1,7 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 // **************************************************************************
-// Generator: WorkerGenerator 2.4.2
+// Generator: WorkerGenerator 6.0.0
 // **************************************************************************
 
 import 'package:squadron/squadron.dart';
@@ -10,7 +10,8 @@ import '../json_service.dart';
 
 void main() {
   /// Web entry point for JsonService
-  run($JsonServiceInitializer, null, ParentSquadronLogger());
+  run($JsonServiceInitializer);
 }
 
-EntryPoint $getJsonServiceActivator() => '/workers/json_service.web.g.dart.js';
+EntryPoint $getJsonServiceActivator() =>
+    Uri.parse('/workers/json_service.web.g.dart.wasm');

@@ -64,4 +64,4 @@ This sample must be built using:
 dart run build_runner build
 ```
 
-Before running the Web-version of the sample, the JavaScript workers must also be compiled. The sample provides a script to automate building the Web workers, cf. `build_web_worker.bat`. Rebuilding Web Workers is mandatory whenever a worker service or one of its dependencies has been modified or updated.
+Before running the Web-version of the sample, the Web workers must also be compiled. The sample provides a script to automate building the Web workers, cf. `build_web_worker.bat`. Rebuilding Web Workers is mandatory whenever a worker service or one of its dependencies has been modified or updated.

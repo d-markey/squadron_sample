@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:squadron/squadron.dart';
 
+import '../../root_logger.dart';
 import 'json_service.dart';
 import 'model/address.dart';
 import 'model/person.dart';
@@ -89,12 +89,12 @@ ${a.country.toUpperCase()}''').join()}
     _result = '';
     await _begin();
     final sw = Stopwatch()..start();
-    Squadron.info('[${sw.elapsedMilliseconds} ms] Loading JSON...');
+    rootLogger.i('[${sw.elapsedMilliseconds} ms] Loading JSON...');
     final jsonMap = await _worker.decode(_jsonStr);
-    Squadron.info('[${sw.elapsedMilliseconds} ms] Loaded JSON');
-    Squadron.info('[${sw.elapsedMilliseconds} ms] Converting to person...');
+    rootLogger.i('[${sw.elapsedMilliseconds} ms] Loaded JSON');
+    rootLogger.i('[${sw.elapsedMilliseconds} ms] Converting to person...');
     final person = Person.fromJson(jsonMap);
-    Squadron.info('[${sw.elapsedMilliseconds} ms] Converted');
+    rootLogger.i('[${sw.elapsedMilliseconds} ms] Converted');
     _finish();
     setState(() {
       _showResult(person, sw.elapsedMilliseconds);
@@ -105,9 +105,9 @@ ${a.country.toUpperCase()}''').join()}
     _result = '';
     await _begin();
     final sw = Stopwatch()..start();
-    Squadron.info('[${sw.elapsedMilliseconds} ms] Hydrating...');
+    rootLogger.i('[${sw.elapsedMilliseconds} ms] Hydrating...');
     final person = await _worker.hydrate(_jsonStr);
-    Squadron.info(
+    rootLogger.i(
         '[${sw.elapsedMilliseconds} ms] Hydrated in ${sw.elapsedMilliseconds} ms');
     _finish();
     setState(() {

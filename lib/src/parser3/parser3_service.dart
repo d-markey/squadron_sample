@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:squadron/squadron.dart';
 
+import '../../root_logger.dart';
 import '../signal_value.dart';
 
 class Parser3Service {
@@ -11,7 +12,7 @@ class Parser3Service {
   final int maxDelayInMs;
 
   Future<List<SignalValue>> parse(List<String> lines,
-      [CancellationToken? token]) async {
+      [CancelationToken? token]) async {
     final sw = Stopwatch()..start();
 
     String line = lines[0];
@@ -41,7 +42,7 @@ class Parser3Service {
       }
     }
 
-    Squadron.info(
+    rootLogger.i(
         '[${sw.elapsed}] parsed ${lines.length} and extracted ${signalValues.length} signal values');
     return signalValues;
   }

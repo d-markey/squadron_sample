@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
+import '../../root_logger.dart';
 import 'generic_data.dart';
 import 'perf.dart';
 
@@ -57,7 +58,7 @@ class _PerfPageState extends State<PerfPage> {
     void checkBigInt(BigInt res, BigInt expected) async {
       await Future.delayed(Duration.zero);
       if (res != expected) {
-        Squadron.info('woops');
+        rootLogger.i('woops');
       }
     }
 
@@ -75,11 +76,11 @@ class _PerfPageState extends State<PerfPage> {
         futures.add(perfTester.add(x, y).then((res) => checkBigInt(res, sum)));
       }
     }
-    Squadron.info(
-        '[${perfTester.runtimeType}] add bigInts in progress (${sw.elapsed})');
+    rootLogger.i(
+        '[${perfTester.runtimeType}] 1. add bigInts in progress (${sw.elapsed})');
     await Future.wait(futures);
     sw.stop();
-    Squadron.info('[${perfTester.runtimeType}] add bigInts: ${sw.elapsed}');
+    rootLogger.i('[${perfTester.runtimeType}] 1. add bigInts: ${sw.elapsed}');
 
     final me = Person('DOE', 'John', DateTime(1980, 01, 01));
     void checkPerson(Person res) async {
@@ -87,7 +88,7 @@ class _PerfPageState extends State<PerfPage> {
       if (res.lastName != me.lastName ||
           res.firstName != me.firstName ||
           res.dob != me.dob) {
-        Squadron.info('woops');
+        rootLogger.i('woops');
       }
     }
 
@@ -99,7 +100,8 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    Squadron.info('[${perfTester.runtimeType}] sendGenericData: ${sw.elapsed}');
+    rootLogger
+        .i('[${perfTester.runtimeType}] 2. sendGenericData: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -110,14 +112,14 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    Squadron.info(
-        '[${perfTester.runtimeType}] sendGenericDataAsJson: ${sw.elapsed}');
+    rootLogger.i(
+        '[${perfTester.runtimeType}] 3. sendGenericDataAsJson: ${sw.elapsed}');
 
     final list = List<int>.generate(len, (i) => i + 1);
     void checkList(List res) async {
       await Future.delayed(Duration.zero);
       if (res.length != len || res.first > 0) {
-        Squadron.info('woops');
+        rootLogger.i('woops');
       }
     }
 
@@ -129,7 +131,7 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    Squadron.info('[${perfTester.runtimeType}] in list: ${sw.elapsed}');
+    rootLogger.i('[${perfTester.runtimeType}] 4. in list: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -137,7 +139,7 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    Squadron.info('[${perfTester.runtimeType}] in buffer: ${sw.elapsed}');
+    rootLogger.i('[${perfTester.runtimeType}] 5. in buffer: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -145,7 +147,7 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    Squadron.info('[${perfTester.runtimeType}] in json: ${sw.elapsed}');
+    rootLogger.i('[${perfTester.runtimeType}] 6. in json: ${sw.elapsed}');
 
     // measure perf when receiving results
 
@@ -155,7 +157,7 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    Squadron.info('[${perfTester.runtimeType}] out list: ${sw.elapsed}');
+    rootLogger.i('[${perfTester.runtimeType}] 7. out list: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -166,7 +168,7 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    Squadron.info('[${perfTester.runtimeType}] out buffer: ${sw.elapsed}');
+    rootLogger.i('[${perfTester.runtimeType}] 8. out buffer: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -177,7 +179,7 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    Squadron.info('[${perfTester.runtimeType}] out json: ${sw.elapsed}');
+    rootLogger.i('[${perfTester.runtimeType}] 9. out json: ${sw.elapsed}');
 
     // native data structures
     const keys = 'abcdefghijklmnopqrstuvwxyz';
@@ -191,8 +193,8 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    Squadron.info(
-        '[${perfTester.runtimeType}] native with List<int>: ${sw.elapsed}');
+    rootLogger.i(
+        '[${perfTester.runtimeType}] 10. native with List<int>: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -200,8 +202,8 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    Squadron.info(
-        '[${perfTester.runtimeType}] native_inspect with List<int>: ${sw.elapsed}');
+    rootLogger.i(
+        '[${perfTester.runtimeType}] 11. native_inspect with List<int>: ${sw.elapsed}');
 
     final dataIn2 = Map.fromIterables(
         List.generate(keys.length, (index) => keys[index]),
@@ -212,8 +214,8 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    Squadron.info(
-        '[${perfTester.runtimeType}] native with Uint32List: ${sw.elapsed}');
+    rootLogger.i(
+        '[${perfTester.runtimeType}] 12. native with Uint32List: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -221,8 +223,8 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    Squadron.info(
-        '[${perfTester.runtimeType}] native_inspect with Uint32List: ${sw.elapsed}');
+    rootLogger.i(
+        '[${perfTester.runtimeType}] 13. native_inspect with Uint32List: ${sw.elapsed}');
   }
 
   @override

@@ -1,7 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 // **************************************************************************
-// Generator: WorkerGenerator 2.4.2
+// Generator: WorkerGenerator 6.0.0
 // **************************************************************************
 
 import 'package:squadron/squadron.dart';
@@ -10,7 +10,8 @@ import '../codegen.dart';
 
 void main() {
   /// Web entry point for CodeGen
-  run($CodeGenInitializer, null, null);
+  run($CodeGenInitializer);
 }
 
-EntryPoint $getCodeGenActivator() => '/workers/codegen.web.g.dart.js';
+EntryPoint $getCodeGenActivator() =>
+    Uri.parse('/workers/codegen.web.g.dart.wasm');

@@ -7,7 +7,7 @@ part of 'address.dart';
 // **************************************************************************
 
 Address _$AddressFromJson(Map json) => Address(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       line1: json['line1'] as String,
       line2: json['line2'] as String?,
       zip: json['zip'] as String,

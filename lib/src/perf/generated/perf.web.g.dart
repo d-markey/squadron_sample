@@ -1,7 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 // **************************************************************************
-// Generator: WorkerGenerator 2.4.2
+// Generator: WorkerGenerator 6.0.0
 // **************************************************************************
 
 import 'package:squadron/squadron.dart';
@@ -10,7 +10,7 @@ import '../perf.dart';
 
 void main() {
   /// Web entry point for Perf
-  run($PerfInitializer, null, null);
+  run($PerfInitializer);
 }
 
-EntryPoint $getPerfActivator() => '/workers/perf.web.g.dart.js';
+EntryPoint $getPerfActivator() => Uri.parse('/workers/perf.web.g.dart.wasm');

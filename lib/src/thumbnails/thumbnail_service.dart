@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:image/image.dart';
-
 import 'package:squadron/squadron.dart';
+
+import '../../root_logger.dart';
 
 // this abstract class represents the functionality you want to support in your service
 //
@@ -33,8 +34,9 @@ class ThumbnailServiceImpl implements ThumbnailService, WorkerService {
   @override
   late final Map<int, CommandHandler> operations = {
     ThumbnailService.getThumbnailCommand: (r) {
-      Squadron.info('Received getThumbnailCommand in ${r.travelTime} µs');
-      return getThumbnail(r.args[0], r.args[1], r.args[2]);
+      rootLogger.i('Received getThumbnailCommand in ${r.travelTime} µs');
+      return getThumbnail(
+          r.args[0], Cast.toInt(r.args[1]), Cast.toInt(r.args[2]));
     }
   };
 }

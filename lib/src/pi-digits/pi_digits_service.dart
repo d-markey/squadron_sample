@@ -3,8 +3,10 @@ import 'dart:math';
 
 import 'package:squadron/squadron.dart';
 
+import '../../root_logger.dart';
+
 abstract class PiDigitsService {
-  Stream<int> getNDigits(int start, int n, CancellationToken? token);
+  Stream<int> getNDigits(int start, int n, CancelationToken? token);
   FutureOr<int> getNth(int n);
 
   static const getNthCommand = 1;
@@ -15,25 +17,29 @@ void _noop() {}
 Future noop() => Future(_noop);
 
 class PiDigitsServiceImpl implements PiDigitsService, WorkerService {
+  PiDigitsServiceImpl() {
+    rootLogger
+        .i('PiDigitsServiceImpl instantiated, hashCode = ${hashCode.hex}');
+  }
+
   // see https://dept-info.labri.fr/~denis/Enseignement/2017-PG306/TP01/pi.java
 
   @override
-  Stream<int> getNDigits(int start, int n, CancellationToken? token) async* {
+  Stream<int> getNDigits(int start, int n, CancelationToken? token) async* {
+    rootLogger.i('digits $start-${start + n} started...');
     final end = start + n;
     var i = start;
     while (i < end) {
-      yield getNth(i);
-      i++;
-      if (i >= end) break;
       if (i % 50 == 0) {
         // avoid flooding the event loop with noop Futures
         // check every 50 digits only
         await noop();
-        if (token?.cancelled ?? false) {
-          throw CancelledException();
-        }
+        token?.throwIfCanceled();
       }
+      yield getNth(i);
+      i++;
     }
+    rootLogger.i('digits $start-${start + n} done.');
   }
 
   @override
@@ -92,8 +98,16 @@ class PiDigitsServiceImpl implements PiDigitsService, WorkerService {
 
   @override
   late final Map<int, CommandHandler> operations = {
-    PiDigitsService.getNthCommand: (r) => getNth(r.args[0]),
-    PiDigitsService.getNDigitsCommand: (r) =>
-        getNDigits(r.args[0], r.args[1], r.cancelToken),
+    PiDigitsService.getNthCommand: (r) {
+      rootLogger
+          .i('received command ${PiDigitsService.getNthCommand}, args = $r');
+      return getNth(Cast.toInt(r.args[0]));
+    },
+    PiDigitsService.getNDigitsCommand: (r) {
+      rootLogger.i(
+          'received command ${PiDigitsService.getNDigitsCommand}, args = $r');
+      return getNDigits(
+          Cast.toInt(r.args[0]), Cast.toInt(r.args[1]), r.cancelToken);
+    },
   };
 }

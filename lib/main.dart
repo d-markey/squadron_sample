@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
+import 'root_logger.dart';
+import 'src/_helpers/thread_location.web.dart';
 import 'src/codegen/codegen_page.dart';
 import 'src/json/json_page.dart';
 import 'src/parser/parser_page.dart';
@@ -11,16 +13,9 @@ import 'src/pi-digits/pi_digits_page.dart';
 import 'src/text-size/text_size_page.dart';
 import 'src/thumbnails/thumbnail_page.dart';
 
-void initSquadron(String id) {
-  Squadron.setId(id);
-  Squadron.setLogger(ConsoleSquadronLogger());
-  Squadron.logLevel = SquadronLogLevel.all;
-  Squadron.debugMode = false;
-}
-
 void main() {
-  initSquadron('FlutterDemo');
-  runApp(const SampleApp());
+  rootLogger.i('MAIN THREAD = $threadId, running from $threadLocation');
+  Future(() => runApp(const SampleApp()));
 }
 
 class SampleApp extends StatefulWidget {

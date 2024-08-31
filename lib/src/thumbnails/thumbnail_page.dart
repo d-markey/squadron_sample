@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
+import '../../root_logger.dart';
 import 'thumbnail_worker_pool.dart';
 
 class ThumbnailPage extends StatefulWidget {
@@ -56,11 +57,11 @@ class _ThumbnailPageState extends State<ThumbnailPage> {
     final futures = <Future<Uint8List>>[];
     for (var i = 0; i < images.length; i++) {
       futures.add(Future<Uint8List>(() async {
-        Squadron.info('Loading image #$i...');
+        rootLogger.i('Loading image #$i...');
         final sw = Stopwatch()..start();
         final t = await _thumbnailWorkerPool.getThumbnail(images[i], 32, 32);
         sw.stop();
-        Squadron.info('Image #$i loaded in ${sw.elapsed}');
+        rootLogger.i('Image #$i loaded in ${sw.elapsed}');
         return t;
       }));
     }

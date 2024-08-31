@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:squadron/squadron.dart';
 
+import '../../root_logger.dart';
+
 class ParserService implements WorkerService {
   ParserService();
 
@@ -9,7 +11,7 @@ class ParserService implements WorkerService {
 
   // to avoid too much serialization/deserialization, use only List and Map (not List<T> nor Map<K, V>)
   // make sure these lists and maps contain only base types (string, bool, num)
-  Future<List> parse(List lines, [CancellationToken? token]) async {
+  Future<List> parse(List lines, [CancelationToken? token]) async {
     final sw = Stopwatch()..start();
     // load first timestamp
     // note: we KNOW that items in 'lines' are strings, so we force 'line' to be a String
@@ -33,7 +35,7 @@ class ParserService implements WorkerService {
       }
     }
 
-    Squadron.info(
+    rootLogger.i(
         '[${sw.elapsed}] parsed ${lines.length} and extracted ${signalValues.length / 3} signal values');
     return signalValues;
   }
@@ -45,7 +47,7 @@ class ParserService implements WorkerService {
   @override
   Map<int, CommandHandler> get operations => {
         parseCommand: (r) {
-          Squadron.debug('parse command received in ${r.travelTime} µs');
+          rootLogger.d('parse command received in ${r.travelTime} µs');
           return parse(r.args, r.cancelToken);
         },
       };

@@ -1,9 +1,10 @@
 import 'dart:async';
 
+import 'package:cancelation_token/cancelation_token.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:squadron/squadron.dart';
 
+import '../../root_logger.dart';
 import '../vcd_generator.dart';
 import 'parser3_runner.dart';
 import 'parser3_service.dart';
@@ -53,7 +54,7 @@ class _Parser3PageState extends State<Parser3Page> {
 
   int get _maxDelayInMs => int.parse(widget._maxDelayInMs.text);
 
-  late CancellationToken _token = _createToken();
+  late CancelableToken _token = _createToken();
 
   List<String>? _vcd;
 
@@ -61,17 +62,17 @@ class _Parser3PageState extends State<Parser3Page> {
     final token = _token;
     // same data for all tests
     _vcd = generateVCDData(_maxEntries).toList();
-    if (token.cancelled) return;
+    if (token.isCanceled) return;
     await _withoutPool(token);
-    if (token.cancelled) return;
+    if (token.isCanceled) return;
     await _withCompute(token);
-    if (token.cancelled) return;
+    if (token.isCanceled) return;
     // reset data
     _vcd = null;
   }
 
-  Future _withoutPool([CancellationToken? token]) async {
-    Squadron.info('****** PARSE - WITHOUT POOL ******');
+  Future _withoutPool([CancelationToken? token]) async {
+    rootLogger.i('****** PARSE - WITHOUT POOL ******');
     try {
       _start();
       final vcd = (_vcd ??= generateVCDData(_maxEntries).toList()).toList();
@@ -82,8 +83,8 @@ class _Parser3PageState extends State<Parser3Page> {
     }
   }
 
-  Future _withCompute([CancellationToken? token]) async {
-    Squadron.info('****** PARSE - WITHOUT POOL (compute) ******');
+  Future _withCompute([CancelationToken? token]) async {
+    rootLogger.i('****** PARSE - WITHOUT POOL (compute) ******');
     try {
       _start();
       final vcd = (_vcd ??= generateVCDData(_maxEntries).toList()).toList();
@@ -94,11 +95,9 @@ class _Parser3PageState extends State<Parser3Page> {
     }
   }
 
-  CancellationToken _createToken() {
-    final token = CancellationToken();
-    token.addListener(() {
-      Squadron.info('Token cancelled');
-    });
+  CancelableToken _createToken() {
+    final token = CancelableToken();
+    token.onCanceled.then((_) => rootLogger.i('Token cancelled'));
     return token;
   }
 

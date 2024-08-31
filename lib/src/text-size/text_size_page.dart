@@ -3,7 +3,7 @@ import 'package:squadron/squadron.dart';
 
 import 'local_size_service.dart';
 import 'local_size_service_impl.dart';
-import 'my_worker_pool.dart';
+import 'text_size_worker_pool.dart';
 
 class TextSizePage extends StatefulWidget {
   const TextSizePage({super.key, this.tabBar});
@@ -18,11 +18,11 @@ class _TextSizePageState extends State<TextSizePage> {
   _TextSizePageState();
 
   Future _getTextsSizes() async {
-    MyWorkerPool? myWorkerPool;
+    TextSizeWorkerPool? myWorkerPool;
     try {
       final sizeService =
           LocalWorker<LocalSizeService>.create(LocalSizeServiceImpl());
-      myWorkerPool = MyWorkerPool(
+      myWorkerPool = TextSizeWorkerPool(
           sizeService,
           const ConcurrencySettings(
               minWorkers: 1, maxWorkers: 4, maxParallel: 2));

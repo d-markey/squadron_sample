@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:squadron/squadron.dart';
 
+import '../../../root_logger.dart';
 import '../parser_service.dart';
 
 class WebParserService extends ParserService {
@@ -11,7 +12,7 @@ class WebParserService extends ParserService {
   @override
   Map<int, CommandHandler> get operations => {
         ParserService.parseCommand: (r) async {
-          Squadron.debug('parse command (Web) received in ${r.travelTime} µs');
+          rootLogger.d('parse command (Web) received in ${r.travelTime} µs');
           final list = await parse(r.args, r.cancelToken);
           return jsonEncode(list);
         },

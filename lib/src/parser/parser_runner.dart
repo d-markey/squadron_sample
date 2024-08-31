@@ -1,9 +1,8 @@
 import 'package:squadron/squadron.dart';
 
-import '../../main.dart';
-
-import 'parser_service.dart';
+import '../../root_logger.dart';
 import '../signal_value.dart';
+import 'parser_service.dart';
 
 final _sw = Stopwatch()..start();
 
@@ -13,25 +12,20 @@ class ParseArguments {
   final ParserService parser;
   final List<String> lines;
   final int nbOfChunks;
-  final CancellationToken token;
+  final CancelationToken token;
 }
 
 const _oneSec = Duration(seconds: 1);
 
 Future<List> parse(ParseArguments args) async {
-  if (!Squadron.isInitialized) {
-    // we're being called from a compute context
-    initSquadron('compute');
-  }
-
   final parser = args.parser;
   final lines = args.lines;
   final nbOfChunks = args.nbOfChunks;
   final token = args.token;
 
-  if (token.cancelled) return [];
+  if (token.isCanceled) return [];
   await Future.delayed(_oneSec);
-  if (token.cancelled) return [];
+  if (token.isCanceled) return [];
 
   final pool = (parser is WorkerPool) ? (parser as WorkerPool) : null;
   final linesPerBatch = lines.length ~/ nbOfChunks;
@@ -40,10 +34,10 @@ Future<List> parse(ParseArguments args) async {
 
   if (pool != null) {
     final concurrency = pool.concurrencySettings;
-    Squadron.info(
+    rootLogger.i(
         'START: lines = ${lines.length} / nb of chunks = $nbOfChunks / pool: ${concurrency.minWorkers}-${concurrency.maxWorkers} workers');
   } else {
-    Squadron.info(
+    rootLogger.i(
         'START: lines = ${lines.length} / nb of chunks = $nbOfChunks / no pool');
   }
 
@@ -59,21 +53,21 @@ Future<List> parse(ParseArguments args) async {
       chunk.add(lines.removeAt(0));
     }
     // parse chunk
-    Squadron.info('    batch #${futures.length + 1} = ${chunk.length} lines');
+    rootLogger.i('    batch #${futures.length + 1} = ${chunk.length} lines');
     futures.add(parser.parse(chunk, token));
   }
   // parse last chunk
   if (lines.isNotEmpty) {
-    Squadron.info('    batch #${futures.length + 1} = ${lines.length} lines');
+    rootLogger.i('    batch #${futures.length + 1} = ${lines.length} lines');
     futures.add(parser.parse(lines, token));
   }
 
-  Squadron.info('STARTED ${futures.length} FUTURES, WAITING FOR RESULTS...');
+  rootLogger.i('STARTED ${futures.length} FUTURES, WAITING FOR RESULTS...');
 
   final chunks = await Future.wait(futures);
-  if (token.cancelled) return [];
+  if (token.isCanceled) return [];
 
-  Squadron.info('MERGING AND CONVERTING RESULTS');
+  rootLogger.i('MERGING AND CONVERTING RESULTS');
   final signalValues = <SignalValue>[];
   for (var i = 0; i < chunks.length; i++) {
     final chunk = chunks[i];
@@ -84,17 +78,17 @@ Future<List> parse(ParseArguments args) async {
 
   final elapsed = _sw.elapsedMilliseconds;
 
-  Squadron.info(
+  rootLogger.i(
       'DONE PARSING: total items = ${signalValues.length} in ${_sw.elapsed}, ${signalValues.length / elapsed} item/ms');
-  Squadron.info('    first = ${signalValues.first}');
-  Squadron.info('    last = ${signalValues.last}');
+  rootLogger.i('    first = ${signalValues.first}');
+  rootLogger.i('    last = ${signalValues.last}');
 
   if (pool != null) {
-    Squadron.info('Pool stats');
+    rootLogger.i('Pool stats');
     final stats = pool.fullStats.toList();
     for (var i = 0; i < stats.length; i++) {
       final stat = stats[i];
-      Squadron.info(
+      rootLogger.i(
           '    #$i ${stat.status} current = ${stat.workload} / total/max/errors = ${stat.totalWorkload}/${stat.maxWorkload}/${stat.totalErrors}');
     }
   }

@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:cancelation_token/cancelation_token.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
+import '../../root_logger.dart';
 import '../vcd_generator.dart';
 import 'parser2_runner.dart';
 import 'parser2_service.dart';
@@ -64,7 +66,7 @@ class _Parser2PageState extends State<Parser2Page> {
 
   int get _batchSize => int.parse(widget._batchSize.text);
 
-  late CancellationToken _token = _createToken();
+  late CancelableToken _token = _createToken();
 
   Future<Parser2WorkerPool> _startPool() async {
     final chunks = _chunks;
@@ -92,19 +94,19 @@ class _Parser2PageState extends State<Parser2Page> {
     final token = _token;
     // same data for all tests
     _vcd = generateVCDData(_maxEntries).toList();
-    if (token.cancelled) return;
+    if (token.isCanceled) return;
     await _withoutPool(token);
-    if (token.cancelled) return;
+    if (token.isCanceled) return;
     await _withCompute(token);
-    if (token.cancelled) return;
+    if (token.isCanceled) return;
     await _withPool(token);
-    if (token.cancelled) return;
+    if (token.isCanceled) return;
     // reset data
     _vcd = null;
   }
 
-  Future _withoutPool([CancellationToken? token]) async {
-    Squadron.info('****** PARSE - WITHOUT POOL ******');
+  Future _withoutPool([CancelationToken? token]) async {
+    rootLogger.i('****** PARSE - WITHOUT POOL ******');
     try {
       _start();
       final vcd = (_vcd ??= generateVCDData(_maxEntries).toList()).toList();
@@ -115,8 +117,8 @@ class _Parser2PageState extends State<Parser2Page> {
     }
   }
 
-  Future _withCompute([CancellationToken? token]) async {
-    Squadron.info('****** PARSE - WITHOUT POOL (compute) ******');
+  Future _withCompute([CancelationToken? token]) async {
+    rootLogger.i('****** PARSE - WITHOUT POOL (compute) ******');
     try {
       _start();
       final vcd = (_vcd ??= generateVCDData(_maxEntries).toList()).toList();
@@ -129,8 +131,8 @@ class _Parser2PageState extends State<Parser2Page> {
     }
   }
 
-  Future _withPool([CancellationToken? token]) async {
-    Squadron.info('****** PARSE - WITH POOL ******');
+  Future _withPool([CancelationToken? token]) async {
+    rootLogger.i('****** PARSE - WITH POOL ******');
     try {
       _start();
       _startPool();
@@ -141,11 +143,9 @@ class _Parser2PageState extends State<Parser2Page> {
     }
   }
 
-  CancellationToken _createToken() {
-    final token = CancellationToken();
-    token.addListener(() {
-      Squadron.info('Token cancelled');
-    });
+  CancelableToken _createToken() {
+    final token = CancelableToken();
+    token.onCanceled.then((_) => rootLogger.i('Token cancelled'));
     return token;
   }
 

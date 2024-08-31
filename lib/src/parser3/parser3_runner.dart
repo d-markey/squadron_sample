@@ -1,6 +1,6 @@
 import 'package:squadron/squadron.dart';
 
-import '../../main.dart';
+import '../../root_logger.dart';
 import 'parser3_service.dart';
 
 final _sw = Stopwatch()..start();
@@ -10,24 +10,19 @@ class ParseArguments {
 
   final Parser3Service parser;
   final List<String> lines;
-  final CancellationToken token;
+  final CancelationToken token;
 }
 
 const _oneSec = Duration(seconds: 1);
 
 Future<List> parse(ParseArguments args) async {
-  if (!Squadron.isInitialized) {
-    // we're being called from a compute context
-    initSquadron('compute');
-  }
-
   final parser = args.parser;
   final lines = args.lines;
   final token = args.token;
 
-  if (token.cancelled) return [];
+  if (token.isCanceled) return [];
   await Future.delayed(_oneSec);
-  if (token.cancelled) return [];
+  if (token.isCanceled) return [];
 
   final pool = (parser is WorkerPool) ? (parser as WorkerPool) : null;
 
@@ -37,17 +32,17 @@ Future<List> parse(ParseArguments args) async {
 
   final elapsed = _sw.elapsedMilliseconds;
 
-  Squadron.info(
+  rootLogger.i(
       'DONE PARSING: total items = ${signalValues.length} in ${_sw.elapsed}, ${signalValues.length / elapsed} item/ms');
-  Squadron.info('    first = ${signalValues.first}');
-  Squadron.info('    last = ${signalValues.last}');
+  rootLogger.i('    first = ${signalValues.first}');
+  rootLogger.i('    last = ${signalValues.last}');
 
   if (pool != null) {
-    Squadron.info('Pool stats');
+    rootLogger.i('Pool stats');
     final stats = pool.fullStats.toList();
     for (var i = 0; i < stats.length; i++) {
       final stat = stats[i];
-      Squadron.info(
+      rootLogger.i(
           '    #$i ${stat.status} current = ${stat.workload} / total/max/errors = ${stat.totalWorkload}/${stat.maxWorkload}/${stat.totalErrors}');
     }
   }

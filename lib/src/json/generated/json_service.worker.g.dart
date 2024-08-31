@@ -3,7 +3,7 @@
 part of '../json_service.dart';
 
 // **************************************************************************
-// Generator: WorkerGenerator 2.4.2
+// Generator: WorkerGenerator 6.0.0
 // **************************************************************************
 
 /// WorkerService class for JsonService
@@ -15,9 +15,11 @@ class _$JsonServiceWorkerService extends JsonService implements WorkerService {
 
   late final Map<int, CommandHandler> _operations =
       Map.unmodifiable(<int, CommandHandler>{
-    _$decodeId: ($) => decode($.args[0]),
-    _$hydrateId: ($) async =>
-        (const PersonMarshaler()).marshal((await hydrate($.args[0]))),
+    _$decodeId: ($in) => decode($in.args[0] as String),
+    _$hydrateId: ($in) async {
+      final $out = await hydrate($in.args[0] as String);
+      return (const PersonMarshaler()).marshal($out);
+    },
   });
 
   static const int _$decodeId = 1;
@@ -25,24 +27,13 @@ class _$JsonServiceWorkerService extends JsonService implements WorkerService {
 }
 
 /// Service initializer for JsonService
-WorkerService $JsonServiceInitializer(WorkerRequest startRequest) =>
+WorkerService $JsonServiceInitializer(WorkerRequest $in) =>
     _$JsonServiceWorkerService();
-
-/// Operations map for JsonService
-@Deprecated(
-    'squadron_builder now supports "plain old Dart objects" as services. '
-    'Services do not need to derive from WorkerService nor do they need to mix in '
-    'with \$JsonServiceOperations anymore.')
-mixin $JsonServiceOperations on WorkerService {
-  @override
-  // not needed anymore, generated for compatibility with previous versions of squadron_builder
-  Map<int, CommandHandler> get operations => WorkerService.noOperations;
-}
 
 /// Worker for JsonService
 class JsonServiceWorker extends Worker implements JsonService {
-  JsonServiceWorker({PlatformWorkerHook? platformWorkerHook})
-      : super($JsonServiceActivator, platformWorkerHook: platformWorkerHook);
+  JsonServiceWorker({PlatformThreadHook? threadHook})
+      : super($JsonServiceActivator, threadHook: threadHook);
 
   @override
   Future<dynamic> decode(String source) =>
@@ -51,7 +42,7 @@ class JsonServiceWorker extends Worker implements JsonService {
   @override
   Future<Person> hydrate(String source) =>
       send(_$JsonServiceWorkerService._$hydrateId, args: [source])
-          .then((_) => (const PersonMarshaler()).unmarshal(_));
+          .then(($x) => (const PersonMarshaler()).unmarshal($x));
 }
 
 /// Worker pool for JsonService
@@ -59,8 +50,8 @@ class JsonServiceWorkerPool extends WorkerPool<JsonServiceWorker>
     implements JsonService {
   JsonServiceWorkerPool(
       {ConcurrencySettings? concurrencySettings,
-      PlatformWorkerHook? platformWorkerHook})
-      : super(() => JsonServiceWorker(platformWorkerHook: platformWorkerHook),
+      PlatformThreadHook? threadHook})
+      : super(() => JsonServiceWorker(threadHook: threadHook),
             concurrencySettings: concurrencySettings);
 
   @override

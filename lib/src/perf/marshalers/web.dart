@@ -50,13 +50,11 @@ class ListIntAsBufferMarshaler
 
   @override
   ByteBuffer marshal(List<int> data) {
-    // Squadron.info('Marshaling ${data.length} integers');
     return Uint32List.fromList(data).buffer;
   }
 
   @override
   List<int> unmarshal(ByteBuffer data) {
-    // Squadron.info('Unmarshaling ${data.lengthInBytes} bytes');
     return Uint32List.view(data);
   }
 }

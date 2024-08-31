@@ -4,5 +4,5 @@ import 'package:squadron/squadron.dart';
 
 import '../thumbnail_service.dart';
 
-void start(List command) =>
+void start(WorkerRequest command) =>
     run((startRequest) => ThumbnailServiceImpl(), command);
