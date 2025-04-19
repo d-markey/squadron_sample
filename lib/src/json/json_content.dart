@@ -2,37 +2,20 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:squadron/squadron.dart';
+import 'package:squadron_sample/src/_helpers/page_with_logger.dart';
 
-import '../../root_logger.dart';
 import 'json_service.dart';
 import 'model/address.dart';
 import 'model/person.dart';
 
-class JsonPage extends StatefulWidget {
-  const JsonPage({super.key, this.tabBar});
-
-  final TabBar? tabBar;
-
-  @override
-  State<JsonPage> createState() => _JsonPageState();
-}
-
-class _JsonPageState extends State<JsonPage> {
-  _JsonPageState() {
-    _worker.start();
-  }
+class JsonContent extends PageContent {
+  JsonContent() : super('SQUADRON SAMPLE - JSON');
 
   String? __jsonStr;
   String get _jsonStr => (__jsonStr ??= jsonEncode(_santaClaus.toJson()));
 
-  final _worker = JsonServiceWorker();
   Timer? _computing;
-
-  @override
-  void dispose() {
-    _worker.stop();
-    super.dispose();
-  }
 
   static final _santaClaus = Person(
       id: 1234,
@@ -50,15 +33,11 @@ class _JsonPageState extends State<JsonPage> {
   String _result = '';
   Widget? _photo;
 
-  void _refresh() {
-    setState(() {});
-  }
-
   Future _begin() {
-    _refresh();
+    refresh();
     _computing?.cancel();
     _computing = Timer.periodic(const Duration(milliseconds: 100), (timer) {
-      _refresh();
+      refresh();
     });
     return Future.delayed(const Duration(milliseconds: 500));
   }
@@ -67,7 +46,7 @@ class _JsonPageState extends State<JsonPage> {
     await Future.delayed(const Duration(milliseconds: 500));
     _computing?.cancel();
     _computing = null;
-    _refresh();
+    refresh();
   }
 
   void _showResult(Person person, int millis) {
@@ -81,78 +60,79 @@ ${person.lastName.toUpperCase()} ${person.firstName}
 ${person.addresses.take(1).map((a) => '''${a.line1}${a.line2 != null ? '\n${a.line2}' : ''}
 ${a.zip} ${a.city}
 ${a.country.toUpperCase()}''').join()}
-
 ''';
+    refresh();
   }
 
   Future _execWithDecode() async {
     _result = '';
     await _begin();
+    final worker = switch (getMode()) {
+      SquadronPlatformType.js => JsonServiceWorker.js(),
+      SquadronPlatformType.wasm => JsonServiceWorker.wasm(),
+      _ => JsonServiceWorker(),
+    };
+    await worker.start();
     final sw = Stopwatch()..start();
-    rootLogger.i('[${sw.elapsedMilliseconds} ms] Loading JSON...');
-    final jsonMap = await _worker.decode(_jsonStr);
-    rootLogger.i('[${sw.elapsedMilliseconds} ms] Loaded JSON');
-    rootLogger.i('[${sw.elapsedMilliseconds} ms] Converting to person...');
-    final person = Person.fromJson(jsonMap);
-    rootLogger.i('[${sw.elapsedMilliseconds} ms] Converted');
-    _finish();
-    setState(() {
-      _showResult(person, sw.elapsedMilliseconds);
-    });
+    Person person;
+    try {
+      log('[${sw.elapsedMilliseconds} ms] Loading JSON...');
+      final jsonMap = await worker.decode(_jsonStr);
+      log('[${sw.elapsedMilliseconds} ms] Loaded JSON');
+      log('[${sw.elapsedMilliseconds} ms] Converting to person...');
+      person = Person.fromJson(jsonMap);
+      log('[${sw.elapsedMilliseconds} ms] Converted');
+    } finally {
+      worker.stop();
+    }
+    await _finish();
+    _showResult(person, sw.elapsedMilliseconds);
   }
 
   Future _execWithHydrate() async {
     _result = '';
     await _begin();
+    final worker = switch (getMode()) {
+      SquadronPlatformType.js => JsonServiceWorker.js(),
+      SquadronPlatformType.wasm => JsonServiceWorker.wasm(),
+      _ => JsonServiceWorker(),
+    };
+    await worker.start();
     final sw = Stopwatch()..start();
-    rootLogger.i('[${sw.elapsedMilliseconds} ms] Hydrating...');
-    final person = await _worker.hydrate(_jsonStr);
-    rootLogger.i(
-        '[${sw.elapsedMilliseconds} ms] Hydrated in ${sw.elapsedMilliseconds} ms');
-    _finish();
-    setState(() {
-      _showResult(person, sw.elapsedMilliseconds);
-    });
+    Person person;
+    try {
+      log('[${sw.elapsedMilliseconds} ms] Hydrating...');
+      person = await worker.hydrate(_jsonStr);
+      log('[${sw.elapsedMilliseconds} ms] Hydrated in ${sw.elapsedMilliseconds} ms');
+    } finally {
+      worker.stop();
+    }
+    await _finish();
+    _showResult(person, sw.elapsedMilliseconds);
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('SQUADRON SAMPLE - JSON'),
-        bottom: widget.tabBar,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              _result.isEmpty ? '<no result yet>' : _result,
-            ),
-            if (_photo != null) _photo!,
-          ],
-        ),
-      ),
-      floatingActionButton: (_computing != null)
-          ? Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-              Text('tick = ${_computing?.tick}',
-                  style: const TextStyle(
-                      backgroundColor: Colors.blue, color: Colors.white)),
-            ])
-          : Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-              FloatingActionButton(
-                onPressed: _execWithDecode,
-                tooltip: 'Decode',
-                child: const Text('Decode', textAlign: TextAlign.center),
-              ),
-              FloatingActionButton(
-                onPressed: _execWithHydrate,
-                tooltip: 'Hydrate',
-                child: const Text('Hydrate', textAlign: TextAlign.center),
-              )
-            ]),
-    );
-  }
+  Widget body() => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            _result.isEmpty ? '<no result yet>' : _result,
+          ),
+          if (_photo != null) _photo!,
+        ],
+      );
+
+  @override
+  List<Widget> actions() => (_computing != null)
+      ? [
+          Text('tick = ${_computing?.tick}',
+              style: const TextStyle(
+                  backgroundColor: Colors.blue, color: Colors.white)),
+        ]
+      : [
+          action(onPressed: _execWithDecode, label: 'Decode'),
+          action(onPressed: _execWithHydrate, label: 'Hydrate')
+        ];
 }
 
 const _b64 =

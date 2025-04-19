@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert' show jsonDecode;
 
 import 'package:squadron/squadron.dart';
-import 'package:squadron_sample/web.g.dart';
 
 import '../../root_logger.dart';
 import 'generated/json_service.activator.g.dart';
@@ -11,7 +10,7 @@ import 'model/person.dart';
 
 part 'generated/json_service.worker.g.dart';
 
-@SquadronService(baseUrl: '/workers', wasm: workerExt == 'wasm')
+@SquadronService(baseUrl: '/workers')
 class JsonService {
   @SquadronMethod()
   Future<dynamic> decode(String source) async {

@@ -1,10 +1,15 @@
 import 'dart:async';
 
+import 'package:cancelation_token/cancelation_token.dart';
 import 'package:squadron/squadron.dart';
 
 import '../../root_logger.dart';
+import 'generated/parser2_service.activator.g.dart';
 
-class Parser2Service implements WorkerService {
+part 'generated/parser2_service.worker.g.dart';
+
+@SquadronService(baseUrl: '~/workers')
+class Parser2Service {
   Parser2Service(int batchSize) : _batchSize = batchSize;
 
   static const _timeStampMarker = '#';
@@ -22,6 +27,7 @@ class Parser2Service implements WorkerService {
 
   // to avoid too much serialization/deserialization, use only List and Map (not List<T> nor Map<K, V>)
   // make sure these lists and maps contain only base types (string, bool, num)
+  @squadronMethod
   Stream<List<dynamic>> parse(List lines, [CancelationToken? token]) async* {
     final sw = Stopwatch()..start();
     // load first timestamp
@@ -63,16 +69,4 @@ class Parser2Service implements WorkerService {
 
     rootLogger.i('[${sw.elapsed}] parsed ${lines.length} lines');
   }
-
-  // command IDs
-  static const parseCommand = 1;
-
-  // command IDs --> command implementations
-  @override
-  Map<int, CommandHandler> get operations => {
-        parseCommand: (r) {
-          rootLogger.d('parse command received in ${r.travelTime} µs');
-          return parse(r.args, r.cancelToken);
-        },
-      };
 }

@@ -5,4 +5,3 @@ import 'stub.dart'
 const personMarshaler = StringPersonMarshaler();
 const intListAsStringMarshaler = ListIntAsStringMarshaler();
 const intListAsBufferMarshaler = ListIntAsBufferMarshaler();
-const bigIntMarshaler = BigIntMarshaler();

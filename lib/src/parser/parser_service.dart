@@ -1,21 +1,27 @@
 import 'dart:async';
 
+import 'package:cancelation_token/cancelation_token.dart';
 import 'package:squadron/squadron.dart';
 
 import '../../root_logger.dart';
+import 'generated/parser_service.activator.g.dart';
 
-class ParserService implements WorkerService {
+part 'generated/parser_service.worker.g.dart';
+
+@SquadronService(baseUrl: '~/workers')
+class ParserService {
   ParserService();
 
   static const _timeStampMarker = '#';
 
   // to avoid too much serialization/deserialization, use only List and Map (not List<T> nor Map<K, V>)
   // make sure these lists and maps contain only base types (string, bool, num)
-  Future<List> parse(List lines, [CancelationToken? token]) async {
+  @squadronMethod
+  Future<List> parse(List<String> lines, [CancelationToken? token]) async {
     final sw = Stopwatch()..start();
     // load first timestamp
     // note: we KNOW that items in 'lines' are strings, so we force 'line' to be a String
-    String line = lines[0];
+    var line = lines[0];
     if (!line.startsWith(_timeStampMarker)) throw Exception('Invalid data');
     int timeStamp = int.parse(line.substring(_timeStampMarker.length));
 
@@ -39,16 +45,4 @@ class ParserService implements WorkerService {
         '[${sw.elapsed}] parsed ${lines.length} and extracted ${signalValues.length / 3} signal values');
     return signalValues;
   }
-
-  // command IDs
-  static const parseCommand = 1;
-
-  // command IDs --> command implementations
-  @override
-  Map<int, CommandHandler> get operations => {
-        parseCommand: (r) {
-          rootLogger.d('parse command received in ${r.travelTime} µs');
-          return parse(r.args, r.cancelToken);
-        },
-      };
 }

@@ -1,14 +1,18 @@
 import 'dart:async';
+import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:squadron/squadron.dart';
-import 'package:squadron_sample/web.g.dart';
 
 import 'generated/codegen.activator.g.dart';
 
 part 'generated/codegen.worker.g.dart';
 
-@SquadronService(baseUrl: '/workers', wasm: workerExt == 'wasm')
+@SquadronService(baseUrl: '/workers')
 class CodeGen {
-  @SquadronMethod()
-  Future<int> inc(int n) async => n + 1;
+  @squadronMethod
+  FutureOr<Uint8List?> pdf(Uint8List? data) => Random().nextBool()
+      ? null
+      : Uint8List.fromList(
+          data?.map((x) => x + 1).toList() ?? Uint8List.fromList([11, 13, 17]));
 }

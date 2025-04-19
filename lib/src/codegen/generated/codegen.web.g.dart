@@ -1,7 +1,8 @@
+// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 // **************************************************************************
-// Generator: WorkerGenerator 6.0.0
+// Generator: WorkerGenerator 7.1.1 (Squadron 7.1.1)
 // **************************************************************************
 
 import 'package:squadron/squadron.dart';
@@ -13,5 +14,12 @@ void main() {
   run($CodeGenInitializer);
 }
 
-EntryPoint $getCodeGenActivator() =>
-    Uri.parse('/workers/codegen.web.g.dart.wasm');
+EntryPoint $getCodeGenActivator(SquadronPlatformType platform) {
+  if (platform.isJs) {
+    return Squadron.uri('/workers/codegen.web.g.dart.js');
+  } else if (platform.isWasm) {
+    return Squadron.uri('/workers/codegen.web.g.dart.wasm');
+  } else {
+    throw UnsupportedError('${platform.label} not supported.');
+  }
+}

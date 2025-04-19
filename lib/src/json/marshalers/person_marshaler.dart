@@ -9,7 +9,7 @@ class PersonMarshaler extends SquadronMarshaler<Person, Map> {
   const PersonMarshaler() : super();
 
   @override
-  Map marshal(Person data) => {
+  Map marshal(Person data, [MarshalingContext? context]) => {
         'i': data.id,
         'l': data.lastName,
         'f': data.firstName,
@@ -19,7 +19,7 @@ class PersonMarshaler extends SquadronMarshaler<Person, Map> {
       };
 
   @override
-  Person unmarshal(Map data) {
+  Person unmarshal(Map data, [MarshalingContext? context]) {
     final p = Person(id: data['i'], lastName: data['l'], firstName: data['f']);
     final d = data['d'];
     if (d != null) {

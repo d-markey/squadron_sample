@@ -5,41 +5,14 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
-import '../../root_logger.dart';
+import '../_helpers/page_with_logger.dart';
 import 'generic_data.dart';
 import 'perf.dart';
 
-class PerfPage extends StatefulWidget {
-  const PerfPage({super.key, this.tabBar});
-
-  final TabBar? tabBar;
-
-  @override
-  State<PerfPage> createState() => _PerfPageState();
-}
-
-class _PerfPageState extends State<PerfPage> {
-  _PerfPageState();
+class PerfContent extends PageContent {
+  PerfContent() : super('SQUADRON SAMPLE - PERF');
 
   final _service = Perf(PerfContext.singleton);
-  final _worker = PerfWorker(PerfContext.singleton);
-  final _workerPool = PerfWorkerPool(PerfContext.singleton,
-      concurrencySettings:
-          const ConcurrencySettings(minWorkers: 3, maxWorkers: 3));
-
-  @override
-  void initState() {
-    _worker.start();
-    _workerPool.start();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _worker.stop();
-    _workerPool.stop();
-    super.dispose();
-  }
 
   int? result;
 
@@ -58,7 +31,7 @@ class _PerfPageState extends State<PerfPage> {
     void checkBigInt(BigInt res, BigInt expected) async {
       await Future.delayed(Duration.zero);
       if (res != expected) {
-        rootLogger.i('woops');
+        log('woops');
       }
     }
 
@@ -76,11 +49,10 @@ class _PerfPageState extends State<PerfPage> {
         futures.add(perfTester.add(x, y).then((res) => checkBigInt(res, sum)));
       }
     }
-    rootLogger.i(
-        '[${perfTester.runtimeType}] 1. add bigInts in progress (${sw.elapsed})');
+    log('[${perfTester.runtimeType}] 1. add bigInts in progress (${sw.elapsed})');
     await Future.wait(futures);
     sw.stop();
-    rootLogger.i('[${perfTester.runtimeType}] 1. add bigInts: ${sw.elapsed}');
+    log('[${perfTester.runtimeType}] 1. add bigInts: ${sw.elapsed}');
 
     final me = Person('DOE', 'John', DateTime(1980, 01, 01));
     void checkPerson(Person res) async {
@@ -88,7 +60,7 @@ class _PerfPageState extends State<PerfPage> {
       if (res.lastName != me.lastName ||
           res.firstName != me.firstName ||
           res.dob != me.dob) {
-        rootLogger.i('woops');
+        log('woops');
       }
     }
 
@@ -100,8 +72,7 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    rootLogger
-        .i('[${perfTester.runtimeType}] 2. sendGenericData: ${sw.elapsed}');
+    log('[${perfTester.runtimeType}] 2. sendGenericData: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -112,14 +83,13 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    rootLogger.i(
-        '[${perfTester.runtimeType}] 3. sendGenericDataAsJson: ${sw.elapsed}');
+    log('[${perfTester.runtimeType}] 3. sendGenericDataAsJson: ${sw.elapsed}');
 
     final list = List<int>.generate(len, (i) => i + 1);
     void checkList(List res) async {
       await Future.delayed(Duration.zero);
       if (res.length != len || res.first > 0) {
-        rootLogger.i('woops');
+        log('woops');
       }
     }
 
@@ -131,7 +101,7 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    rootLogger.i('[${perfTester.runtimeType}] 4. in list: ${sw.elapsed}');
+    log('[${perfTester.runtimeType}] 4. in list: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -139,7 +109,7 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    rootLogger.i('[${perfTester.runtimeType}] 5. in buffer: ${sw.elapsed}');
+    log('[${perfTester.runtimeType}] 5. in buffer: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -147,7 +117,7 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    rootLogger.i('[${perfTester.runtimeType}] 6. in json: ${sw.elapsed}');
+    log('[${perfTester.runtimeType}] 6. in json: ${sw.elapsed}');
 
     // measure perf when receiving results
 
@@ -157,7 +127,7 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    rootLogger.i('[${perfTester.runtimeType}] 7. out list: ${sw.elapsed}');
+    log('[${perfTester.runtimeType}] 7. out list: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -168,7 +138,7 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    rootLogger.i('[${perfTester.runtimeType}] 8. out buffer: ${sw.elapsed}');
+    log('[${perfTester.runtimeType}] 8. out buffer: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -179,7 +149,7 @@ class _PerfPageState extends State<PerfPage> {
     }
     await Future.wait(futures);
     sw.stop();
-    rootLogger.i('[${perfTester.runtimeType}] 9. out json: ${sw.elapsed}');
+    log('[${perfTester.runtimeType}] 9. out json: ${sw.elapsed}');
 
     // native data structures
     const keys = 'abcdefghijklmnopqrstuvwxyz';
@@ -189,84 +159,87 @@ class _PerfPageState extends State<PerfPage> {
         List.generate(keys.length, (index) => List.filled(index * len, 0)));
     reset();
     for (var i = 0; i < loops; i++) {
-      futures.add(perfTester.native(dataIn));
+      futures.add(perfTester.noInspect(dataIn));
     }
     await Future.wait(futures);
     sw.stop();
-    rootLogger.i(
-        '[${perfTester.runtimeType}] 10. native with List<int>: ${sw.elapsed}');
+    log('[${perfTester.runtimeType}] 10. native with List<int>: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
-      futures.add(perfTester.native_inspect(dataIn));
+      futures.add(perfTester.inspect(dataIn));
     }
     await Future.wait(futures);
     sw.stop();
-    rootLogger.i(
-        '[${perfTester.runtimeType}] 11. native_inspect with List<int>: ${sw.elapsed}');
+    log('[${perfTester.runtimeType}] 11. native_inspect with List<int>: ${sw.elapsed}');
 
     final dataIn2 = Map.fromIterables(
         List.generate(keys.length, (index) => keys[index]),
         List.generate(keys.length, (index) => Uint32List(index * len)));
     reset();
     for (var i = 0; i < loops; i++) {
-      futures.add(perfTester.native(dataIn2));
+      futures.add(perfTester.noInspect(dataIn2));
     }
     await Future.wait(futures);
     sw.stop();
-    rootLogger.i(
-        '[${perfTester.runtimeType}] 12. native with Uint32List: ${sw.elapsed}');
+    log('[${perfTester.runtimeType}] 12. native with Uint32List: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
-      futures.add(perfTester.native_inspect(dataIn2));
+      futures.add(perfTester.inspect(dataIn2));
     }
     await Future.wait(futures);
     sw.stop();
-    rootLogger.i(
-        '[${perfTester.runtimeType}] 13. native_inspect with Uint32List: ${sw.elapsed}');
+    log('[${perfTester.runtimeType}] 13. native_inspect with Uint32List: ${sw.elapsed}');
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('SQUADRON SAMPLE - PERF'),
-          bottom: widget.tabBar,
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                result?.toString() ?? '<no result yet>',
-              ),
-            ],
-          ),
-        ),
-        floatingActionButton:
-            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-          FloatingActionButton(
-            onPressed: () async {
-              await _execWith(_service);
-            },
-            tooltip: 'No Thread',
-            child: const Text('No Thread', textAlign: TextAlign.center),
-          ),
-          FloatingActionButton(
-            onPressed: () async {
-              await _execWith(_worker);
-            },
-            tooltip: 'Thread',
-            child: const Text('Thread', textAlign: TextAlign.center),
-          ),
-          FloatingActionButton(
-            onPressed: () async {
-              await _execWith(_workerPool);
-            },
-            tooltip: 'Thread Pool',
-            child: const Text('Thread Pool', textAlign: TextAlign.center),
-          ),
-        ]));
+  Widget body() => Text(result?.toString() ?? '<no result yet>');
+
+  Future<dynamic> _execWithService() => _execWith(_service);
+
+  Future<dynamic> _execWithWorker() async {
+    final worker = switch (getMode()) {
+      SquadronPlatformType.js => PerfWorker.js(PerfContext.singleton),
+      SquadronPlatformType.wasm => PerfWorker.wasm(PerfContext.singleton),
+      _ => PerfWorker(PerfContext.singleton),
+    };
+    await worker.start();
+    try {
+      return await _execWith(worker);
+    } finally {
+      worker.stop();
+    }
   }
+
+  Future<dynamic> _execWithPool() async {
+    final concurrency = ConcurrencySettings(minWorkers: 3, maxWorkers: 3);
+    final pool = switch (getMode()) {
+      SquadronPlatformType.js => PerfWorkerPool.js(
+          PerfContext.singleton,
+          concurrencySettings: concurrency,
+        ),
+      SquadronPlatformType.wasm => PerfWorkerPool.wasm(
+          PerfContext.singleton,
+          concurrencySettings: concurrency,
+        ),
+      _ => PerfWorkerPool(
+          PerfContext.singleton,
+          concurrencySettings: concurrency,
+        ),
+    };
+    await pool.start();
+    try {
+      return await _execWith(pool);
+    } finally {
+      pool.stop();
+    }
+  }
+
+  @override
+  List<Widget> actions() => [
+        action(onPressed: _execWithService, label: 'No Thread'),
+        action(onPressed: _execWithWorker, label: 'Thread'),
+        action(onPressed: _execWithPool, label: 'Thread Pool'),
+      ];
 }

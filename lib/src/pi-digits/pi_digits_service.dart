@@ -1,30 +1,26 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:cancelation_token/cancelation_token.dart';
 import 'package:squadron/squadron.dart';
 
 import '../../root_logger.dart';
+import 'generated/pi_digits_service.activator.g.dart';
 
-abstract class PiDigitsService {
-  Stream<int> getNDigits(int start, int n, CancelationToken? token);
-  FutureOr<int> getNth(int n);
-
-  static const getNthCommand = 1;
-  static const getNDigitsCommand = 2;
-}
+part 'generated/pi_digits_service.worker.g.dart';
 
 void _noop() {}
 Future noop() => Future(_noop);
 
-class PiDigitsServiceImpl implements PiDigitsService, WorkerService {
-  PiDigitsServiceImpl() {
+@SquadronService(baseUrl: '~/workers')
+class PiDigitsService {
+  PiDigitsService() {
     rootLogger
         .i('PiDigitsServiceImpl instantiated, hashCode = ${hashCode.hex}');
   }
 
   // see https://dept-info.labri.fr/~denis/Enseignement/2017-PG306/TP01/pi.java
-
-  @override
+  @squadronMethod
   Stream<int> getNDigits(int start, int n, CancelationToken? token) async* {
     rootLogger.i('digits $start-${start + n} started...');
     final end = start + n;
@@ -42,7 +38,6 @@ class PiDigitsServiceImpl implements PiDigitsService, WorkerService {
     rootLogger.i('digits $start-${start + n} done.');
   }
 
-  @override
   int getNth(int n) {
     if (n < 0) return -1;
     n -= 1;
@@ -95,19 +90,4 @@ class PiDigitsServiceImpl implements PiDigitsService, WorkerService {
     }
     return tempo;
   }
-
-  @override
-  late final Map<int, CommandHandler> operations = {
-    PiDigitsService.getNthCommand: (r) {
-      rootLogger
-          .i('received command ${PiDigitsService.getNthCommand}, args = $r');
-      return getNth(Cast.toInt(r.args[0]));
-    },
-    PiDigitsService.getNDigitsCommand: (r) {
-      rootLogger.i(
-          'received command ${PiDigitsService.getNDigitsCommand}, args = $r');
-      return getNDigits(
-          Cast.toInt(r.args[0]), Cast.toInt(r.args[1]), r.cancelToken);
-    },
-  };
 }

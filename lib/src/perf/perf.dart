@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:squadron/squadron.dart';
-import 'package:squadron_sample/web.g.dart';
 
 import 'generated/perf.activator.g.dart';
 import 'generic_data.dart';
@@ -40,17 +39,12 @@ class PerfContext {
   Map toJson() => const {};
 }
 
-@SquadronService(baseUrl: '/workers', wasm: workerExt == 'wasm')
+@SquadronService(baseUrl: '/workers')
 class Perf {
   Perf(PerfContext context);
 
   @SquadronMethod()
-  @bigIntMarshaler
-  Future<BigInt> add(
-    @bigIntMarshaler BigInt a,
-    @bigIntMarshaler BigInt b,
-  ) async =>
-      a + b;
+  Future<BigInt> add(BigInt a, BigInt b) async => a + b;
 
   @SquadronMethod()
   Future<Person> sendGenericData(GenericData<Person> personData) async =>
@@ -90,10 +84,9 @@ class Perf {
       jsonEncode(data.map((n) => -n).toList());
 
   @SquadronMethod(inspectRequest: true, inspectResponse: true)
-  Future<Map<String, dynamic>> native_inspect(
-          Map<String, dynamic> data) async =>
-      data;
+  Future<Map<String, dynamic>> inspect(Map<String, dynamic> data) async => data;
 
   @SquadronMethod()
-  Future<Map<String, dynamic>> native(Map<String, dynamic> data) async => data;
+  Future<Map<String, dynamic>> noInspect(Map<String, dynamic> data) async =>
+      data;
 }

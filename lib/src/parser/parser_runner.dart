@@ -1,6 +1,8 @@
+import 'package:cancelation_token/cancelation_token.dart';
 import 'package:squadron/squadron.dart';
 
 import '../../root_logger.dart';
+import '../_helpers/worker_status.dart';
 import '../signal_value.dart';
 import 'parser_service.dart';
 
@@ -15,7 +17,7 @@ class ParseArguments {
   final CancelationToken token;
 }
 
-const _oneSec = Duration(seconds: 1);
+const _tenMs = Duration(milliseconds: 10);
 
 Future<List> parse(ParseArguments args) async {
   final parser = args.parser;
@@ -24,7 +26,7 @@ Future<List> parse(ParseArguments args) async {
   final token = args.token;
 
   if (token.isCanceled) return [];
-  await Future.delayed(_oneSec);
+  await Future.delayed(_tenMs);
   if (token.isCanceled) return [];
 
   final pool = (parser is WorkerPool) ? (parser as WorkerPool) : null;
@@ -94,7 +96,7 @@ Future<List> parse(ParseArguments args) async {
   }
 
   // just to see ticks start again
-  await Future.delayed(_oneSec);
+  await Future.delayed(_tenMs);
 
   return signalValues;
 }

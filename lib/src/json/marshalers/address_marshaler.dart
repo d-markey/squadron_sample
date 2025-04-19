@@ -6,7 +6,7 @@ class AddressMarshaler extends SquadronMarshaler<Address, Map> {
   const AddressMarshaler() : super();
 
   @override
-  Map marshal(Address data) => {
+  Map marshal(Address data, [MarshalingContext? context]) => {
         'i': data.id,
         '1': data.line1,
         '2': data.line2,
@@ -16,7 +16,7 @@ class AddressMarshaler extends SquadronMarshaler<Address, Map> {
       };
 
   @override
-  Address unmarshal(Map data) => Address(
+  Address unmarshal(Map data, [MarshalingContext? context]) => Address(
       id: data['i'],
       line1: data['1'],
       line2: data['2'],

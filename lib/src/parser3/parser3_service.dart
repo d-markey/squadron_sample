@@ -1,16 +1,22 @@
 import 'dart:async';
 
+import 'package:cancelation_token/cancelation_token.dart';
 import 'package:squadron/squadron.dart';
 
 import '../../root_logger.dart';
 import '../signal_value.dart';
+import 'generated/parser3_service.activator.g.dart';
 
+part 'generated/parser3_service.worker.g.dart';
+
+@SquadronService(baseUrl: '~/workers')
 class Parser3Service {
   Parser3Service(this.maxDelayInMs);
 
   static const _timeStampMarker = '#';
   final int maxDelayInMs;
 
+  @squadronMethod
   Future<List<SignalValue>> parse(List<String> lines,
       [CancelationToken? token]) async {
     final sw = Stopwatch()..start();

@@ -1,39 +1,29 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:squadron/squadron.dart';
 
 import '../../root_logger.dart';
-import 'local_size_service.dart';
+import 'generated/text_size_service.activator.g.dart';
+import 'local_size_interface.dart';
 
-// this abstract class represents the functionality you want to support in your service
-abstract class TextSizeService {
-  FutureOr doSomethingWithTexts(List texts);
+part 'generated/text_size_service.worker.g.dart';
 
-  // this constant is used to identify the method to call when communicating with isolates / web workers
-  static const doSomethingWithTextsCommand = 1;
-}
+@SquadronService(baseUrl: '~/workers')
+class TextSizeService {
+  TextSizeService(@localWorker this.sizeService);
 
-// this class is the actual implementation of the service defined above
-class TextSizeServiceImpl implements TextSizeService, WorkerService {
-  TextSizeServiceImpl(this._sizeService);
+  final ILocalSize sizeService;
 
-  // in Workers, the _sizeService will be set to a SizeClient to communicate with the TextSizeServer in the main Isolate
-  final LocalSizeService _sizeService;
-
-  @override
-  Future doSomethingWithTexts(List texts) async {
+  @squadronMethod
+  Future<String> doSomethingWithTexts(List<String> texts) async {
+    final res = <String, String>{};
     for (String text in texts) {
-      final size = await _sizeService.measure(text);
-      rootLogger.i(
-          '${text.replaceAll('\r', '\\r').replaceAll('\n', '\\n')} --> ${size['w']}x${size['h']}');
+      final size = await sizeService.measure(text);
+      final key = text.replaceAll('\r', '\\r').replaceAll('\n', '\\n');
+      res[key] = '${size['w']}x${size['h']}';
+      rootLogger.i('$key --> ${res[key]}');
     }
+    return jsonEncode(res);
   }
-
-  // this map creates the correspondance between the service constants from MyWorkerService
-  // and the method implementations in MyWorkerServiceImpl
-  @override
-  late final Map<int, CommandHandler> operations = {
-    TextSizeService.doSomethingWithTextsCommand: (r) =>
-        doSomethingWithTexts(r.args[0])
-  };
 }

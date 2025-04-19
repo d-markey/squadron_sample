@@ -5,32 +5,11 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
-import '../../root_logger.dart';
-import 'thumbnail_worker_pool.dart';
+import '../_helpers/page_with_logger.dart';
+import 'thumbnail_service.dart';
 
-class ThumbnailPage extends StatefulWidget {
-  const ThumbnailPage({super.key, this.tabBar});
-
-  final TabBar? tabBar;
-
-  @override
-  State<ThumbnailPage> createState() => _ThumbnailPageState();
-}
-
-class _ThumbnailPageState extends State<ThumbnailPage> {
-  _ThumbnailPageState()
-      : _thumbnailWorkerPool = ThumbnailWorkerPool(const ConcurrencySettings(
-            minWorkers: 1, maxWorkers: 4, maxParallel: 1)) {
-    _thumbnailWorkerPool.start();
-  }
-
-  final ThumbnailWorkerPool _thumbnailWorkerPool;
-
-  @override
-  void dispose() {
-    _thumbnailWorkerPool.stop();
-    super.dispose();
-  }
+class ThumbnailContent extends PageContent {
+  ThumbnailContent() : super('SQUADRON SAMPLE - THUMBNAILS');
 
   List<Uint8List>? _images;
   List<Uint8List>? _thumbnails;
@@ -38,10 +17,9 @@ class _ThumbnailPageState extends State<ThumbnailPage> {
   Future _selectImage() async {
     // resetting UI
     if (_images != null) {
-      setState(() {
-        _images = null;
-        _thumbnails = null;
-      });
+      _images = null;
+      _thumbnails = null;
+      refresh();
     }
 
     // have the user pick a set of images or take pictures
@@ -52,83 +30,88 @@ class _ThumbnailPageState extends State<ThumbnailPage> {
       base64Decode(squadronIcon),
     ];
 
-    // get the thumbnails from ThumbnailService via Squadron
-    final thumbnails = <Uint8List>[];
-    final futures = <Future<Uint8List>>[];
-    for (var i = 0; i < images.length; i++) {
-      futures.add(Future<Uint8List>(() async {
-        rootLogger.i('Loading image #$i...');
-        final sw = Stopwatch()..start();
-        final t = await _thumbnailWorkerPool.getThumbnail(images[i], 32, 32);
-        sw.stop();
-        rootLogger.i('Image #$i loaded in ${sw.elapsed}');
-        return t;
-      }));
-    }
-    thumbnails.addAll(await Future.wait(futures));
+    final concurrency =
+        ConcurrencySettings(minWorkers: 1, maxWorkers: 4, maxParallel: 1);
+    final pool = switch (getMode()) {
+      SquadronPlatformType.js =>
+        ThumbnailServiceWorkerPool.js(concurrencySettings: concurrency),
+      SquadronPlatformType.wasm =>
+        ThumbnailServiceWorkerPool.wasm(concurrencySettings: concurrency),
+      _ => ThumbnailServiceWorkerPool(concurrencySettings: concurrency)
+    };
+    await pool.start();
 
-    // do something with the thumbnails, eg. display on UI, send to a backend, write to a file or database...
-    setState(() {
+    try {
+      // get the thumbnails from ThumbnailService via Squadron
+      final thumbnails = <Uint8List>[];
+      final futures = <Future<Uint8List>>[];
+      for (var i = 0; i < images.length; i++) {
+        futures.add(Future<Uint8List>(() async {
+          log('Loading image #$i...');
+          final sw = Stopwatch()..start();
+          final t = await pool.getThumbnail(images[i], 32, 32);
+          log('Image #$i loaded in ${sw.elapsed}');
+          return t;
+        }));
+      }
+      thumbnails.addAll(await Future.wait(futures));
+
+      // do something with the thumbnails, eg. display on UI, send to a backend, write to a file or database...
       _images = images;
       _thumbnails = thumbnails;
-    });
+    } finally {
+      pool.stop();
+    }
+    refresh();
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget body() {
     final labels = [
       'Dart',
       'Flutter',
       'Squadron',
     ];
 
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('SQUADRON SAMPLE - THUMBNAILS'),
-          bottom: widget.tabBar,
-        ),
-        body: Center(
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          TextButton(
-            onPressed: () => _selectImage(),
-            child: const Text('Select Image'),
-          ),
-          if (_images == null)
-            Padding(
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [Image.memory(base64Decode(pickIcon))])),
-          if (_images != null)
-            Padding(
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: _images!
-                        .indexMap((n, i) => Column(
-                            children: [Text(labels[n]), Image.memory(i)]))
-                        .toList())),
-          if (_thumbnails != null)
-            Padding(
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: _thumbnails!
-                        .indexMap((n, t) => Column(
-                            children: [Text('Thumbnail #$n'), Image.memory(t)]))
-                        .toList())),
-        ])));
+    return Center(
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      TextButton(
+        onPressed: () => _selectImage(),
+        child: const Text('Select Image'),
+      ),
+      if (_images == null)
+        Padding(
+            padding: const EdgeInsets.all(8),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [Image.memory(base64Decode(pickIcon))])),
+      if (_images != null)
+        Padding(
+            padding: const EdgeInsets.all(8),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: _images!.indexed
+                    .map((item) => Column(children: [
+                          Text(labels[item.$1]),
+                          Image.memory(item.$2),
+                        ]))
+                    .toList())),
+      if (_thumbnails != null)
+        Padding(
+            padding: const EdgeInsets.all(8),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: _thumbnails!.indexed
+                    .map((item) => Column(children: [
+                          Text('Thumbnail #${item.$1}'),
+                          Image.memory(item.$2),
+                        ]))
+                    .toList())),
+    ]));
   }
-}
 
-extension IndexedIterableExt<T> on Iterable<T> {
-  Iterable<V> indexMap<V>(V Function(int index, T item) projector) sync* {
-    int idx = 0;
-    for (var item in this) {
-      yield projector(idx++, item);
-    }
-  }
+  @override
+  List<Widget> actions() => [];
 }
 
 // hard-coded images

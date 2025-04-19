@@ -12,7 +12,7 @@ external JSObject? get _flutter;
 
 Object? get buildConfig => _flutter?['buildConfig'].dartify();
 
-final String threadLocation =
+final String threadLocationImpl =
     'Web Worker ${location.dartify().toString()} with config=$buildConfig; WasmGC = ${checkWasmGcSupport()}';
 
 bool checkWasmGcSupport() {

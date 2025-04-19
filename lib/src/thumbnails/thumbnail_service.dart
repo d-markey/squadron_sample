@@ -4,39 +4,18 @@ import 'dart:typed_data';
 import 'package:image/image.dart';
 import 'package:squadron/squadron.dart';
 
-import '../../root_logger.dart';
+import 'generated/thumbnail_service.activator.g.dart';
 
-// this abstract class represents the functionality you want to support in your service
-//
-// in this example, there is only one functionality: given an image represented by imageData,
-// compute a thumbnail of size (thumbWidth, thumbHeight)
-abstract class ThumbnailService {
-  FutureOr<Uint8List> getThumbnail(
-      Uint8List imageData, int thumbWidth, int thumbHeight);
+part 'generated/thumbnail_service.worker.g.dart';
 
-  // this constant is used to identify the method to call when communicating with isolates / web workers
-  static const getThumbnailCommand = 1;
-}
-
-// this class is the actual implementation of the service defined above
-class ThumbnailServiceImpl implements ThumbnailService, WorkerService {
-  @override
+@SquadronService(baseUrl: '~/workers')
+class ThumbnailService {
+  @squadronMethod
   FutureOr<Uint8List> getThumbnail(
       Uint8List imageData, int thumbWidth, int thumbHeight) {
     // implementation using the image package (https://pub.dev/packages/image)
     var image = decodeImage(imageData)!;
     var thumbnail = copyResize(image, width: thumbWidth, height: thumbHeight);
-    return Uint8List.fromList(encodePng(thumbnail));
+    return encodePng(thumbnail);
   }
-
-  // this map creates the correspondance between the service constants from ThumbnailService
-  // and the method implementations in ThumbnailServiceImpl
-  @override
-  late final Map<int, CommandHandler> operations = {
-    ThumbnailService.getThumbnailCommand: (r) {
-      rootLogger.i('Received getThumbnailCommand in ${r.travelTime} µs');
-      return getThumbnail(
-          r.args[0], Cast.toInt(r.args[1]), Cast.toInt(r.args[2]));
-    }
-  };
 }
