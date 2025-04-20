@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
-import '../_helpers/page_with_logger.dart';
+import '../_helpers/page_content.dart';
+import '../logging_service.dart';
 import 'local_size_service.dart';
 import 'text_size_service.dart';
 
@@ -14,9 +15,11 @@ class TextSizeContent extends PageContent {
 
   Future _getTextsSizes() async {
     final worker = switch (getMode()) {
-      SquadronPlatformType.js => TextSizeServiceWorker.js(_localService),
-      SquadronPlatformType.wasm => TextSizeServiceWorker.wasm(_localService),
-      _ => TextSizeServiceWorker(_localService),
+      SquadronPlatformType.js =>
+        TextSizeServiceWorker.js(mainLogger, _localService),
+      SquadronPlatformType.wasm =>
+        TextSizeServiceWorker.wasm(mainLogger, _localService),
+      _ => TextSizeServiceWorker(mainLogger, _localService),
     };
     try {
       await worker.start();

@@ -1,31 +1,31 @@
-@SET OPTIM=-O2
+@SET OPTIM=-O1
 @ECHO.Compile Web workers to JavaScript, optim = %OPTIM%...
 @ECHO.
 @ECHO.   pi_digits_worker.dart...
-@CALL dart compile js .\lib\src\pi-digits\generated\pi_digits_service.web.g.dart -o .\web\workers\pi_digits_service.web.g.dart.js %OPTIM% & ECHO ON
+@CALL dart compile js .\lib\src\pi-digits\_gen\pi_digits_service.web.g.dart -o .\web\workers\pi_digits_service.web.g.dart.js %OPTIM% & ECHO ON
 @ECHO.
 @ECHO.   thumbnail_worker.dart...
-@CALL dart compile js .\lib\src\thumbnails\generated\thumbnail_service.web.g.dart -o .\web\workers\thumbnail_service.web.g.dart.js %OPTIM% & ECHO ON
+@CALL dart compile js .\lib\src\thumbnails\_gen\thumbnail_service.web.g.dart -o .\web\workers\thumbnail_service.web.g.dart.js %OPTIM% & ECHO ON
 @ECHO.
 @ECHO.   text_size_worker.dart...
-@CALL dart compile js .\lib\src\text-size\generated\text_size_service.web.g.dart -o .\web\workers\text_size_service.web.g.dart.js %OPTIM% & ECHO ON
+@CALL dart compile js .\lib\src\text-size\_gen\text_size_service.web.g.dart -o .\web\workers\text_size_service.web.g.dart.js %OPTIM% & ECHO ON
 @ECHO.
 @ECHO.   parser_worker.dart...
-@CALL dart compile js .\lib\src\parser\generated\parser_service.web.g.dart -o .\web\workers\parser_service.web.g.dart.js %OPTIM% & ECHO ON
+@CALL dart compile js .\lib\src\parser\_gen\parser_service.web.g.dart -o .\web\workers\parser_service.web.g.dart.js %OPTIM% & ECHO ON
 @ECHO.
 @ECHO.   parser2_worker.dart...
-@CALL dart compile js .\lib\src\parser2\generated\parser2_service.web.g.dart -o .\web\workers\parser2_service.web.g.dart.js %OPTIM% & ECHO ON
+@CALL dart compile js .\lib\src\parser2\_gen\parser2_service.web.g.dart -o .\web\workers\parser2_service.web.g.dart.js %OPTIM% & ECHO ON
 @ECHO.
-@ECHO.   parser3_worker.dart...
-@CALL dart compile js .\lib\src\parser3\generated\parser3_service.web.g.dart -o .\web\workers\parser3_service.web.g.dart.js %OPTIM% & ECHO ON
-@ECHO.
-@ECHO.   codegen.web.g.dart...
-@CALL dart compile js .\lib\src\codegen\generated\codegen.web.g.dart -o .\web\workers\codegen.web.g.dart.js %OPTIM% & ECHO ON
+@ECHO.   uint8list_service.web.g.dart...
+@CALL dart compile js .\lib\src\uint8list\_gen\uint8list_service.web.g.dart -o .\web\workers\uint8list_service.web.g.dart.js %OPTIM% & ECHO ON
 @ECHO.
 @ECHO.   perf.web.g.dart...
-@CALL dart compile js .\lib\src\perf\generated\perf.web.g.dart -o .\web\workers\perf.web.g.dart.js %OPTIM% & ECHO ON
+@CALL dart compile js .\lib\src\perf\_gen\perf.web.g.dart -o .\web\workers\perf.web.g.dart.js %OPTIM% & ECHO ON
 @ECHO.
 @ECHO.   json_service.web.g.dart...
-@CALL dart compile js .\lib\src\json\generated\json_service.web.g.dart -o .\web\workers\json_service.web.g.dart.js %OPTIM% & ECHO ON
+@CALL dart compile js .\lib\src\json\_gen\json_service.web.g.dart -o .\web\workers\json_service.web.g.dart.js %OPTIM% & ECHO ON
+@ECHO.
+@ECHO.   http_service.web.g.dart...
+@CALL dart compile js .\lib\src\http\_gen\http_service.web.g.dart -o .\web\workers\http_service.web.g.dart.js %OPTIM% & ECHO ON
 @ECHO.
 @ECHO.Done

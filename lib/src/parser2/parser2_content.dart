@@ -4,9 +4,9 @@ import 'package:cancelation_token/cancelation_token.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
-import 'package:squadron_sample/src/_helpers/page_with_logger.dart';
 
-import '../../root_logger.dart';
+import '../_helpers/page_content.dart';
+import '../logging_service.dart';
 import '../vcd_generator.dart';
 import 'parser2_runner.dart';
 import 'parser2_service.dart';
@@ -54,11 +54,14 @@ class Parser2Content extends PageContent {
       maxParallel: 1,
     );
     final pool = switch (getMode()) {
-      SquadronPlatformType.js => Parser2ServiceWorkerPool.js(batchSize,
+      SquadronPlatformType.js => Parser2ServiceWorkerPool.js(
+          mainLogger, batchSize,
           concurrencySettings: concurrency),
-      SquadronPlatformType.wasm => Parser2ServiceWorkerPool.wasm(batchSize,
+      SquadronPlatformType.wasm => Parser2ServiceWorkerPool.wasm(
+          mainLogger, batchSize,
           concurrencySettings: concurrency),
-      _ => Parser2ServiceWorkerPool(batchSize, concurrencySettings: concurrency)
+      _ => Parser2ServiceWorkerPool(mainLogger, batchSize,
+          concurrencySettings: concurrency)
     };
     await pool.start();
     return pool;
@@ -82,33 +85,42 @@ class Parser2Content extends PageContent {
   }
 
   Future _withoutPool([CancelationToken? token]) async {
-    rootLogger.i('****** PARSE - WITHOUT POOL ******');
+    mainLogger.log('[$threadId] [M] ****** PARSE - WITHOUT POOL ******');
     try {
       _start();
       final vcd = (_vcd ??= generateVCDData(maxEntries).toList()).toList();
-      await parse(ParseArguments(Parser2Service(maxEntries), vcd, 1,
-          token ?? _token)); // force 1 stream and 1 batch
+      await parse(ParseArguments(
+        Parser2Service(mainLogger, maxEntries),
+        vcd,
+        1,
+        token ?? _token,
+      )); // force 1 stream and 1 batch
     } finally {
       _done();
     }
   }
 
   Future _withCompute([CancelationToken? token]) async {
-    rootLogger.i('****** PARSE - WITHOUT POOL (compute) ******');
+    mainLogger
+        .log('[$threadId] [M] ****** PARSE - WITHOUT POOL (compute) ******');
     try {
       _start();
       final vcd = (_vcd ??= generateVCDData(maxEntries).toList()).toList();
       await compute(
           parse,
           ParseArguments(
-              Parser2Service(batchSize), vcd, chunks, token ?? _token));
+            Parser2Service(mainLogger, batchSize),
+            vcd,
+            chunks,
+            token ?? _token,
+          ));
     } finally {
       _done();
     }
   }
 
   Future _withPool([CancelationToken? token]) async {
-    rootLogger.i('****** PARSE - WITH POOL ******');
+    mainLogger.log('[$threadId] [M] ****** PARSE - WITH POOL ******');
     final pool = await _startPool();
     try {
       _start();
@@ -122,7 +134,8 @@ class Parser2Content extends PageContent {
 
   CancelableToken _createToken() {
     final token = CancelableToken();
-    token.onCanceled.then((_) => rootLogger.i('Token cancelled'));
+    token.onCanceled
+        .then((_) => mainLogger.log('[$threadId] [M] Token cancelled'));
     return token;
   }
 

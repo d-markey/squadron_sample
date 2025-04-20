@@ -3,8 +3,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
-import 'package:squadron_sample/src/_helpers/page_with_logger.dart';
 
+import '../_helpers/page_content.dart';
+import '../logging_service.dart';
 import 'json_service.dart';
 import 'model/address.dart';
 import 'model/person.dart';
@@ -68,20 +69,24 @@ ${a.country.toUpperCase()}''').join()}
     _result = '';
     await _begin();
     final worker = switch (getMode()) {
-      SquadronPlatformType.js => JsonServiceWorker.js(),
-      SquadronPlatformType.wasm => JsonServiceWorker.wasm(),
-      _ => JsonServiceWorker(),
+      SquadronPlatformType.js => JsonServiceWorker.js(mainLogger),
+      SquadronPlatformType.wasm => JsonServiceWorker.wasm(mainLogger),
+      _ => JsonServiceWorker(mainLogger),
     };
     await worker.start();
     final sw = Stopwatch()..start();
     Person person;
     try {
-      log('[${sw.elapsedMilliseconds} ms] Loading JSON...');
+      mainLogger.log(
+          '[$threadId] [M] [${sw.elapsedMilliseconds} ms] Loading JSON...');
       final jsonMap = await worker.decode(_jsonStr);
-      log('[${sw.elapsedMilliseconds} ms] Loaded JSON');
-      log('[${sw.elapsedMilliseconds} ms] Converting to person...');
+      mainLogger
+          .log('[$threadId] [M] [${sw.elapsedMilliseconds} ms] Loaded JSON');
+      mainLogger.log(
+          '[$threadId] [M] [${sw.elapsedMilliseconds} ms] Converting to person...');
       person = Person.fromJson(jsonMap);
-      log('[${sw.elapsedMilliseconds} ms] Converted');
+      mainLogger
+          .log('[$threadId] [M] [${sw.elapsedMilliseconds} ms] Converted');
     } finally {
       worker.stop();
     }
@@ -93,17 +98,18 @@ ${a.country.toUpperCase()}''').join()}
     _result = '';
     await _begin();
     final worker = switch (getMode()) {
-      SquadronPlatformType.js => JsonServiceWorker.js(),
-      SquadronPlatformType.wasm => JsonServiceWorker.wasm(),
-      _ => JsonServiceWorker(),
+      SquadronPlatformType.js => JsonServiceWorker.js(mainLogger),
+      SquadronPlatformType.wasm => JsonServiceWorker.wasm(mainLogger),
+      _ => JsonServiceWorker(mainLogger),
     };
     await worker.start();
     final sw = Stopwatch()..start();
     Person person;
     try {
-      log('[${sw.elapsedMilliseconds} ms] Hydrating...');
+      mainLogger
+          .log('[$threadId] [M] [${sw.elapsedMilliseconds} ms] Hydrating...');
       person = await worker.hydrate(_jsonStr);
-      log('[${sw.elapsedMilliseconds} ms] Hydrated in ${sw.elapsedMilliseconds} ms');
+      mainLogger.log('[$threadId] [M] [${sw.elapsedMilliseconds} ms] Hydrated');
     } finally {
       worker.stop();
     }

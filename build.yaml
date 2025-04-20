@@ -17,11 +17,11 @@ targets:
             {
               "{{dir}}/{{file}}.dart":
                 [
-                  "{{dir}}/generated/{{file}}.worker.g.dart",
-                  "{{dir}}/generated/{{file}}.vm.g.dart",
-                  "{{dir}}/generated/{{file}}.web.g.dart",
-                  "{{dir}}/generated/{{file}}.stub.g.dart",
-                  "{{dir}}/generated/{{file}}.activator.g.dart",
+                  "{{dir}}/_gen/{{file}}.worker.g.dart",
+                  "{{dir}}/_gen/{{file}}.vm.g.dart",
+                  "{{dir}}/_gen/{{file}}.web.g.dart",
+                  "{{dir}}/_gen/{{file}}.stub.g.dart",
+                  "{{dir}}/_gen/{{file}}.activator.g.dart",
                 ],
             }
           with_finalizers: false

@@ -5,7 +5,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
-import '../_helpers/page_with_logger.dart';
+import '../_helpers/page_content.dart';
+import '../logging_service.dart';
 import 'generic_data.dart';
 import 'perf.dart';
 
@@ -19,7 +20,7 @@ class PerfContent extends PageContent {
   Future _execWith(Perf perfTester) async {
     final sw = Stopwatch();
     final futures = <Future>[];
-    const len = 1000, loops = 100;
+    const len = 100, loops = 10;
 
     void reset() {
       futures.clear();
@@ -31,7 +32,7 @@ class PerfContent extends PageContent {
     void checkBigInt(BigInt res, BigInt expected) async {
       await Future.delayed(Duration.zero);
       if (res != expected) {
-        log('woops');
+        mainLogger.log('[$threadId] [M] woops');
       }
     }
 
@@ -49,10 +50,12 @@ class PerfContent extends PageContent {
         futures.add(perfTester.add(x, y).then((res) => checkBigInt(res, sum)));
       }
     }
-    log('[${perfTester.runtimeType}] 1. add bigInts in progress (${sw.elapsed})');
+    mainLogger.log(
+        '[$threadId] [M] [${perfTester.runtimeType}] 1. add bigInts in progress (${sw.elapsed})');
     await Future.wait(futures);
     sw.stop();
-    log('[${perfTester.runtimeType}] 1. add bigInts: ${sw.elapsed}');
+    mainLogger.log(
+        '[$threadId] [M] [${perfTester.runtimeType}] 1. add bigInts: ${sw.elapsed}');
 
     final me = Person('DOE', 'John', DateTime(1980, 01, 01));
     void checkPerson(Person res) async {
@@ -60,7 +63,7 @@ class PerfContent extends PageContent {
       if (res.lastName != me.lastName ||
           res.firstName != me.firstName ||
           res.dob != me.dob) {
-        log('woops');
+        mainLogger.log('[$threadId] [M] woops');
       }
     }
 
@@ -72,7 +75,8 @@ class PerfContent extends PageContent {
     }
     await Future.wait(futures);
     sw.stop();
-    log('[${perfTester.runtimeType}] 2. sendGenericData: ${sw.elapsed}');
+    mainLogger.log(
+        '[$threadId] [M] [${perfTester.runtimeType}] 2. sendGenericData: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -83,13 +87,14 @@ class PerfContent extends PageContent {
     }
     await Future.wait(futures);
     sw.stop();
-    log('[${perfTester.runtimeType}] 3. sendGenericDataAsJson: ${sw.elapsed}');
+    mainLogger.log(
+        '[$threadId] [M] [${perfTester.runtimeType}] 3. sendGenericDataAsJson: ${sw.elapsed}');
 
     final list = List<int>.generate(len, (i) => i + 1);
     void checkList(List res) async {
       await Future.delayed(Duration.zero);
       if (res.length != len || res.first > 0) {
-        log('woops');
+        mainLogger.log('[$threadId] [M] woops');
       }
     }
 
@@ -101,7 +106,8 @@ class PerfContent extends PageContent {
     }
     await Future.wait(futures);
     sw.stop();
-    log('[${perfTester.runtimeType}] 4. in list: ${sw.elapsed}');
+    mainLogger.log(
+        '[$threadId] [M] [${perfTester.runtimeType}] 4. in list: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -109,7 +115,8 @@ class PerfContent extends PageContent {
     }
     await Future.wait(futures);
     sw.stop();
-    log('[${perfTester.runtimeType}] 5. in buffer: ${sw.elapsed}');
+    mainLogger.log(
+        '[$threadId] [M] [${perfTester.runtimeType}] 5. in buffer: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -117,7 +124,8 @@ class PerfContent extends PageContent {
     }
     await Future.wait(futures);
     sw.stop();
-    log('[${perfTester.runtimeType}] 6. in json: ${sw.elapsed}');
+    mainLogger.log(
+        '[$threadId] [M] [${perfTester.runtimeType}] 6. in json: ${sw.elapsed}');
 
     // measure perf when receiving results
 
@@ -127,7 +135,8 @@ class PerfContent extends PageContent {
     }
     await Future.wait(futures);
     sw.stop();
-    log('[${perfTester.runtimeType}] 7. out list: ${sw.elapsed}');
+    mainLogger.log(
+        '[$threadId] [M] [${perfTester.runtimeType}] 7. out list: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -138,7 +147,8 @@ class PerfContent extends PageContent {
     }
     await Future.wait(futures);
     sw.stop();
-    log('[${perfTester.runtimeType}] 8. out buffer: ${sw.elapsed}');
+    mainLogger.log(
+        '[$threadId] [M] [${perfTester.runtimeType}] 8. out buffer: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -149,7 +159,8 @@ class PerfContent extends PageContent {
     }
     await Future.wait(futures);
     sw.stop();
-    log('[${perfTester.runtimeType}] 9. out json: ${sw.elapsed}');
+    mainLogger.log(
+        '[$threadId] [M] [${perfTester.runtimeType}] 9. out json: ${sw.elapsed}');
 
     // native data structures
     const keys = 'abcdefghijklmnopqrstuvwxyz';
@@ -163,7 +174,8 @@ class PerfContent extends PageContent {
     }
     await Future.wait(futures);
     sw.stop();
-    log('[${perfTester.runtimeType}] 10. native with List<int>: ${sw.elapsed}');
+    mainLogger.log(
+        '[$threadId] [M] [${perfTester.runtimeType}] 10. native with List<int>: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -171,7 +183,8 @@ class PerfContent extends PageContent {
     }
     await Future.wait(futures);
     sw.stop();
-    log('[${perfTester.runtimeType}] 11. native_inspect with List<int>: ${sw.elapsed}');
+    mainLogger.log(
+        '[$threadId] [M] [${perfTester.runtimeType}] 11. native_inspect with List<int>: ${sw.elapsed}');
 
     final dataIn2 = Map.fromIterables(
         List.generate(keys.length, (index) => keys[index]),
@@ -182,7 +195,8 @@ class PerfContent extends PageContent {
     }
     await Future.wait(futures);
     sw.stop();
-    log('[${perfTester.runtimeType}] 12. native with Uint32List: ${sw.elapsed}');
+    mainLogger.log(
+        '[$threadId] [M] [${perfTester.runtimeType}] 12. native with Uint32List: ${sw.elapsed}');
 
     reset();
     for (var i = 0; i < loops; i++) {
@@ -190,7 +204,8 @@ class PerfContent extends PageContent {
     }
     await Future.wait(futures);
     sw.stop();
-    log('[${perfTester.runtimeType}] 13. native_inspect with Uint32List: ${sw.elapsed}');
+    mainLogger.log(
+        '[$threadId] [M] [${perfTester.runtimeType}] 13. native_inspect with Uint32List: ${sw.elapsed}');
   }
 
   @override

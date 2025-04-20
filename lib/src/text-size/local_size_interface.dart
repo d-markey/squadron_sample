@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:squadron/squadron.dart';
 
-part 'generated/local_size_interface.worker.g.dart';
+part '_gen/local_size_interface.worker.g.dart';
 
 // local services should be based on interfaces, because implementations are
 // likely to import libraries that are not available when compiling workers

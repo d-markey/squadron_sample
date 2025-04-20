@@ -3,17 +3,18 @@ import 'dart:convert';
 
 import 'package:squadron/squadron.dart';
 
-import '../../root_logger.dart';
-import 'generated/text_size_service.activator.g.dart';
+import '../logging_service.dart';
+import '_gen/text_size_service.activator.g.dart';
 import 'local_size_interface.dart';
 
-part 'generated/text_size_service.worker.g.dart';
+part '_gen/text_size_service.worker.g.dart';
 
 @SquadronService(baseUrl: '~/workers')
 class TextSizeService {
-  TextSizeService(@localWorker this.sizeService);
+  TextSizeService(@localWorker this.logger, @localWorker this.sizeService);
 
   final ILocalSize sizeService;
+  final ILoggingService logger;
 
   @squadronMethod
   Future<String> doSomethingWithTexts(List<String> texts) async {
@@ -22,7 +23,7 @@ class TextSizeService {
       final size = await sizeService.measure(text);
       final key = text.replaceAll('\r', '\\r').replaceAll('\n', '\\n');
       res[key] = '${size['w']}x${size['h']}';
-      rootLogger.i('$key --> ${res[key]}');
+      logger.log('[$threadId] $key --> ${res[key]}');
     }
     return jsonEncode(res);
   }

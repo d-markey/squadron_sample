@@ -4,26 +4,28 @@ import 'dart:math';
 import 'package:cancelation_token/cancelation_token.dart';
 import 'package:squadron/squadron.dart';
 
-import '../../root_logger.dart';
-import 'generated/pi_digits_service.activator.g.dart';
+import '../logging_service.dart';
+import '_gen/pi_digits_service.activator.g.dart';
 
-part 'generated/pi_digits_service.worker.g.dart';
+part '_gen/pi_digits_service.worker.g.dart';
 
 void _noop() {}
 Future noop() => Future(_noop);
 
 @SquadronService(baseUrl: '~/workers')
 class PiDigitsService {
-  PiDigitsService() {
-    rootLogger
-        .i('PiDigitsServiceImpl instantiated, hashCode = ${hashCode.hex}');
+  PiDigitsService(@localWorker this.logger) {
+    logger.log(
+        '[$threadId] [S] PiDigitsServiceImpl instantiated, hashCode = ${hashCode.hex}');
   }
+
+  final ILoggingService logger;
 
   // see https://dept-info.labri.fr/~denis/Enseignement/2017-PG306/TP01/pi.java
   @squadronMethod
   Stream<int> getNDigits(int start, int n, CancelationToken? token) async* {
-    rootLogger.i('digits $start-${start + n} started...');
     final end = start + n;
+    logger.log('[$threadId] [S] digits $start-${end - 1} started...');
     var i = start;
     while (i < end) {
       if (i % 50 == 0) {
@@ -35,7 +37,7 @@ class PiDigitsService {
       yield getNth(i);
       i++;
     }
-    rootLogger.i('digits $start-${start + n} done.');
+    logger.log('[$threadId] [S] digits $start-${end - 1} done.');
   }
 
   int getNth(int n) {

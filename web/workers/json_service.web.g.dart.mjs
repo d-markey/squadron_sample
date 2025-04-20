@@ -162,6 +162,14 @@ class CompiledApp {
       _200: (c) =>
       queueMicrotask(() => dartInstance.exports.$invokeCallback(c)),
       _222: (x0,x1,x2) => x0.postMessage(x1,x2),
+      _225: (x0,x1) => x0.push(x1),
+      _226: x0 => x0.close(),
+      _227: x0 => x0.close(),
+      _228: f => finalizeWrapper(f, function(x0) { return dartInstance.exports._228(f,arguments.length,x0) }),
+      _229: f => finalizeWrapper(f, function(x0) { return dartInstance.exports._229(f,arguments.length,x0) }),
+      _230: x0 => x0.close(),
+      _231: x0 => x0.close(),
+      _232: () => new MessageChannel(),
       _249: () => globalThis.self,
       _250: () => new MessageChannel(),
       _251: x0 => x0.close(),
@@ -281,6 +289,7 @@ class CompiledApp {
       _2829: x0 => x0.port1,
       _2830: x0 => x0.port2,
       _2836: (x0,x1) => x0.onmessage = x1,
+      _2838: (x0,x1) => x0.onmessageerror = x1,
       _2898: (x0,x1) => x0.onmessage = x1,
 
     };

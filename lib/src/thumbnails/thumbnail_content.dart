@@ -5,7 +5,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
-import '../_helpers/page_with_logger.dart';
+import '../_helpers/page_content.dart';
+import '../logging_service.dart';
 import 'thumbnail_service.dart';
 
 class ThumbnailContent extends PageContent {
@@ -14,7 +15,7 @@ class ThumbnailContent extends PageContent {
   List<Uint8List>? _images;
   List<Uint8List>? _thumbnails;
 
-  Future _selectImage() async {
+  Future _selectImage(SquadronPlatformType mode) async {
     // resetting UI
     if (_images != null) {
       _images = null;
@@ -37,9 +38,10 @@ class ThumbnailContent extends PageContent {
         ThumbnailServiceWorkerPool.js(concurrencySettings: concurrency),
       SquadronPlatformType.wasm =>
         ThumbnailServiceWorkerPool.wasm(concurrencySettings: concurrency),
+      SquadronPlatformType.unknown => ThumbnailService(),
       _ => ThumbnailServiceWorkerPool(concurrencySettings: concurrency)
     };
-    await pool.start();
+    if (pool is IWorker) await (pool as IWorker).start();
 
     try {
       // get the thumbnails from ThumbnailService via Squadron
@@ -47,10 +49,10 @@ class ThumbnailContent extends PageContent {
       final futures = <Future<Uint8List>>[];
       for (var i = 0; i < images.length; i++) {
         futures.add(Future<Uint8List>(() async {
-          log('Loading image #$i...');
+          mainLogger.log('[$threadId] [M] Loading image #$i...');
           final sw = Stopwatch()..start();
           final t = await pool.getThumbnail(images[i], 32, 32);
-          log('Image #$i loaded in ${sw.elapsed}');
+          mainLogger.log('[$threadId] [M] Image #$i loaded in ${sw.elapsed}');
           return t;
         }));
       }
@@ -60,7 +62,7 @@ class ThumbnailContent extends PageContent {
       _images = images;
       _thumbnails = thumbnails;
     } finally {
-      pool.stop();
+      if (pool is IWorker) (pool as IWorker).stop();
     }
     refresh();
   }
@@ -76,18 +78,22 @@ class ThumbnailContent extends PageContent {
     return Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       TextButton(
-        onPressed: () => _selectImage(),
-        child: const Text('Select Image'),
+        onPressed: () => _selectImage(SquadronPlatformType.unknown),
+        child: const Text('Select Image (main thread)'),
+      ),
+      TextButton(
+        onPressed: () => _selectImage(getMode()),
+        child: const Text('Select Image (pool)'),
       ),
       if (_images == null)
         Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(4),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [Image.memory(base64Decode(pickIcon))])),
       if (_images != null)
         Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(4),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: _images!.indexed

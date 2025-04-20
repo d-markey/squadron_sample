@@ -5,7 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:squadron/squadron.dart';
 
-import '../_helpers/page_with_logger.dart';
+import '../_helpers/page_content.dart';
+import '../logging_service.dart';
 import '../vcd_generator.dart';
 import 'parser_runner.dart';
 import 'parser_service.dart';
@@ -49,11 +50,11 @@ class ParserContent extends PageContent {
         minWorkers: chunks, maxWorkers: chunks, maxParallel: 1);
 
     final pool = switch (getMode()) {
-      SquadronPlatformType.js =>
-        ParserServiceWorkerPool.js(concurrencySettings: concurrency),
-      SquadronPlatformType.wasm =>
-        ParserServiceWorkerPool.wasm(concurrencySettings: concurrency),
-      _ => ParserServiceWorkerPool(concurrencySettings: concurrency)
+      SquadronPlatformType.js => ParserServiceWorkerPool.js(mainLogger,
+          concurrencySettings: concurrency),
+      SquadronPlatformType.wasm => ParserServiceWorkerPool.wasm(mainLogger,
+          concurrencySettings: concurrency),
+      _ => ParserServiceWorkerPool(mainLogger, concurrencySettings: concurrency)
     };
     await pool.start();
 
@@ -78,21 +79,21 @@ class ParserContent extends PageContent {
   }
 
   Future _withoutPool([CancelationToken? token]) async {
-    log('****** PARSE - WITHOUT POOL ******');
+    mainLogger.log('[$threadId] ****** PARSE - WITHOUT POOL ******');
     try {
       _start();
       final vcd = (_vcd ??=
               generateVCDData(int.parse(_maxEntries.text)).toList())
           .toList();
-      await parse(ParseArguments(
-          ParserService(), vcd, int.parse(_chunks.text), token ?? _token));
+      await parse(ParseArguments(ParserService(mainLogger), vcd,
+          int.parse(_chunks.text), token ?? _token));
     } finally {
       _done();
     }
   }
 
   Future _withCompute([CancelationToken? token]) async {
-    log('****** PARSE - WITHOUT POOL (compute) ******');
+    mainLogger.log('[$threadId] ****** PARSE - WITHOUT POOL (compute) ******');
     try {
       _start();
       final vcd = (_vcd ??=
@@ -100,15 +101,15 @@ class ParserContent extends PageContent {
           .toList();
       await compute(
           parse,
-          ParseArguments(
-              ParserService(), vcd, int.parse(_chunks.text), token ?? _token));
+          ParseArguments(ParserService(mainLogger), vcd,
+              int.parse(_chunks.text), token ?? _token));
     } finally {
       _done();
     }
   }
 
   Future _withPool([CancelationToken? token]) async {
-    log('****** PARSE - WITH POOL ******');
+    mainLogger.log('[$threadId] ****** PARSE - WITH POOL ******');
     final pool = await _startPool();
     try {
       _start();
@@ -125,7 +126,7 @@ class ParserContent extends PageContent {
 
   CancelableToken _createToken() {
     final token = CancelableToken();
-    token.onCanceled.then((_) => log('Token cancelled'));
+    token.onCanceled.then((_) => mainLogger.log('[$threadId] Token cancelled'));
     return token;
   }
 

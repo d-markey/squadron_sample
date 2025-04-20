@@ -3,14 +3,17 @@ import 'dart:async';
 import 'package:cancelation_token/cancelation_token.dart';
 import 'package:squadron/squadron.dart';
 
-import '../../root_logger.dart';
-import 'generated/parser2_service.activator.g.dart';
+import '../logging_service.dart';
+import '_gen/parser2_service.activator.g.dart';
 
-part 'generated/parser2_service.worker.g.dart';
+part '_gen/parser2_service.worker.g.dart';
 
 @SquadronService(baseUrl: '~/workers')
 class Parser2Service {
-  Parser2Service(int batchSize) : _batchSize = batchSize;
+  Parser2Service(@localWorker this.logger, int batchSize)
+      : _batchSize = batchSize;
+
+  final ILoggingService logger;
 
   static const _timeStampMarker = '#';
 
@@ -34,7 +37,7 @@ class Parser2Service {
     // note: we KNOW that items in 'lines' are strings, so we force 'line' to be a String
     String line = lines[0];
     if (!line.startsWith(_timeStampMarker)) {
-      rootLogger.f('first line = $line');
+      logger.log('[$threadId] [S] first line = $line');
       throw Exception('Invalid data');
     }
     int timeStamp = int.parse(line.substring(_timeStampMarker.length));
@@ -67,6 +70,6 @@ class Parser2Service {
       yield signalValues;
     }
 
-    rootLogger.i('[${sw.elapsed}] parsed ${lines.length} lines');
+    logger.log('[$threadId] [S] [${sw.elapsed}] parsed ${lines.length} lines');
   }
 }

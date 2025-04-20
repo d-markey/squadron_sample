@@ -4,9 +4,9 @@ import 'dart:typed_data';
 import 'package:image/image.dart';
 import 'package:squadron/squadron.dart';
 
-import 'generated/thumbnail_service.activator.g.dart';
+import '_gen/thumbnail_service.activator.g.dart';
 
-part 'generated/thumbnail_service.worker.g.dart';
+part '_gen/thumbnail_service.worker.g.dart';
 
 @SquadronService(baseUrl: '~/workers')
 class ThumbnailService {

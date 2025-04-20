@@ -4,11 +4,11 @@ import 'dart:typed_data';
 
 import 'package:squadron/squadron.dart';
 
-import 'generated/perf.activator.g.dart';
+import '_gen/perf.activator.g.dart';
 import 'generic_data.dart';
 import 'marshalers/marshalers.dart';
 
-part 'generated/perf.worker.g.dart';
+part '_gen/perf.worker.g.dart';
 
 @personMarshaler
 class Person {
@@ -39,7 +39,7 @@ class PerfContext {
   Map toJson() => const {};
 }
 
-@SquadronService(baseUrl: '/workers')
+@SquadronService(baseUrl: '~/workers')
 class Perf {
   Perf(PerfContext context);
 

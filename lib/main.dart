@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:squadron/squadron.dart';
 
-import 'root_logger.dart';
 import 'src/_helpers/page_with_logger.dart';
-import 'src/_helpers/thread_location.dart';
-import 'src/codegen/codegen_content.dart';
+import 'src/http/http_content.dart';
 import 'src/json/json_content.dart';
 import 'src/parser/parser_content.dart';
 import 'src/parser2/parser2_content.dart';
-import 'src/parser3/parser3_page.dart';
 import 'src/perf/perf_content.dart';
 import 'src/pi-digits/pi_digits_content.dart';
 import 'src/text-size/text_size_content.dart';
 import 'src/thumbnails/thumbnail_content.dart';
+import 'src/uint8list/uint8list_content.dart';
 
 void main() {
-  rootLogger.i('MAIN THREAD = $threadId, running from $threadLocation');
-  Future(() => runApp(const SampleApp()));
+  runApp(const SampleApp());
 }
 
 class SampleApp extends StatefulWidget {
@@ -49,13 +45,16 @@ class _SampleAppState extends State<SampleApp>
           content: Parser2Content(),
           tabBar: tabBar,
         ),
-    const Tab(text: 'Parser (yield)'): (tabBar) => Parser3Page(tabBar: tabBar),
     const Tab(text: 'Json'): (tabBar) => PageWithLogger(
           content: JsonContent(),
           tabBar: tabBar,
         ),
-    const Tab(text: 'Codegen'): (tabBar) => PageWithLogger(
-          content: CodeGenContent(),
+    const Tab(text: 'HTTP'): (tabBar) => PageWithLogger(
+          content: HttpContent(),
+          tabBar: tabBar,
+        ),
+    const Tab(text: 'Uint8List'): (tabBar) => PageWithLogger(
+          content: Uint8ListContent(),
           tabBar: tabBar,
         ),
     const Tab(text: 'Perf'): (tabBar) => PageWithLogger(

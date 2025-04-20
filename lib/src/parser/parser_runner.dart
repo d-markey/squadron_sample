@@ -1,8 +1,8 @@
 import 'package:cancelation_token/cancelation_token.dart';
 import 'package:squadron/squadron.dart';
 
-import '../../root_logger.dart';
 import '../_helpers/worker_status.dart';
+import '../logging_service.dart';
 import '../signal_value.dart';
 import 'parser_service.dart';
 
@@ -36,11 +36,11 @@ Future<List> parse(ParseArguments args) async {
 
   if (pool != null) {
     final concurrency = pool.concurrencySettings;
-    rootLogger.i(
-        'START: lines = ${lines.length} / nb of chunks = $nbOfChunks / pool: ${concurrency.minWorkers}-${concurrency.maxWorkers} workers');
+    mainLogger.log(
+        '[$threadId] [M] START: lines = ${lines.length} / nb of chunks = $nbOfChunks / pool: ${concurrency.minWorkers}-${concurrency.maxWorkers} workers');
   } else {
-    rootLogger.i(
-        'START: lines = ${lines.length} / nb of chunks = $nbOfChunks / no pool');
+    mainLogger.log(
+        '[$threadId] [M] START: lines = ${lines.length} / nb of chunks = $nbOfChunks / no pool');
   }
 
   final futures = <Future<List>>[];
@@ -55,21 +55,24 @@ Future<List> parse(ParseArguments args) async {
       chunk.add(lines.removeAt(0));
     }
     // parse chunk
-    rootLogger.i('    batch #${futures.length + 1} = ${chunk.length} lines');
+    mainLogger.log(
+        '[$threadId] [M]    batch #${futures.length + 1} = ${chunk.length} lines');
     futures.add(parser.parse(chunk, token));
   }
   // parse last chunk
   if (lines.isNotEmpty) {
-    rootLogger.i('    batch #${futures.length + 1} = ${lines.length} lines');
+    mainLogger.log(
+        '[$threadId] [M]    batch #${futures.length + 1} = ${lines.length} lines');
     futures.add(parser.parse(lines, token));
   }
 
-  rootLogger.i('STARTED ${futures.length} FUTURES, WAITING FOR RESULTS...');
+  mainLogger.log(
+      '[$threadId] [M] STARTED ${futures.length} FUTURES, WAITING FOR RESULTS...');
 
   final chunks = await Future.wait(futures);
   if (token.isCanceled) return [];
 
-  rootLogger.i('MERGING AND CONVERTING RESULTS');
+  mainLogger.log('[$threadId] [M] MERGING AND CONVERTING RESULTS');
   final signalValues = <SignalValue>[];
   for (var i = 0; i < chunks.length; i++) {
     final chunk = chunks[i];
@@ -80,18 +83,18 @@ Future<List> parse(ParseArguments args) async {
 
   final elapsed = _sw.elapsedMilliseconds;
 
-  rootLogger.i(
-      'DONE PARSING: total items = ${signalValues.length} in ${_sw.elapsed}, ${signalValues.length / elapsed} item/ms');
-  rootLogger.i('    first = ${signalValues.first}');
-  rootLogger.i('    last = ${signalValues.last}');
+  mainLogger.log(
+      '[$threadId] [M] DONE PARSING: total items = ${signalValues.length} in ${_sw.elapsed}, ${signalValues.length / elapsed} item/ms');
+  mainLogger.log('[$threadId] [M]     first = ${signalValues.first}');
+  mainLogger.log('[$threadId] [M]     last = ${signalValues.last}');
 
   if (pool != null) {
-    rootLogger.i('Pool stats');
+    mainLogger.log('[$threadId] [M] Pool stats');
     final stats = pool.fullStats.toList();
     for (var i = 0; i < stats.length; i++) {
       final stat = stats[i];
-      rootLogger.i(
-          '    #$i ${stat.status} current = ${stat.workload} / total/max/errors = ${stat.totalWorkload}/${stat.maxWorkload}/${stat.totalErrors}');
+      mainLogger.log(
+          '[$threadId] [M]     #$i ${stat.status} current = ${stat.workload} / total/max/errors = ${stat.totalWorkload}/${stat.maxWorkload}/${stat.totalErrors}');
     }
   }
 
