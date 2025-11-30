@@ -8,7 +8,7 @@ part '_gen/http_service.worker.g.dart';
 
 @SquadronService(baseUrl: '~/workers')
 class HttpService {
-  HttpService(@localWorker this.logger);
+  HttpService(@sharedService this.logger);
 
   final ILoggingService logger;
 

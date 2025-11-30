@@ -1,12 +1,13 @@
-// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format width=80
 
 part of '../uint8list_service.dart';
 
 // **************************************************************************
-// Generator: WorkerGenerator 7.1.1 (Squadron 7.1.1)
+// Generator: WorkerGenerator 9.0.0+1 (Squadron 7.4.0)
 // **************************************************************************
 
+// dart format width=80
 /// Command ids used in operations map
 const int _$pdfId = 1;
 
@@ -40,6 +41,22 @@ mixin _$Uint8ListService$Invoker on Invoker implements Uint8ListService {
 /// Facade for Uint8ListService, implements other details of the service unrelated to
 /// invoking the remote service.
 mixin _$Uint8ListService$Facade implements Uint8ListService {}
+
+/// WorkerClient for Uint8ListService
+final class $Uint8ListService$Client extends WorkerClient
+    with _$Uint8ListService$Invoker, _$Uint8ListService$Facade
+    implements Uint8ListService {
+  $Uint8ListService$Client(PlatformChannel channelInfo)
+      : super(Channel.deserialize(channelInfo)!);
+}
+
+/// Local worker extension for Uint8ListService
+extension $Uint8ListServiceLocalWorkerExt on Uint8ListService {
+  // Get a fresh local worker instance.
+  LocalWorker<Uint8ListService> getLocalWorker(
+          [ExceptionManager? exceptionManager]) =>
+      LocalWorker.create(this, _$getOperations(), exceptionManager);
+}
 
 /// WorkerService class for Uint8ListService
 class _$Uint8ListService$WorkerService extends Uint8ListService

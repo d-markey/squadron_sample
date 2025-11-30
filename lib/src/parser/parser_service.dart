@@ -10,7 +10,7 @@ part '_gen/parser_service.worker.g.dart';
 
 @SquadronService(baseUrl: '~/workers')
 class ParserService {
-  ParserService(@localWorker this.logger);
+  ParserService(@sharedService this.logger);
 
   final ILoggingService logger;
 

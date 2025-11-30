@@ -1,12 +1,13 @@
-// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format width=80
 
 part of '../parser_service.dart';
 
 // **************************************************************************
-// Generator: WorkerGenerator 7.1.1 (Squadron 7.1.1)
+// Generator: WorkerGenerator 9.0.0+1 (Squadron 7.4.0)
 // **************************************************************************
 
+// dart format width=80
 /// Command ids used in operations map
 const int _$parseId = 1;
 
@@ -42,6 +43,25 @@ mixin _$ParserService$Invoker on Invoker implements ParserService {
 /// invoking the remote service.
 mixin _$ParserService$Facade implements ParserService {}
 
+/// WorkerClient for ParserService
+final class $ParserService$Client extends WorkerClient
+    with _$ParserService$Invoker, _$ParserService$Facade
+    implements ParserService {
+  $ParserService$Client(PlatformChannel channelInfo)
+      : super(Channel.deserialize(channelInfo)!);
+
+  @override
+  late final ILoggingService logger;
+}
+
+/// Local worker extension for ParserService
+extension $ParserServiceLocalWorkerExt on ParserService {
+  // Get a fresh local worker instance.
+  LocalWorker<ParserService> getLocalWorker(
+          [ExceptionManager? exceptionManager]) =>
+      LocalWorker.create(this, _$getOperations(), exceptionManager);
+}
+
 /// WorkerService class for ParserService
 class _$ParserService$WorkerService extends ParserService
     implements WorkerService {
@@ -55,7 +75,7 @@ class _$ParserService$WorkerService extends ParserService
 WorkerService $ParserServiceInitializer(WorkerRequest $req) {
   final $dsr = _$Deser(contextAware: false);
   return _$ParserService$WorkerService(
-      $LocalILoggingServiceClient($dsr.$4($req.args[0])));
+      $ILoggingService$Client($dsr.$4($req.args[0])));
 }
 
 /// Worker for ParserService
@@ -86,23 +106,25 @@ base class ParserServiceWorker extends Worker
         super($ParserServiceActivator(SquadronPlatformType.wasm),
             threadHook: threadHook, exceptionManager: exceptionManager);
 
-  final _$localWorkers = <LocalWorker?>[null];
+  final _$remote = <Channel?>[null];
   final List _$startReq;
 
   @override
   List? getStartArgs() {
     final p0 = _$startReq[0];
-    if (p0 is ILoggingService) {
+    if (p0 is Worker) {
+      _$startReq[0] = (_$remote[0] ??= p0.getSharedChannel())?.serialize();
+    } else if (p0 is ILoggingService) {
       _$startReq[0] =
-          (_$localWorkers[0] = p0.getLocalWorker()).channel?.serialize();
+          (_$remote[0] ??= p0.getLocalWorker().channel)?.serialize();
     }
     return _$startReq;
   }
 
   @override
   void stop() {
-    _$localWorkers[0]?.stop();
-    _$localWorkers[0] = null;
+    _$remote[0]?.close();
+    _$remote[0] = null;
     _$startReq[0] = logger;
     super.stop();
   }

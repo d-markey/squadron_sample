@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:image/image.dart';
+import 'package:image/image.dart' as img;
 import 'package:squadron/squadron.dart';
 
 import '_gen/thumbnail_service.activator.g.dart';
@@ -14,8 +14,9 @@ class ThumbnailService {
   FutureOr<Uint8List> getThumbnail(
       Uint8List imageData, int thumbWidth, int thumbHeight) {
     // implementation using the image package (https://pub.dev/packages/image)
-    var image = decodeImage(imageData)!;
-    var thumbnail = copyResize(image, width: thumbWidth, height: thumbHeight);
-    return encodePng(thumbnail);
+    var image = img.decodeImage(imageData)!;
+    var thumbnail =
+        img.copyResize(image, width: thumbWidth, height: thumbHeight);
+    return img.encodePng(thumbnail);
   }
 }

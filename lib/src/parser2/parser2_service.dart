@@ -10,7 +10,7 @@ part '_gen/parser2_service.worker.g.dart';
 
 @SquadronService(baseUrl: '~/workers')
 class Parser2Service {
-  Parser2Service(@localWorker this.logger, int batchSize)
+  Parser2Service(@sharedService this.logger, int batchSize)
       : _batchSize = batchSize;
 
   final ILoggingService logger;

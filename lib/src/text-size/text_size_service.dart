@@ -11,7 +11,7 @@ part '_gen/text_size_service.worker.g.dart';
 
 @SquadronService(baseUrl: '~/workers')
 class TextSizeService {
-  TextSizeService(@localWorker this.logger, @localWorker this.sizeService);
+  TextSizeService(@sharedService this.logger, @sharedService this.sizeService);
 
   final ILocalSize sizeService;
   final ILoggingService logger;

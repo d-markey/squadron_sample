@@ -12,7 +12,7 @@ part '_gen/json_service.worker.g.dart';
 
 @SquadronService(baseUrl: '~/workers')
 class JsonService {
-  JsonService(@localWorker this.logger);
+  JsonService(@sharedService this.logger);
 
   final ILoggingService logger;
 

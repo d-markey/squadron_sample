@@ -1,12 +1,13 @@
-// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format width=80
 
 part of '../http_service.dart';
 
 // **************************************************************************
-// Generator: WorkerGenerator 7.1.1 (Squadron 7.1.1)
+// Generator: WorkerGenerator 9.0.0+1 (Squadron 7.4.0)
 // **************************************************************************
 
+// dart format width=80
 /// Command ids used in operations map
 const int _$getId = 1;
 
@@ -41,6 +42,25 @@ mixin _$HttpService$Invoker on Invoker implements HttpService {
 /// invoking the remote service.
 mixin _$HttpService$Facade implements HttpService {}
 
+/// WorkerClient for HttpService
+final class $HttpService$Client extends WorkerClient
+    with _$HttpService$Invoker, _$HttpService$Facade
+    implements HttpService {
+  $HttpService$Client(PlatformChannel channelInfo)
+      : super(Channel.deserialize(channelInfo)!);
+
+  @override
+  late final ILoggingService logger;
+}
+
+/// Local worker extension for HttpService
+extension $HttpServiceLocalWorkerExt on HttpService {
+  // Get a fresh local worker instance.
+  LocalWorker<HttpService> getLocalWorker(
+          [ExceptionManager? exceptionManager]) =>
+      LocalWorker.create(this, _$getOperations(), exceptionManager);
+}
+
 /// WorkerService class for HttpService
 class _$HttpService$WorkerService extends HttpService implements WorkerService {
   _$HttpService$WorkerService(super.logger) : super();
@@ -53,7 +73,7 @@ class _$HttpService$WorkerService extends HttpService implements WorkerService {
 WorkerService $HttpServiceInitializer(WorkerRequest $req) {
   final $dsr = _$Deser(contextAware: false);
   return _$HttpService$WorkerService(
-      $LocalILoggingServiceClient($dsr.$1($req.args[0])));
+      $ILoggingService$Client($dsr.$1($req.args[0])));
 }
 
 /// Worker for HttpService
@@ -84,23 +104,25 @@ base class HttpServiceWorker extends Worker
         super($HttpServiceActivator(SquadronPlatformType.wasm),
             threadHook: threadHook, exceptionManager: exceptionManager);
 
-  final _$localWorkers = <LocalWorker?>[null];
+  final _$remote = <Channel?>[null];
   final List _$startReq;
 
   @override
   List? getStartArgs() {
     final p0 = _$startReq[0];
-    if (p0 is ILoggingService) {
+    if (p0 is Worker) {
+      _$startReq[0] = (_$remote[0] ??= p0.getSharedChannel())?.serialize();
+    } else if (p0 is ILoggingService) {
       _$startReq[0] =
-          (_$localWorkers[0] = p0.getLocalWorker()).channel?.serialize();
+          (_$remote[0] ??= p0.getLocalWorker().channel)?.serialize();
     }
     return _$startReq;
   }
 
   @override
   void stop() {
-    _$localWorkers[0]?.stop();
-    _$localWorkers[0] = null;
+    _$remote[0]?.close();
+    _$remote[0] = null;
     _$startReq[0] = logger;
     super.stop();
   }

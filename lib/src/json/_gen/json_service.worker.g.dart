@@ -1,12 +1,13 @@
-// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format width=80
 
 part of '../json_service.dart';
 
 // **************************************************************************
-// Generator: WorkerGenerator 7.1.1 (Squadron 7.1.1)
+// Generator: WorkerGenerator 9.0.0+1 (Squadron 7.4.0)
 // **************************************************************************
 
+// dart format width=80
 /// Command ids used in operations map
 const int _$decodeId = 1;
 const int _$hydrateId = 2;
@@ -56,6 +57,25 @@ mixin _$JsonService$Invoker on Invoker implements JsonService {
 /// invoking the remote service.
 mixin _$JsonService$Facade implements JsonService {}
 
+/// WorkerClient for JsonService
+final class $JsonService$Client extends WorkerClient
+    with _$JsonService$Invoker, _$JsonService$Facade
+    implements JsonService {
+  $JsonService$Client(PlatformChannel channelInfo)
+      : super(Channel.deserialize(channelInfo)!);
+
+  @override
+  late final ILoggingService logger;
+}
+
+/// Local worker extension for JsonService
+extension $JsonServiceLocalWorkerExt on JsonService {
+  // Get a fresh local worker instance.
+  LocalWorker<JsonService> getLocalWorker(
+          [ExceptionManager? exceptionManager]) =>
+      LocalWorker.create(this, _$getOperations(), exceptionManager);
+}
+
 /// WorkerService class for JsonService
 class _$JsonService$WorkerService extends JsonService implements WorkerService {
   _$JsonService$WorkerService(super.logger) : super();
@@ -68,7 +88,7 @@ class _$JsonService$WorkerService extends JsonService implements WorkerService {
 WorkerService $JsonServiceInitializer(WorkerRequest $req) {
   final $dsr = _$Deser(contextAware: false);
   return _$JsonService$WorkerService(
-      $LocalILoggingServiceClient($dsr.$4($req.args[0])));
+      $ILoggingService$Client($dsr.$4($req.args[0])));
 }
 
 /// Worker for JsonService
@@ -99,23 +119,25 @@ base class JsonServiceWorker extends Worker
         super($JsonServiceActivator(SquadronPlatformType.wasm),
             threadHook: threadHook, exceptionManager: exceptionManager);
 
-  final _$localWorkers = <LocalWorker?>[null];
+  final _$remote = <Channel?>[null];
   final List _$startReq;
 
   @override
   List? getStartArgs() {
     final p0 = _$startReq[0];
-    if (p0 is ILoggingService) {
+    if (p0 is Worker) {
+      _$startReq[0] = (_$remote[0] ??= p0.getSharedChannel())?.serialize();
+    } else if (p0 is ILoggingService) {
       _$startReq[0] =
-          (_$localWorkers[0] = p0.getLocalWorker()).channel?.serialize();
+          (_$remote[0] ??= p0.getLocalWorker().channel)?.serialize();
     }
     return _$startReq;
   }
 
   @override
   void stop() {
-    _$localWorkers[0]?.stop();
-    _$localWorkers[0] = null;
+    _$remote[0]?.close();
+    _$remote[0] = null;
     _$startReq[0] = logger;
     super.stop();
   }

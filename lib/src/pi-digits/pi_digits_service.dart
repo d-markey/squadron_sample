@@ -14,7 +14,7 @@ Future noop() => Future(_noop);
 
 @SquadronService(baseUrl: '~/workers')
 class PiDigitsService {
-  PiDigitsService(@localWorker this.logger) {
+  PiDigitsService(@sharedService this.logger) {
     logger.log(
         '[$threadId] [S] PiDigitsServiceImpl instantiated, hashCode = ${hashCode.hex}');
   }

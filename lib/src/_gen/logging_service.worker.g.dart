@@ -1,12 +1,13 @@
-// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format width=80
 
 part of '../logging_service.dart';
 
 // **************************************************************************
-// Generator: WorkerGenerator 7.1.1 (Squadron 7.1.1)
+// Generator: WorkerGenerator 9.0.0+1 (Squadron 7.4.0)
 // **************************************************************************
 
+// dart format width=80
 /// Command ids used in operations map
 const int _$logId = 1;
 
@@ -31,20 +32,20 @@ mixin _$ILoggingService$Invoker on Invoker implements ILoggingService {
 /// invoking the remote service.
 mixin _$ILoggingService$Facade implements ILoggingService {}
 
+/// WorkerClient for ILoggingService
+final class $ILoggingService$Client extends WorkerClient
+    with _$ILoggingService$Invoker, _$ILoggingService$Facade
+    implements ILoggingService {
+  $ILoggingService$Client(PlatformChannel channelInfo)
+      : super(Channel.deserialize(channelInfo)!);
+}
+
 /// Local worker extension for ILoggingService
 extension $ILoggingServiceLocalWorkerExt on ILoggingService {
   // Get a fresh local worker instance.
   LocalWorker<ILoggingService> getLocalWorker(
           [ExceptionManager? exceptionManager]) =>
       LocalWorker.create(this, _$getOperations(), exceptionManager);
-}
-
-/// LocalWorkerClient for ILoggingService
-final class $LocalILoggingServiceClient extends LocalWorkerClient
-    with _$ILoggingService$Invoker, _$ILoggingService$Facade
-    implements ILoggingService {
-  $LocalILoggingServiceClient(PlatformChannel channelInfo)
-      : super(Channel.deserialize(channelInfo)!);
 }
 
 final class _$Deser extends MarshalingContext {

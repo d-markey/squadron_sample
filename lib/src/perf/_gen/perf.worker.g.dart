@@ -1,12 +1,13 @@
-// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format width=80
 
 part of '../perf.dart';
 
 // **************************************************************************
-// Generator: WorkerGenerator 7.1.1 (Squadron 7.1.1)
+// Generator: WorkerGenerator 9.0.0+1 (Squadron 7.4.0)
 // **************************************************************************
 
+// dart format width=80
 /// Command ids used in operations map
 const int _$addId = 1;
 const int _$inspectId = 2;
@@ -244,6 +245,21 @@ mixin _$Perf$Invoker on Invoker implements Perf {
 /// Facade for Perf, implements other details of the service unrelated to
 /// invoking the remote service.
 mixin _$Perf$Facade implements Perf {}
+
+/// WorkerClient for Perf
+final class $Perf$Client extends WorkerClient
+    with _$Perf$Invoker, _$Perf$Facade
+    implements Perf {
+  $Perf$Client(PlatformChannel channelInfo)
+      : super(Channel.deserialize(channelInfo)!);
+}
+
+/// Local worker extension for Perf
+extension $PerfLocalWorkerExt on Perf {
+  // Get a fresh local worker instance.
+  LocalWorker<Perf> getLocalWorker([ExceptionManager? exceptionManager]) =>
+      LocalWorker.create(this, _$getOperations(), exceptionManager);
+}
 
 /// WorkerService class for Perf
 class _$Perf$WorkerService extends Perf implements WorkerService {

@@ -1,12 +1,13 @@
-// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format width=80
 
 part of '../thumbnail_service.dart';
 
 // **************************************************************************
-// Generator: WorkerGenerator 7.1.1 (Squadron 7.1.1)
+// Generator: WorkerGenerator 9.0.0+1 (Squadron 7.4.0)
 // **************************************************************************
 
+// dart format width=80
 /// Command ids used in operations map
 const int _$getThumbnailId = 1;
 
@@ -43,6 +44,22 @@ mixin _$ThumbnailService$Invoker on Invoker implements ThumbnailService {
 /// Facade for ThumbnailService, implements other details of the service unrelated to
 /// invoking the remote service.
 mixin _$ThumbnailService$Facade implements ThumbnailService {}
+
+/// WorkerClient for ThumbnailService
+final class $ThumbnailService$Client extends WorkerClient
+    with _$ThumbnailService$Invoker, _$ThumbnailService$Facade
+    implements ThumbnailService {
+  $ThumbnailService$Client(PlatformChannel channelInfo)
+      : super(Channel.deserialize(channelInfo)!);
+}
+
+/// Local worker extension for ThumbnailService
+extension $ThumbnailServiceLocalWorkerExt on ThumbnailService {
+  // Get a fresh local worker instance.
+  LocalWorker<ThumbnailService> getLocalWorker(
+          [ExceptionManager? exceptionManager]) =>
+      LocalWorker.create(this, _$getOperations(), exceptionManager);
+}
 
 /// WorkerService class for ThumbnailService
 class _$ThumbnailService$WorkerService extends ThumbnailService
